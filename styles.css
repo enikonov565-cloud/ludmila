@@ -457,7 +457,11 @@ a { color: inherit; text-decoration: none; }
 }
 /* одна короткая фраза на сцену — крупно, с рукописной заглавной */
 .apx__phrase { margin: 0; font-weight: 500; font-size: calc(70 * var(--u)); line-height: 1.04; letter-spacing: -.03em; }
-.apx__phrase .cap { width: auto; font-weight: 400; font-size: 1.4em; line-height: .5; letter-spacing: 0; margin-right: .02em; }
+/* заглавная стоит на базовой линии строки и не отрывается от своего слова */
+.apx__phrase .cap { width: auto; font-weight: 400; font-size: 1.4em; line-height: .5; letter-spacing: 0; margin-right: .02em; vertical-align: baseline; position: relative; top: -.04em; }
+.nw { white-space: nowrap; }
+/* уточнение под фразой: Inter Bold, как в макете */
+.apx__note { margin: calc(26 * var(--u)) 0 0; font-weight: 700; font-size: calc(24 * var(--u)); line-height: 1.3; opacity: .85; }
 
 /* главная мысль и номер — проявляются вокруг суженного квадрата */
 .apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: var(--ink); }
@@ -485,17 +489,17 @@ a { color: inherit; text-decoration: none; }
 
 /* итог — плашка 10% #182C31, текст по правому краю: Inter Medium 64 и Inter Bold 28 */
 .apx__answer {
-  position: absolute; right: calc(630 * var(--u)); top: calc(736 * var(--u)); /* заканчивается до фото — текст не ложится на пиджак */
-  display: flex; flex-direction: column; align-items: flex-end; gap: calc(30 * var(--u));
-  padding: 0; color: var(--ink); text-align: right;
+  position: absolute; left: calc(781 * var(--u)); top: calc(736 * var(--u)); /* левая линия общая со счётчиком и стрелками */
+  display: flex; flex-direction: column; align-items: flex-start; gap: calc(30 * var(--u));
+  padding: 0; color: var(--ink); text-align: left;
 }
 .apx__line { display: block; }
-.apx__answer-head { margin: 0; font-weight: 500; font-size: calc(60 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
+.apx__answer-head { margin: 0; font-weight: 500; font-size: calc(56 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
 .apx__answer-sub { margin: 0; width: auto; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
 
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
 .apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(951 * var(--u)); width: calc(217 * var(--u)); height: calc(60 * var(--u)); }
-.apx__count { position: absolute; left: 0; top: 0; width: calc(147 * var(--u)); margin: 0; display: flex; justify-content: flex-end; gap: calc(13 * var(--u));
+.apx__count { position: absolute; left: 0; top: 0; width: auto; margin: 0; display: flex; justify-content: flex-start; gap: calc(13 * var(--u));
   font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; color: var(--ink); }
 .apx__arrow {
   position: absolute; top: calc(44 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u));
@@ -519,13 +523,14 @@ a { color: inherit; text-decoration: none; }
   .apx__num { font-size: clamp(56px, 16vw, 110px); bottom: -8px; right: 10px; }
   .apx__more { font-size: 10px; left: 14px; }
   .apx__more + .apx__more { right: 14px; }
-  .apx__answer { position: static; align-self: flex-end; gap: 12px; padding: 0; }
+  .apx__answer { position: static; align-self: flex-start; gap: 12px; padding: 0; }
+  .apx__note { margin-top: 14px; font-size: clamp(13px, 3.6vw, 18px); }
   .apx__phrase { font-size: clamp(30px, 9vw, 60px); }
   .apx__card { padding: 16%; }
   .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
   .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
-  .apx__nav { position: relative; left: auto; top: auto; align-self: flex-end; width: 217px; height: 64px; margin-right: 18px; }
-  .apx__count { width: 147px; gap: 13px; font-size: 24px; }
+  .apx__nav { position: relative; left: auto; top: auto; align-self: flex-start; width: 217px; height: 64px; }
+  .apx__count { width: auto; gap: 13px; font-size: 24px; }
   .apx__arrow { top: 40px; width: 100px; height: 24px; }
   .apx__arrow.js-next { left: 117px; }
   .approach__photo { position: static; order: 9; align-self: flex-end; height: auto; width: calc(100% + 20px); margin-right: -20px; }
