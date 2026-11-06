@@ -357,10 +357,20 @@ a { color: inherit; text-decoration: none; }
   --tile-w: calc(345 * var(--u)); --tile-h: calc(460 * var(--u));
   position: relative; overflow: hidden;
   height: 100svh; min-height: calc(1080 * var(--u));
+  display: flex; align-items: center; justify-content: center;
   background: radial-gradient(120% 95% at 50% 45%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
 }
+/* Кадр 1920 × 1080, как во втором блоке: поля 60 слева и справа одинаковые для всех блоков */
+.works__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
+/* Заголовок в стиле имени во втором блоке: рукописная заглавная + Inter 500 */
+.works__title {
+  position: absolute; left: calc(60 * var(--u)); top: calc(96 * var(--u)); margin: 0;
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30;
+}
+.works__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; margin-right: calc(4 * var(--u)); }
+/* Кольцо — под заголовком, по центру, строго между полями 60 (размер подбирает скрипт) */
 .works__stage {
-  position: absolute; inset: 0;
+  position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(300 * var(--u)); bottom: calc(40 * var(--u));
   display: flex; align-items: center; justify-content: center;
   perspective: 3000px; cursor: grab; touch-action: pan-y; user-select: none;
 }
@@ -368,7 +378,7 @@ a { color: inherit; text-decoration: none; }
 /* наклон: передний край колеса опущен вниз, задний ряд поднят — взгляд чуть сверху */
 .works__tilt { transform-style: preserve-3d; transform: rotateX(-10deg); }
 .works__ring {
-  position: relative; width: 0; height: var(--tile-h);
+  position: relative; width: 0; height: var(--tile-h); /* высоту уточняет скрипт, чтобы кольцо встало между полями */
   margin: 0; padding: 0; list-style: none;
   transform-style: preserve-3d; will-change: transform;
 }
@@ -384,6 +394,9 @@ a { color: inherit; text-decoration: none; }
 .works__back { transform: rotateY(180deg); filter: brightness(.2); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .works { --u: 1px; --tile-w: clamp(120px, 34vw, 300px); /* широкий экран сайта (16:9) помещается в ширину телефона */ --tile-h: calc(var(--tile-w) * 4 / 3); height: 100svh; min-height: 520px; }
+  .works { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 40px; }
+  .works__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
+  .works__title { position: static; font-size: clamp(38px, 10.5vw, 64px); }
+  .works__stage { position: relative; left: auto; right: auto; top: auto; bottom: auto; height: min(56svh, 420px); }
   .works__face, .works__back { border-radius: 12px; }
 }

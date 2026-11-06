@@ -188,14 +188,12 @@ document.documentElement.classList.replace('no-js', 'js');
   /* Симметрия: широкие плашки (экраны сайтов, 16:9) стоят на кольце через равные углы
      (при четырёх — ровно через 90°), а обычные карточки между ними разложены с равными зазорами.
      Радиус — из общей длины всех плашек с зазорами. */
-  var layout = function () {
-    var h = ring.offsetHeight; // размер без 3D-проекции
+  var geometry = function (h) {
     var widths = ratios.map(function (r) { return h * r; });
     var total = widths.reduce(function (s, w) { return s + w + h * GAP; }, 0);
-    radius = total / (2 * Math.PI);
-    var deg = function (len) { return len / radius * 180 / Math.PI; };
-    var angles = [];
-    var anchors = [];
+    var R = total / (2 * Math.PI);
+    var deg = function (len) { return len / R * 180 / Math.PI; };
+    var angles = [], anchors = [];
     ratios.forEach(function (r, i) { if (r > 1.2) anchors.push(i); });
     if (anchors.length < 2) {
       var arc = 0;
@@ -209,16 +207,50 @@ document.documentElement.classList.replace('no-js', 'js');
         var between = [];
         for (var i = (ai + 1) % count; i !== next; i = (i + 1) % count) between.push(i);
         var used = widths[ai] / 2 + widths[next] / 2 + between.reduce(function (s, i) { return s + widths[i]; }, 0);
-        var gap = ((step / 180 * Math.PI * radius) - used) / (between.length + 1);
+        var gap = ((step / 180 * Math.PI * R) - used) / (between.length + 1);
         var pos = widths[ai] / 2 + gap;
         between.forEach(function (i) { angles[i] = base + deg(pos + widths[i] / 2); pos += widths[i] + gap; });
       });
     }
+    return { widths: widths, R: R, angles: angles };
+  };
+
+  /* Самая широкая проекция кольца на экран при любом повороте (с учётом перспективы) */
+  var PERSPECTIVE = 3000;
+  var halfExtent = function (g) {
+    var m = 0;
+    for (var t = 0; t < 360; t += 2) {
+      g.angles.forEach(function (a0, i) {
+        var a = (a0 + t) * Math.PI / 180, e = g.widths[i] / 2;
+        [-e, e].forEach(function (ex) {
+          var x = ex * Math.cos(a) + g.R * Math.sin(a);
+          var z = -ex * Math.sin(a) + g.R * Math.cos(a) - g.R;
+          if (PERSPECTIVE - z > 1) m = Math.max(m, Math.abs(x * PERSPECTIVE / (PERSPECTIVE - z)));
+        });
+      });
+    }
+    return m;
+  };
+
+  /* Подбор высоты плашек: кольцо целиком помещается между полями и по высоте сцены */
+  var layout = function () {
+    var availW = stage.clientWidth, availH = stage.clientHeight;
+    /* на телефоне кольцо целиком было бы крошечным — там оно шире экрана, видны 3–4 передние работы */
+    var spread = stage.clientWidth < 700 ? 2.4 : 1;
+    var lo = 40, hi = availH / 1.3;
+    for (var n = 0; n < 22; n++) {
+      var mid = (lo + hi) / 2;
+      if (halfExtent(geometry(mid)) * 2 <= availW * spread) lo = mid; else hi = mid;
+    }
+    var h = Math.floor(lo);
+    ring.style.height = h + 'px';
+    var g = geometry(h);
+    radius = g.R;
     items.forEach(function (el, i) {
-      var w = widths[i];
+      var w = g.widths[i];
       el.style.width = w + 'px';
       el.style.marginLeft = (-w / 2) + 'px';
-      el.style.transform = 'rotateY(' + angles[i] + 'deg) translateZ(' + radius + 'px)';
+      el.style.transform = 'rotateY(' + g.angles[i] + 'deg) translateZ(' + radius + 'px)';
     });
     apply();
   };
