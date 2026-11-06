@@ -179,28 +179,46 @@ document.documentElement.classList.replace('no-js', 'js');
   var count = items.length;
   if (!count) return;
 
-  var SPEED = 7, SENSITIVITY = 5, GAP = 0.34; // зазор между плашками — доля их высоты (как spacing 3 в образце)
+  var SPEED = 1.5, SENSITIVITY = 5, GAP = 0.34; // 9° в секунду — полный оборот за 40 секунд; зазор — доля высоты плашки
   var degPerSec = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : SPEED * 6;
   var radius = 0, rotY = 0, vel = 0, last = 0, raf = 0, visible = false;
   var drag = { active: false, x: 0, y: 0, decided: false, horizontal: false };
   var ratios = Array.prototype.map.call(items, function (el) { return parseFloat(el.getAttribute('data-ratio')) || 0.75; });
 
-  /* Плашки разной ширины (экраны сайтов широкие, карточки 3:4): каждая занимает на кольце
-     дугу по своей ширине, радиус — из общей длины всех плашек с зазорами */
+  /* Симметрия: широкие плашки (экраны сайтов, 16:9) стоят на кольце через равные углы
+     (при четырёх — ровно через 90°), а обычные карточки между ними разложены с равными зазорами.
+     Радиус — из общей длины всех плашек с зазорами. */
   var layout = function () {
     var h = ring.offsetHeight; // размер без 3D-проекции
-    var gap = h * GAP;
     var widths = ratios.map(function (r) { return h * r; });
-    var total = widths.reduce(function (s, w) { return s + w + gap; }, 0);
+    var total = widths.reduce(function (s, w) { return s + w + h * GAP; }, 0);
     radius = total / (2 * Math.PI);
-    var arc = 0;
+    var deg = function (len) { return len / radius * 180 / Math.PI; };
+    var angles = [];
+    var anchors = [];
+    ratios.forEach(function (r, i) { if (r > 1.2) anchors.push(i); });
+    if (anchors.length < 2) {
+      var arc = 0;
+      widths.forEach(function (w, i) { angles[i] = deg(arc + (w + h * GAP) / 2); arc += w + h * GAP; });
+    } else {
+      var step = 360 / anchors.length;
+      anchors.forEach(function (ai, k) {
+        var next = anchors[(k + 1) % anchors.length];
+        var base = k * step;
+        angles[ai] = base;
+        var between = [];
+        for (var i = (ai + 1) % count; i !== next; i = (i + 1) % count) between.push(i);
+        var used = widths[ai] / 2 + widths[next] / 2 + between.reduce(function (s, i) { return s + widths[i]; }, 0);
+        var gap = ((step / 180 * Math.PI * radius) - used) / (between.length + 1);
+        var pos = widths[ai] / 2 + gap;
+        between.forEach(function (i) { angles[i] = base + deg(pos + widths[i] / 2); pos += widths[i] + gap; });
+      });
+    }
     items.forEach(function (el, i) {
       var w = widths[i];
-      var a = (arc + (w + gap) / 2) / radius * 180 / Math.PI;
-      arc += w + gap;
       el.style.width = w + 'px';
       el.style.marginLeft = (-w / 2) + 'px';
-      el.style.transform = 'rotateY(' + a + 'deg) translateZ(' + radius + 'px)';
+      el.style.transform = 'rotateY(' + angles[i] + 'deg) translateZ(' + radius + 'px)';
     });
     apply();
   };
