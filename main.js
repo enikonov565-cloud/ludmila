@@ -166,3 +166,77 @@ document.documentElement.classList.replace('no-js', 'js');
 
   window.addEventListener('load', function () { ScrollTrigger.refresh(); });
 })();
+
+/* Третий блок: кольцо из плашек с работами — Round Carousel (Originkit), без React.
+   Кольцо медленно крутится само, его можно потянуть мышью или пальцем (с инерцией),
+   изнанка плашек приглушена. Пока блок вне экрана — анимация на паузе. */
+(function () {
+  'use strict';
+  var stage = document.querySelector('[data-works]');
+  if (!stage) return;
+  var ring = stage.querySelector('.works__ring');
+  var items = ring.querySelectorAll('.works__item');
+  var count = items.length;
+  if (!count) return;
+
+  var SPACING = 3, SPEED = 7, SENSITIVITY = 5;
+  var angle = 360 / count;
+  var degPerSec = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : SPEED * 6;
+  var radius = 0, rotY = 0, vel = 0, last = 0, raf = 0, visible = false;
+  var drag = { active: false, x: 0, y: 0, decided: false, horizontal: false };
+
+  var layout = function () {
+    var w = ring.offsetWidth; // размер без 3D-проекции
+    radius = (w * (1 + SPACING * 0.15)) / (2 * Math.tan(Math.PI / count));
+    items.forEach(function (el, i) { el.style.transform = 'rotateY(' + (i * angle) + 'deg) translateZ(' + radius + 'px)'; });
+    apply();
+  };
+  var apply = function () { ring.style.transform = 'translateZ(' + (-radius) + 'px) rotateY(' + rotY + 'deg)'; };
+
+  var tick = function (now) {
+    var dt = last ? Math.min((now - last) / 1000, 0.1) : 0;
+    last = now;
+    if (!drag.active) {
+      if (Math.abs(vel) > 0.01) { rotY += vel * dt; vel *= 0.94; }
+      else { rotY += degPerSec * dt; }
+    }
+    apply();
+    raf = visible ? requestAnimationFrame(tick) : 0;
+  };
+  var start = function () { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } };
+
+  /* тянем по горизонтали; вертикальное движение пальца оставляем прокрутке страницы */
+  stage.addEventListener('pointerdown', function (e) {
+    drag = { active: true, x: e.clientX, y: e.clientY, decided: e.pointerType === 'mouse', horizontal: e.pointerType === 'mouse' };
+    vel = 0;
+    if (drag.horizontal) { stage.setPointerCapture(e.pointerId); stage.classList.add('is-dragging'); }
+  });
+  stage.addEventListener('pointermove', function (e) {
+    if (!drag.active) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.decided) {
+      if (Math.abs(dx) + Math.abs(dy) < 6) return;
+      drag.decided = true; drag.horizontal = Math.abs(dx) > Math.abs(dy);
+      if (!drag.horizontal) { drag.active = false; return; }
+      stage.setPointerCapture(e.pointerId); stage.classList.add('is-dragging');
+    }
+    drag.x = e.clientX; drag.y = e.clientY;
+    var k = 0.1 * SENSITIVITY; // 0,5° на пиксель: плавнее, чем в оригинале (1,5°)
+    rotY += dx * k; vel = dx * k * 60;
+  });
+  var end = function (e) {
+    if (stage.hasPointerCapture && stage.hasPointerCapture(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+    drag.active = false; stage.classList.remove('is-dragging');
+  };
+  stage.addEventListener('pointerup', end);
+  stage.addEventListener('pointercancel', end);
+
+  layout();
+  window.addEventListener('resize', layout);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      visible = entries[0].isIntersecting;
+      if (visible) start();
+    }, { rootMargin: '100px' }).observe(stage);
+  } else { visible = true; start(); }
+})();

@@ -347,3 +347,44 @@ a { color: inherit; text-decoration: none; }
   .about__grid { grid-template-columns: 1fr 1fr; }
   .about__side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
 }
+
+/* ===== Третий блок: кольцо из плашек с работами (Round Carousel, Originkit) =====
+   Фон — тот же беж, что у карточек второго блока; сверху мягко выходит из тёмного */
+.works {
+  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  --tile-w: calc(360 * var(--u)); --tile-h: calc(398 * var(--u)); /* пропорции плашки 300 × 332, как в образце */
+  position: relative; overflow: hidden;
+  height: 100svh; min-height: calc(1080 * var(--u));
+  background: radial-gradient(120% 95% at 50% 45%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
+}
+.works::before {
+  content: ""; position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 22%; pointer-events: none;
+  background: linear-gradient(to bottom, #070F10 0%, rgba(7, 15, 16, .7) 25%, rgba(7, 15, 16, .32) 55%, rgba(7, 15, 16, .08) 82%, rgba(7, 15, 16, 0) 100%);
+}
+.works__stage {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 3000px; cursor: grab; touch-action: pan-y; user-select: none;
+}
+.works__stage.is-dragging { cursor: grabbing; }
+.works__tilt { transform-style: preserve-3d; transform: rotateX(-5deg); }
+.works__ring {
+  position: relative; width: var(--tile-w); height: var(--tile-h);
+  margin: 0; padding: 0; list-style: none;
+  transform-style: preserve-3d; will-change: transform;
+}
+.works__item { position: absolute; inset: 0; transform-style: preserve-3d; }
+.works__face, .works__back {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border-radius: calc(15 * var(--u)); overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  object-fit: cover; background-size: cover; background-position: center;
+  pointer-events: none;
+}
+.works__face { box-shadow: 0 calc(10 * var(--u)) calc(30 * var(--u)) rgba(40, 28, 16, .35); }
+/* изнанка плашек — приглушённая (как innerDim 2) */
+.works__back { transform: rotateY(180deg); filter: brightness(.2); }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .works { --u: 1px; --tile-w: clamp(150px, 34vw, 260px); --tile-h: calc(var(--tile-w) * 1.1067); height: min(100svh, calc(var(--tile-w) * 3.2)); min-height: 520px; }
+  .works__face, .works__back { border-radius: 12px; }
+}
