@@ -628,7 +628,7 @@ document.documentElement.classList.replace('no-js', 'js');
     o.font = capFont; capW = o.measureText('М').width;
     o.font = restFont; restW = o.measureText('ОЙ ПОДХОД').width;
     total = capW + size * 0.05 + restW;
-    var x = (W - total) / 2, y = H * 0.58;
+    var x = (W - total) / 2, y = H * 0.06 + size * 0.78; // крупная надпись — вверху экрана
     o.fillStyle = '#000';
     o.font = capFont; o.fillText('М', x, y);
     o.font = restFont; o.fillText('ОЙ ПОДХОД', x + capW + size * 0.05, y);

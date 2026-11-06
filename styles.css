@@ -435,20 +435,23 @@ a { color: inherit; text-decoration: none; }
 }
 .approach__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
 /* заголовок: рукописная «М» Good Vibes Pro 96 + Inter Medium 77 прописными */
+/* компьютер: заголовок того же размера — по центру блока, в полутоне, за квадратом и фото */
 .approach__title {
-  position: absolute; left: calc(60 * var(--u)); top: calc(151 * var(--u)); margin: 0;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 0; opacity: .45; white-space: nowrap; margin: 0;
   font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; text-transform: uppercase; color: var(--ink);
 }
 /* крупная надпись из частиц на заднем плане (только компьютер) */
 .approach__bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .38; }
-.approach__frame { z-index: 1; }
+/* слои: частицы и заголовок — сзади, фото над ними, квадрат и тексты — сверху */
+.approach__frame { z-index: auto; }
+.apx, .apx__answer, .apx__nav { z-index: 2; }
 /* заголовок собирается из частиц (canvas поверх); настоящий текст проявляется, когда частицы собрались */
 .approach__title-text { display: inline-block; transition: opacity .8s var(--ease); }
 .approach__title.is-particles .approach__title-text { opacity: 0; }
 .approach__particles { position: absolute; left: calc(-40 * var(--u)); top: calc(-40 * var(--u)); pointer-events: none; transition: opacity .9s var(--ease); }
 .approach__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; text-transform: none; margin-right: calc(10 * var(--u)); }
 /* фото — вплотную к правому и нижнему краю окна, без полей */
-.approach__photo { position: absolute; right: calc(-115 * var(--u)); bottom: 0; height: calc(900 * var(--u)); width: auto; pointer-events: none; } /* у вырезанного фото справа пустое поле — сдвигаем его за край, чтобы фигура стояла вплотную */
+.approach__photo { position: absolute; z-index: 1; right: calc(-115 * var(--u)); bottom: 0; height: calc(900 * var(--u)); width: auto; pointer-events: none; } /* у вырезанного фото справа пустое поле — сдвигаем его за край, чтобы фигура стояла вплотную */
 
 /* квадрат 680 со сценой: текст стоит во внутренней зоне 480 (поля по 100),
    поэтому при сужении до 480 он не обрезается */
@@ -551,7 +554,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .approach { --u: 1px; height: auto; min-height: 0; display: flex; flex-direction: column; align-items: stretch; padding: 56px 20px 0; }
   .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
-  .approach__title { position: relative; left: auto; top: auto; font-size: clamp(36px, 10vw, 64px); }
+  .approach__title { position: relative; left: auto; top: auto; transform: none; opacity: 1; white-space: normal; font-size: clamp(36px, 10vw, 64px); }
   .approach__particles { left: -20px; top: -20px; }
   .approach__bg { display: none; }
   .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
