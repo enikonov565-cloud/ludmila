@@ -386,14 +386,19 @@ document.documentElement.classList.replace('no-js', 'js');
   var setOpen = function (v) {
     opened = v;
     var card = slides[current].querySelector('.apx__card');
-    card.setAttribute('aria-pressed', v ? 'true' : 'false');
+    var hintBtn = card.querySelector('.js-open');
+    if (hintBtn) hintBtn.setAttribute('aria-expanded', v ? 'true' : 'false');
     if (v) hoverTl[current].timeScale(1).play(); else hoverTl[current].timeScale(1.4).reverse();
   };
   var showMeaning = function () {};
   slides.forEach(function (s) {
     var card = s.querySelector('.apx__card');
-    card.addEventListener('click', function () { setOpen(!opened); restart(); });
-    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!opened); restart(); } });
+    /* клик по лицевой стороне открывает; на обороте — только кнопки, чтобы было ясно, что делать */
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('.js-close')) { setOpen(false); restart(); return; }
+      if (e.target.closest('.js-card-next')) { go(1); restart(); return; }
+      if (!opened) { setOpen(true); restart(); }
+    });
   });
   root.addEventListener('mouseenter', function () { over = true; });
   root.addEventListener('mouseleave', function () { over = false; });
@@ -403,7 +408,7 @@ document.documentElement.classList.replace('no-js', 'js');
     busy = true;
     var next = (current + dir + total) % total;
     var active = slides[current], incoming = slides[next];
-    if (opened) { opened = false; active.querySelector('.apx__card').setAttribute('aria-pressed', 'false'); }
+    if (opened) { opened = false; var hb = active.querySelector('.js-open'); if (hb) hb.setAttribute('aria-expanded', 'false'); }
     hoverTl[current].timeScale(1.4).reverse();
     active.classList.remove('active');
     incoming.classList.add('active');
