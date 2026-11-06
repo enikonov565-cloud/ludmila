@@ -411,6 +411,7 @@ document.documentElement.classList.replace('no-js', 'js');
     gsap.set(incoming, { autoAlpha: 1, zIndex: 3, scale: reduce ? 1 : 1.2,
       clipPath: reduce ? 'inset(0% 0% 0%)' : (dir > 0 ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)') });
     gsap.to(section, { '--bg': theme(next).bg, '--ink': theme(next).ink, duration: reduce ? 0.01 : 1.1, ease: 'power2.inOut' });
+    if (window.approachTitleReform) window.approachTitleReform(); /* заголовок из частиц пересобирается новым цветом */
     gsap.to(incoming, { clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
       onComplete: function () {
         gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
@@ -433,4 +434,156 @@ document.documentElement.classList.replace('no-js', 'js');
     }, { threshold: 0.4 }).observe(root);
   }
   restart();
+})();
+
+/* Заголовок «Мой подход» из частиц — по примеру VoXelo (CodePen, p5.js), переписан на чистый canvas.
+   Около двух тысяч частиц-штрихов слетаются в надпись и оставляют тающие следы; когда собрались —
+   проявляется настоящий текст, а частицы гаснут. При смене сцены частицы разлетаются и собираются
+   заново уже новым цветом: цвет берётся из текущего цвета текста блока (он меняется вместе с фоном). */
+(function () {
+  'use strict';
+  var title = document.querySelector('.approach__title');
+  if (!title) return;
+  var canvas = title.querySelector('.approach__particles');
+  var textEl = title.querySelector('.approach__title-text');
+  var section = title.closest('.approach');
+  if (!canvas || !canvas.getContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var W = 0, H = 0, padX = 0, padY = 0, targets = [], parts = [], raf = 0, calm = 0, started = false, scale = 1;
+  var MAX = 2200;
+
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+
+  /* точки надписи: рисуем каждый символ тем же шрифтом и в том же месте, что и настоящий текст */
+  var buildTargets = function () {
+    padX = -canvas.offsetLeft; padY = -canvas.offsetTop;
+    W = Math.ceil(textEl.offsetWidth + padX * 2); H = Math.ceil(textEl.offsetHeight + padY * 2);
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var off = document.createElement('canvas'); off.width = W; off.height = H;
+    var o = off.getContext('2d');
+    var cr = canvas.getBoundingClientRect();
+    var marker = document.createElement('span');
+    marker.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    textEl.appendChild(marker);
+    var baseY = marker.getBoundingClientRect().top - cr.top;
+    marker.remove();
+    var walker = document.createTreeWalker(textEl, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while ((node = walker.nextNode())) {
+      var st = getComputedStyle(node.parentNode);
+      o.font = st.fontStyle + ' ' + st.fontWeight + ' ' + st.fontSize + ' ' + st.fontFamily;
+      var upper = st.textTransform === 'uppercase';
+      for (var i = 0; i < node.length; i++) {
+        var ch = node.data[i];
+        if (/\s/.test(ch)) continue;
+        var range = document.createRange(); range.setStart(node, i); range.setEnd(node, i + 1);
+        var rr = range.getBoundingClientRect();
+        o.fillText(upper ? ch.toUpperCase() : ch, rr.left - cr.left, baseY);
+      }
+    }
+    var fs = parseFloat(getComputedStyle(textEl).fontSize);
+    scale = fs / 77;
+    var step = Math.max(2, Math.round(fs / 24));
+    var data = o.getImageData(0, 0, W, H).data, pts = [];
+    for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) if (data[(y * W + x) * 4 + 3] > 140) pts.push([x, y]);
+    for (var k = pts.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)); var t = pts[k]; pts[k] = pts[j]; pts[j] = t; }
+    targets = pts.slice(0, MAX);
+  };
+
+  var makeParts = function () {
+    var s = Math.max(0.6, scale);
+    parts = targets.map(function (t) {
+      var x = rand(0, W), y = rand(-H * 0.5, H * 1.5);
+      return { x: x, y: y, px: x, py: y, vx: 0, vy: 0, tx: t[0], ty: t[1],
+        maxSpeed: rand(3, 10) * s, maxForce: rand(0.3, 0.8) * s, size: rand(0.6, 2.2) * s };
+    });
+  };
+
+  var frame = function () {
+    /* следы: каждый кадр стираем 28% нарисованного — фон блока просвечивает, как в примере */
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+    var color = getComputedStyle(section).color, moving = 0;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      var dx = p.tx - p.x, dy = p.ty - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+      var want = d < 40 ? p.maxSpeed * d / 40 : p.maxSpeed; // подлетая, тормозит
+      var sx = dx / d * want - p.vx, sy = dy / d * want - p.vy;
+      var sm = Math.sqrt(sx * sx + sy * sy);
+      if (sm > p.maxForce) { sx = sx / sm * p.maxForce; sy = sy / sm * p.maxForce; }
+      p.vx += sx; p.vy += sy;
+      var v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; v = p.maxSpeed; }
+      if (d < 40) { p.vx *= 0.9; p.vy *= 0.9; }
+      p.x += p.vx; p.y += p.vy;
+      if (d < 0.6 && v < 0.4) { p.x = p.tx; p.y = p.ty; p.vx = p.vy = 0; }
+      var k = Math.min(1, v / p.maxSpeed);
+      if (d > 1.5) moving++;
+      ctx.globalAlpha = 0.15 + k * 0.7;
+      ctx.lineWidth = p.size * (0.5 + k * 0.5);
+      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(p.x - p.size * 0.5, p.y - p.size * 0.5, p.size, p.size);
+      p.px = p.x; p.py = p.y;
+    }
+    ctx.globalAlpha = 1;
+    /* собрались — проявляем настоящий текст и гасим частицы */
+    calm = moving < parts.length * 0.03 ? calm + 1 : 0;
+    if (calm > 12) {
+      title.classList.remove('is-particles');
+      canvas.style.opacity = '0';
+      raf = 0;
+      return;
+    }
+    raf = requestAnimationFrame(frame);
+  };
+
+  var run = function () {
+    canvas.style.opacity = '1';
+    title.classList.add('is-particles');
+    calm = 0;
+    if (!raf) raf = requestAnimationFrame(frame);
+  };
+
+  /* разлёт и сборка заново (вызывается при смене сцены) */
+  window.approachTitleReform = function () {
+    if (!started) return;
+    var s = Math.max(0.6, scale);
+    parts.forEach(function (p) {
+      var a = rand(0, Math.PI * 2), f = rand(18, 45) * s;
+      p.vx = Math.cos(a) * f; p.vy = Math.sin(a) * f;
+    });
+    run();
+  };
+
+  var start = function () {
+    if (started) return;
+    started = true;
+    buildTargets(); makeParts(); run();
+  };
+  var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  ready.then(function () {
+    title.classList.add('is-particles');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { start(); io.disconnect(); } }, { threshold: 0.6 });
+      io.observe(title);
+    } else start();
+  });
+  var rt = 0;
+  window.addEventListener('resize', function () {
+    if (!started) return;
+    clearTimeout(rt);
+    rt = setTimeout(function () {
+      buildTargets();
+      parts.forEach(function (p, i) { var t = targets[i % targets.length]; p.tx = t[0]; p.ty = t[1]; });
+      run();
+    }, 200);
+  });
 })();
