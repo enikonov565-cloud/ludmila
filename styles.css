@@ -1,0 +1,339 @@
+/* Главная по макету Figma «п-р 18» (1920 × 1080). Все размеры — в единицах макета:
+   calc(N * var(--u)) = N пикселей при ширине экрана 1920. */
+@font-face {
+  font-family: "Good Vibes Pro";
+  src: local("Good Vibes Pro"), local("GoodVibesPro"), local("GoodVibesPro-Regular");
+}
+
+@font-face {
+  font-family: "Wulkan Display";
+  src: local("Wulkan Display"), local("WulkanDisplay-Regular"), local("Wulkan Display Regular");
+  font-style: italic;
+}
+
+:root {
+  --u: calc(100vw / 1920);
+  --teal: #182C31;
+  --display: "Wulkan Display", "Playfair Display", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--teal); color: #fff; font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+p, h1, h2, ul, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Сцена: фон и затемнения — ровно #182C31 */
+.stage {
+  position: relative; overflow: hidden;
+  width: 100%; height: max(calc(1080 * var(--u)), 100svh);
+  background: var(--teal);
+}
+.stage__media { position: absolute; inset: 0; will-change: transform; }
+
+/* Фото из слоёв, снизу вверх: комната → затемнения → надпись → Людмила.
+   10% #182C31 (в макете фото на 90%) уже в самих картинках, чтобы не тонировать надпись. */
+.stage__photo {
+  position: absolute; top: 0; left: calc(-249 * var(--u));
+  width: calc(2438 * var(--u)); aspect-ratio: 2752 / 1536; min-height: 100%;
+  overflow: hidden;
+}
+.stage__depth { position: absolute; inset: 0; will-change: transform; }
+.stage__img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.stage__depth--room .stage__img { transform: scale(1.06); transform-origin: 50% 40%; }
+
+/* Затемнения по краям экрана (координаты от левого края фото: экран начинается на 249) */
+.stage__shade { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+.stage__shade--l { left: 0; width: calc((249 + 568) * var(--u)); background: linear-gradient(270deg, rgba(24, 44, 49, 0), #182C31 calc(568 * var(--u)), #182C31); }
+.stage__shade--r { left: calc(1483 * var(--u)); right: 0; background: linear-gradient(90deg, rgba(24, 44, 49, 0), #182C31 calc(686 * var(--u)), #182C31); }
+
+/* Людмила лежит выше затемнений, поэтому её края гасятся маской — так же, как их гасят затемнения */
+.stage__depth--person {
+  -webkit-mask-image: linear-gradient(90deg, transparent calc(249 * var(--u)), #000 calc(817 * var(--u)), #000 calc(1483 * var(--u)), transparent calc(2169 * var(--u)));
+          mask-image: linear-gradient(90deg, transparent calc(249 * var(--u)), #000 calc(817 * var(--u)), #000 calc(1483 * var(--u)), transparent calc(2169 * var(--u)));
+}
+
+/* Надпись по макету «п-р 18»: Inter 64 и рукописная заглавная «В» 96 (Good Vibes Pro).
+   Координаты макета + 249 — сдвиг фото влево за край экрана. */
+.say {
+  position: absolute;
+  font-size: calc(64 * var(--u)); line-height: 1.072; white-space: nowrap; color: #BDB7B1;
+}
+.says--behind .say--l { left: calc((141 + 249) * var(--u)); top: calc(400.3 * var(--u)); }
+/* Справа — сразу за волосами, не заходя на них */
+.says--behind .say--r { left: calc((1470 + 249) * var(--u)); top: calc(400.3 * var(--u)); }
+/* «Вашей» сдвинута влево, чтобы «й» в обеих строках стояли одна под другой */
+.says--behind .say--r .say__line:first-child { margin-left: calc(-11.875 * var(--u)); }
+.say__line { display: block; }
+.cap {
+  display: inline-block; width: calc(101 * var(--u));
+  font-family: "Good Vibes Pro", "Great Vibes", cursive; font-size: 1.5em; line-height: .5;
+}
+.say--r .cap { width: calc(102 * var(--u)); }
+.w { display: inline-block; white-space: nowrap; }
+.ch { display: inline-block; }
+
+.row--top { display: none; }
+
+/* Переход ко второму блоку, как в nikonovphoto: низ кадра мягкой кривой растворяется
+   в цвет начала второго блока (#1A2C30); короткая зона, чтобы фото не замыливалось */
+.stage__fade {
+  --fade-rgb: 26, 44, 48;
+  position: absolute; z-index: 1; left: 0; bottom: 0; width: 100%; height: 30%; pointer-events: none;
+  background: linear-gradient(to top,
+    rgba(var(--fade-rgb), 1) 0%,
+    rgba(var(--fade-rgb), .9) 12%,
+    rgba(var(--fade-rgb), .72) 26%,
+    rgba(var(--fade-rgb), .5) 42%,
+    rgba(var(--fade-rgb), .3) 58%,
+    rgba(var(--fade-rgb), .14) 74%,
+    rgba(var(--fade-rgb), .04) 88%,
+    rgba(var(--fade-rgb), 0) 100%);
+}
+/* второй блок начинается ровно тем же цветом, без шва */
+.about { margin-top: -1px; }
+
+/* Появление: фото проявляется, затем надпись по буквам выплывает из размытия */
+@media (prefers-reduced-motion: no-preference) {
+  .stage__photo { animation: bg 2.4s var(--ease) both; }
+  .says .ch, .about__name.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.45s + var(--i) * 42ms); }
+  .says .ch.cap, .about__name.is-in .ch.cap { animation-duration: 1.6s; }
+}
+@keyframes bg { from { transform: scale(1.06); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ch { from { opacity: 0; transform: translateY(.4em); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+
+/* Телефон и планшет: фото на весь экран, надпись сверху и снизу справа поверх фото
+   (вокруг головы на узком экране нет места, чтобы спрятать надпись за неё) */
+@media (max-width: 1000px) {
+  :root { --u: 1px; --screen: min(175vw, max(calc(100svh - var(--ptop)), 520px)); --ptop: clamp(120px, 34vw, 170px); }
+  .stage { height: auto; }
+  .stage__photo { left: 0; top: var(--ptop); width: 100%; height: var(--screen); min-height: 0; aspect-ratio: auto; }
+  .stage__img { object-position: 51.5% 0; }
+  .stage__shade, .stage__depth--text, .stage__fade { display: none; }
+  .stage { background: #1A2C30; }
+  .stage__depth--person { -webkit-mask-image: none; mask-image: none; }
+  .stage__media::before, .stage__media::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
+  .stage__media::before { top: calc(var(--ptop) - 1px); height: calc(var(--screen) * .3); background: linear-gradient(180deg, #1A2C30, rgba(26, 44, 48, 0)); }
+  .stage__media::after { top: calc(var(--ptop) + var(--screen) * .5); height: calc(var(--screen) * .5 + 8px); background: linear-gradient(180deg, rgba(26, 44, 48, 0), #1A2C30 88%); }
+  .row--top { display: block; position: relative; z-index: 2; height: calc(var(--ptop) + var(--screen)); padding: 40px 20px; }
+  .says--front { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+  .say { position: static; font-size: clamp(34px, 9.4vw, 64px); }
+  .cap, .say--r .cap { width: 1.03em; }
+  .say--r { align-self: flex-end; text-align: right; }
+}
+
+/* ===== Второй блок по макету «п-р 19»: фон #1A2C30 → #070F10 ===== */
+.about {
+  position: relative; overflow: hidden;
+  height: calc(1080 * var(--u));
+  background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);
+  color: #BDB7B1; /* все светлые тексты сайта — один цвет, как надпись на главной */
+}
+
+/* Имя: рукописные заглавные Good Vibes Pro 96 + Inter Medium 77 */
+.about__name {
+  position: absolute; left: calc(60 * var(--u)); bottom: calc(754.4 * var(--u));
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.37; letter-spacing: -.02em;
+}
+.about__name-line { display: block; white-space: nowrap; }
+.about__name .cap { width: auto; font-weight: 400; font-size: 1.247em; margin-right: calc(10 * var(--u)); }
+.about__name-line--2 .cap { margin-right: calc(7 * var(--u)); }
+
+.about__adapt {
+  position: absolute; left: calc(770 * var(--u)); bottom: calc(772.9 * var(--u));
+  font-style: italic; font-size: calc(30 * var(--u)); line-height: 1.2; color: #BDB7B1;
+}
+
+.about__count {
+  position: absolute; left: calc(1396 * var(--u)); bottom: calc(772.9 * var(--u)); width: calc(464 * var(--u));
+  display: flex; flex-direction: column; align-items: flex-end; gap: calc(24 * var(--u));
+}
+.about__count-top { display: flex; flex-direction: column; align-items: flex-start; gap: calc(15 * var(--u)); }
+.about__num {
+  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-size: calc(153 * var(--u)); line-height: 1.1; letter-spacing: calc(-3 * var(--u)); color: #BDB7B1;
+  text-box: trim-both cap alphabetic;
+}
+.about__num { font-size: calc(150 * var(--u)); }
+.about__num span { font-size: calc(153 * var(--u)); }
+.about__word { font-weight: 500; font-size: calc(64 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }
+.about__niche { align-self: stretch; text-align: right; font-style: italic; font-size: calc(30 * var(--u)); line-height: 1.2; }
+
+/* Сетка: портрет 680, фото 580 с текстом о подходе, карточка кейса 480 и плашки */
+.about__grid {
+  position: absolute; left: calc(60 * var(--u)); top: calc(334 * var(--u));
+  display: flex; gap: calc(30 * var(--u)); align-items: flex-start;
+}
+.tile { position: relative; overflow: hidden; }
+.tile img { display: block; }
+.tile--portrait { width: calc(680 * var(--u)); height: calc(680 * var(--u)); }
+.tile--portrait img { width: 100%; height: 100%; object-fit: cover; }
+.about__mid { width: calc(580 * var(--u)); }
+/* Карточки в цветах большого портрета: тёплый беж стены и коричневый пиджака */
+.tile--photo {
+  width: calc(580 * var(--u)); height: calc(580 * var(--u));
+  background: radial-gradient(120% 95% at 72% 28%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
+}
+/* Фото — полупрозрачный фон под текстом */
+.tile__bg { position: absolute; right: 0; bottom: -3%; height: 106%; width: auto; opacity: .5; }
+
+/* Единый стиль текстов в карточках:
+   заголовки — Inter 500, плотный трекинг; пояснения — Inter 400, 20, полутон */
+.tile--photo, .case-card { --ink: #1A2C30; --ink-soft: #6A5F51; }
+.text-soft { font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; }
+
+/* Призыв: заголовок, пояснение и кнопка одной группой, без пустот */
+.pitch {
+  position: absolute; top: calc(56 * var(--u)); left: calc(40 * var(--u)); right: calc(40 * var(--u));
+  display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;
+  color: var(--ink);
+}
+.pitch__title { width: calc(440 * var(--u)); font-weight: 500; font-size: calc(60 * var(--u)); line-height: 1.02; letter-spacing: -.035em; }
+.pitch__cap { font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.45em; line-height: .5; letter-spacing: 0; margin-right: .02em; }
+.pitch__sub {
+  margin-top: calc(20 * var(--u)); width: calc(300 * var(--u));
+  font-size: calc(20 * var(--u)); line-height: 1.22; letter-spacing: -.02em; color: var(--ink-soft);
+}
+.pitch .btn--order { margin-top: calc(36 * var(--u)); }
+
+/* Заказ — главное действие: медная почти прямоугольная кнопка, крупный текст */
+.btn--order {
+  display: inline-flex; align-items: center;
+  padding: calc(22 * var(--u)) calc(40 * var(--u));
+  border-radius: calc(12 * var(--u)); background: #A9502C; color: #F6EFE5;
+  font-weight: 500; font-size: calc(24 * var(--u)); letter-spacing: -.01em; line-height: 1;
+  box-shadow: 0 calc(14 * var(--u)) calc(30 * var(--u)) calc(-14 * var(--u)) rgba(86, 34, 14, .55);
+  transition: background-color .45s var(--ease), transform .6s var(--ease);
+}
+.btn--order:hover { background: #1A2C30; transform: translateY(calc(-2 * var(--u))); }
+.btn--order:focus-visible { outline: 2px solid #1A2C30; outline-offset: 4px; }
+
+/* Подпись под второй карточкой: одна мягкая фраза, тот же стиль пояснений */
+.about__hook {
+  margin-top: calc(22 * var(--u)); max-width: calc(520 * var(--u));
+  font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; color: #BDB7B1;
+}
+
+.about__side { display: flex; flex-direction: column; gap: calc(20 * var(--u)); width: calc(480 * var(--u)); }
+/* Карточка кейса: текст одной группой слева, фото товара справа — обе по центру высоты */
+.case-card {
+  width: calc(480 * var(--u)); height: calc(480 * var(--u)); padding: calc(62.6 * var(--u)) calc(28 * var(--u)) calc(28 * var(--u));
+  display: grid; grid-template-columns: minmax(0, 1fr) calc(200 * var(--u)); column-gap: calc(20 * var(--u)); align-items: center;
+  background: radial-gradient(120% 95% at 72% 28%, #D8CDBB 0%, #C8BDAB 55%, #B3A691 100%);
+  color: var(--ink);
+}
+/* Общие линии со второй карточкой: верх «Кейс» = верх «Клиент», низ «Перейти» = низ пояснения */
+/* Линии со второй карточкой: верх «Кейс» = верх «Клиент», низ «Инфографика…» = низ «экрана»,
+   «Перейти» стоит на уровне верха кнопки «Заказать дизайн»; фото товара — по центру между ними */
+.case-card { grid-template-rows: auto; align-content: start; --title-gap: 21.5; --note-gap: 45.5; --link-gap: 80.3; }
+.case-card .case-card__img { align-self: start; margin-top: calc(39 * var(--u)); }
+/* Текст во всю высоту фото: «Кейс» на уровне его верха, «Перейти» — на уровне низа */
+.case-card__body { align-self: start; display: flex; flex-direction: column; align-items: flex-start; }
+.case-card__label { font-size: calc(14 * var(--u)); line-height: 1; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.case-card__title { margin-top: calc(var(--title-gap, 12) * var(--u)); font-weight: 500; font-size: calc(24 * var(--u)); line-height: 1.12; letter-spacing: -.025em; }
+.case-card__note { margin-top: calc(var(--note-gap, 12) * var(--u)); font-size: calc(20 * var(--u)); line-height: 1.22; letter-spacing: -.02em; color: var(--ink-soft); }
+
+/* «Перейти» — второстепенное: без рамки, подчёркнутое слово в полутоне;
+   при наведении линия убегает вправо и возвращается слева */
+.link-more {
+  margin-top: calc(var(--link-gap, 28) * var(--u));
+  display: inline-flex; align-items: center; gap: calc(10 * var(--u));
+  font-size: calc(21 * var(--u)); line-height: 1.2; letter-spacing: -.015em; color: var(--ink);
+  transition: color .4s var(--ease);
+}
+.link-more__word { position: relative; padding-bottom: calc(3 * var(--u)); }
+.link-more__word::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: max(1px, calc(1.5 * var(--u)));
+  background: currentColor; transform-origin: right;
+}
+.link-more:hover { color: #A9502C; }
+.link-more:hover .link-more__word::after { animation: line-run .9s var(--ease); }
+.link-more__arrow { width: calc(17 * var(--u)); height: auto; aspect-ratio: 25.8 / 21.6; transform: rotate(39.69deg); transition: transform .5s var(--ease); }
+.link-more:hover .link-more__arrow { transform: rotate(39.69deg) translate(calc(3 * var(--u)), calc(-3 * var(--u))); }
+.link-more:focus-visible { outline: 2px solid #1A2C30; outline-offset: 4px; }
+@keyframes line-run {
+  0% { transform: scaleX(1); transform-origin: right; }
+  45% { transform: scaleX(0); transform-origin: right; }
+  46% { transform: scaleX(0); transform-origin: left; }
+  100% { transform: scaleX(1); transform-origin: left; }
+}
+
+.case-card__img {
+  width: 100%; height: auto;
+  border-radius: calc(14 * var(--u)); box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) calc(-18 * var(--u)) rgba(40, 28, 16, .55);
+  transition: transform .8s var(--ease);
+}
+.case-card:hover .case-card__img { transform: rotate(-1.5deg) scale(1.02); }
+
+.tags { display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); width: calc(480 * var(--u)); }
+.tag {
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(200, 189, 171, .1); color: #BDB7B1; border-radius: calc(27.89 * var(--u));
+  padding: calc(9 * var(--u)) 0; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap;
+}
+.tag--wide { min-width: calc(479 * var(--u)); padding-inline: calc(15 * var(--u)); }
+.tag:nth-child(2) { width: calc(151 * var(--u)); }
+.tag:nth-child(3) { width: calc(140 * var(--u)); }
+.tag:nth-child(4) { width: calc(171 * var(--u)); }
+
+/* Появление при прокрутке */
+.js .about [data-reveal]:not(.about__name) {
+  opacity: 0; transform: translateY(calc(40 * var(--u)));
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  transition-delay: var(--d, 0s);
+}
+.js .about [data-reveal].is-in { opacity: 1; transform: none; }
+.js .about__name .ch { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .js .about [data-reveal]:not(.about__name), .js .about__name .ch { opacity: 1; transform: none; }
+}
+
+/* Телефон и планшет: блоки друг под другом */
+@media (max-width: 1000px) {
+  .about {
+    height: auto; padding: 56px 20px 64px;
+    background: linear-gradient(180deg, #1A2C30 0, #070F10 420px, #070F10 100%);
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .about__name, .about__adapt, .about__count, .about__grid { position: static; }
+  .about__name { font-size: clamp(42px, 11.5vw, 77px); line-height: 1.3; }
+  .about__name .cap { margin-right: .1em; }
+  .about__adapt { font-size: clamp(18px, 4.8vw, 26px); }
+  .about__count { width: auto; align-self: flex-end; gap: 12px; }
+  .about__num { font-size: clamp(84px, 24vw, 150px); letter-spacing: -.02em; }
+  .about__num span { font-size: 1.02em; }
+  .about__word { font-size: clamp(38px, 10.5vw, 64px); }
+  .about__niche { font-size: clamp(18px, 4.8vw, 26px); }
+  .about__grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  .tile--portrait, .tile--photo, .about__mid, .about__side, .case-card { width: 100%; height: auto; }
+  .tile--portrait, .tile--photo { aspect-ratio: 1; }
+  .pitch { inset: 6%; justify-content: center; }
+  .about__hook { margin-top: 14px; max-width: none; font-size: clamp(14.5px, 3.9vw, 19px); letter-spacing: -.02em; }
+  .pitch__title { width: 92%; font-size: clamp(30px, 8.6vw, 48px); }
+  .pitch__sub { margin-top: 12px; width: 70%; font-size: clamp(15px, 4.1vw, 19px); }
+  .pitch .btn--order { margin-top: 22px; }
+  .btn--order { font-size: clamp(16px, 4.4vw, 20px); padding: 16px 26px; border-radius: 10px; }
+  .case-card { padding: 20px; grid-template-columns: minmax(0, 1fr) 40%; grid-template-rows: auto; align-content: center; column-gap: 16px; }
+  .case-card__label { font-size: 12px; }
+  .case-card__title { margin-top: 8px; font-size: clamp(17px, 4.6vw, 22px); }
+  .case-card__note { margin-top: 8px; font-size: clamp(14px, 3.8vw, 17px); }
+  .case-card { --title-gap: 8; --note-gap: 8; --link-gap: 16; }
+  .case-card .case-card__img { margin-top: 0; align-self: center; }
+  .link-more { padding-top: 0; font-size: clamp(15px, 4.1vw, 18px); gap: 8px; }
+  .link-more__word::after { height: 1px; }
+  .link-more__arrow { width: 14px; }
+  .case-card__img { border-radius: 10px; }
+  .tags { width: 100%; gap: 6px 4px; }
+  .tag { font-size: clamp(13px, 3.8vw, 18px); padding: 9px 16px; border-radius: 28px; }
+  .tag--wide { min-width: 0; }
+  .tag:nth-child(n+2) { width: auto; }
+}
+@media (min-width: 640px) and (max-width: 1000px) {
+  .about__grid { grid-template-columns: 1fr 1fr; }
+  .about__side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+}
