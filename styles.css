@@ -278,16 +278,13 @@ a { color: inherit; text-decoration: none; }
 }
 .case-card:hover .case-card__img { transform: rotate(-1.5deg) scale(1.02); }
 
-.tags { display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); width: calc(480 * var(--u)); }
+.tags { display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)); width: calc(480 * var(--u)); }
 .tag {
   display: flex; align-items: center; justify-content: center;
   background: rgba(200, 189, 171, .1); color: #BDB7B1; border-radius: calc(27.89 * var(--u));
-  padding: calc(9 * var(--u)) 0; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap;
+  padding: calc(10 * var(--u)) calc(18 * var(--u)); font-size: calc(21 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap;
 }
-.tag--wide { min-width: calc(479 * var(--u)); padding-inline: calc(15 * var(--u)); }
-.tag:nth-child(2) { width: calc(151 * var(--u)); }
-.tag:nth-child(3) { width: calc(140 * var(--u)); }
-.tag:nth-child(4) { width: calc(171 * var(--u)); }
+/* все плашки одинаковые: равные поля вокруг текста, одинаковые промежутки */
 
 /* Появление при прокрутке */
 .js .about [data-reveal]:not(.about__name) {
@@ -340,8 +337,6 @@ a { color: inherit; text-decoration: none; }
   .case-card__img { border-radius: 10px; }
   .tags { width: 100%; gap: 6px 4px; }
   .tag { font-size: clamp(13px, 3.8vw, 18px); padding: 9px 16px; border-radius: 28px; }
-  .tag--wide { min-width: 0; }
-  .tag:nth-child(n+2) { width: auto; }
 }
 @media (min-width: 640px) and (max-width: 1000px), (min-width: 640px) and (max-aspect-ratio: 7/5) {
   .about__grid { grid-template-columns: 1fr 1fr; }
