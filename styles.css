@@ -451,10 +451,32 @@ a { color: inherit; text-decoration: none; }
 .apx__card {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: space-between;
-  justify-content: center;
-  padding: calc(120 * var(--u));
+  padding: 0; cursor: pointer;
   background: var(--sq); color: var(--sq-ink); clip-path: inset(0%);
 }
+.apx__card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+/* лицевая сторона — проблема; текст во внутренней зоне 480, поэтому при сужении не режется */
+.apx__front { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: calc(120 * var(--u)); }
+/* подсказка «нажмите» — пилюля с пульсирующей точкой */
+.apx__hint {
+  align-self: flex-start; margin-top: calc(40 * var(--u));
+  display: inline-flex; align-items: center; gap: calc(12 * var(--u));
+  padding: calc(10 * var(--u)) calc(20 * var(--u)); border: 1px solid currentColor; border-radius: 99px;
+  font-size: calc(18 * var(--u)); line-height: 1; letter-spacing: .01em; opacity: .9;
+  transition: background-color .35s, color .35s;
+}
+.apx__card:hover .apx__hint { background: var(--sq-ink); color: var(--sq); }
+.apx__hint-dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); border-radius: 50%; background: currentColor; animation: hint-pulse 1.6s ease-in-out infinite; }
+@keyframes hint-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.8); opacity: .35; } }
+/* обратная сторона — фото сцены и решение Людмилы (видна в суженной карточке 480) */
+.apx__back { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
+.apx__back img { position: absolute; inset: 14.7%; width: 70.6%; height: 70.6%; object-fit: cover; }
+.apx__back::after { content: ""; position: absolute; inset: 14.7%; background: linear-gradient(180deg, rgba(14, 27, 30, 0) 35%, rgba(14, 27, 30, .85) 100%); }
+.apx__solution {
+  position: absolute; z-index: 1; left: calc(130 * var(--u)); right: calc(130 * var(--u)); bottom: calc(130 * var(--u)); margin: 0;
+  font-weight: 700; font-size: calc(26 * var(--u)); line-height: 1.25; color: #F6EFE5;
+}
+.apx__solution-label { display: block; margin-bottom: calc(10 * var(--u)); font-weight: 300; font-size: calc(18 * var(--u)); letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
 /* одна короткая фраза на сцену — крупно, с рукописной заглавной */
 .apx__phrase { margin: 0; font-weight: 500; font-size: calc(70 * var(--u)); line-height: 1.04; letter-spacing: -.03em; }
 /* заглавная стоит на базовой линии строки и не отрывается от своего слова */
@@ -498,11 +520,16 @@ a { color: inherit; text-decoration: none; }
 .apx__answer-sub { margin: 0; width: auto; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
 
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
-.apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(951 * var(--u)); width: calc(217 * var(--u)); height: calc(60 * var(--u)); }
-.apx__count { position: absolute; left: 0; top: 0; width: auto; margin: 0; display: flex; justify-content: flex-start; gap: calc(13 * var(--u));
-  font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; color: var(--ink); }
+.apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(905 * var(--u)); width: calc(218 * var(--u)); height: calc(110 * var(--u)); }
+.apx__count {
+  position: absolute; left: 0; right: 0; bottom: calc(26 * var(--u)); margin: 0;
+  display: flex; justify-content: center; align-items: baseline; gap: calc(12 * var(--u)); color: var(--ink);
+}
+.apx__cur { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1; }
+.apx__sep { align-self: center; width: calc(26 * var(--u)); height: 1px; background: currentColor; opacity: .6; transform: rotate(-55deg); }
+.apx__total { font-weight: 300; font-size: calc(22 * var(--u)); line-height: 1; opacity: .75; }
 .apx__arrow {
-  position: absolute; top: calc(44 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u));
+  position: absolute; bottom: 0; width: calc(101 * var(--u)); height: calc(30 * var(--u));
   padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer;
   display: flex; align-items: center; transition: color .35s, transform .5s var(--ease);
 }
@@ -526,12 +553,19 @@ a { color: inherit; text-decoration: none; }
   .apx__answer { position: static; align-self: flex-start; gap: 12px; padding: 0; }
   .apx__note { margin-top: 14px; font-size: clamp(13px, 3.6vw, 18px); }
   .apx__phrase { font-size: clamp(30px, 9vw, 60px); }
-  .apx__card { padding: 16%; }
   .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
   .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
-  .apx__nav { position: relative; left: auto; top: auto; align-self: flex-start; width: 217px; height: 64px; }
-  .apx__count { width: auto; gap: 13px; font-size: 24px; }
-  .apx__arrow { top: 40px; width: 100px; height: 24px; }
+  .apx__nav { position: relative; left: auto; top: auto; align-self: flex-start; width: 218px; height: 92px; }
+  .apx__count { bottom: 30px; gap: 10px; }
+  .apx__cur { font-size: 38px; }
+  .apx__total { font-size: 18px; }
+  .apx__sep { width: 22px; }
+  .apx__hint { margin-top: 18px; padding: 8px 14px; font-size: 13px; gap: 8px; }
+  .apx__hint-dot { width: 7px; height: 7px; }
+  .apx__front { padding: 16%; }
+  .apx__solution { left: 18%; right: 18%; bottom: 18%; font-size: clamp(13px, 3.6vw, 20px); }
+  .apx__solution-label { font-size: 10px; margin-bottom: 6px; }
+  .apx__arrow { bottom: 0; top: auto; width: 100px; height: 24px; }
   .apx__arrow.js-next { left: 117px; }
   .approach__photo { position: static; order: 9; align-self: flex-end; height: auto; width: calc(100% + 20px); margin-right: -20px; }
 }

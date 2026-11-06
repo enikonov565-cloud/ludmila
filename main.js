@@ -369,6 +369,10 @@ document.documentElement.classList.replace('no-js', 'js');
     var num = s.querySelector('.apx__num');
     return gsap.timeline({ paused: true, defaults: { duration: 1.1, ease: 'power2.inOut' } })
       .to(s.querySelector('.apx__card'), { clipPath: 'inset(14.7%)', scale: 0.97 }, 0)
+      .to(s.querySelector('.apx__front'), { autoAlpha: 0, y: -20, duration: 0.5, ease: 'power2.in' }, 0)
+      .fromTo(s.querySelector('.apx__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.45)
+      .from(s.querySelector('.apx__back img'), { scale: 1.15, duration: 1.2, ease: 'power2.out' }, 0.45)
+      .from(s.querySelector('.apx__solution'), { y: 24, autoAlpha: 0, duration: 0.8, ease: 'power2.out' }, 0.7)
       .to(more[0], { x: '1.5rem', opacity: 1 }, 0)
       .to(more[1], { x: '-1.5rem', opacity: 1 }, 0)
       .to(num, { y: 0, duration: 1 }, 0.3)
@@ -377,18 +381,30 @@ document.documentElement.classList.replace('no-js', 'js');
       .to(s.querySelectorAll('.apx__word span'), { xPercent: 0, y: 0, opacity: 1, duration: 1.2 }, 0.2);
   });
 
-  var showMeaning = function () { if (!reduce && (over || !canHover)) hoverTl[current].play(); };
-  if (canHover) {
-    root.addEventListener('mouseenter', function () { over = true; hoverTl[current].play(); });
-    root.addEventListener('mouseleave', function () { over = false; hoverTl[current].reverse(); });
-  }
+  /* нажатие на карточку: она сужается и показывает фото и решение Людмилы; повторное — возвращает проблему */
+  var opened = false;
+  var setOpen = function (v) {
+    opened = v;
+    var card = slides[current].querySelector('.apx__card');
+    card.setAttribute('aria-pressed', v ? 'true' : 'false');
+    if (v) hoverTl[current].timeScale(1).play(); else hoverTl[current].timeScale(1.4).reverse();
+  };
+  var showMeaning = function () {};
+  slides.forEach(function (s) {
+    var card = s.querySelector('.apx__card');
+    card.addEventListener('click', function () { setOpen(!opened); restart(); });
+    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(!opened); restart(); } });
+  });
+  root.addEventListener('mouseenter', function () { over = true; });
+  root.addEventListener('mouseleave', function () { over = false; });
 
   var go = function (dir) {
     if (busy) return;
     busy = true;
     var next = (current + dir + total) % total;
     var active = slides[current], incoming = slides[next];
-    hoverTl[current].reverse();
+    if (opened) { opened = false; active.querySelector('.apx__card').setAttribute('aria-pressed', 'false'); }
+    hoverTl[current].timeScale(1.4).reverse();
     active.classList.remove('active');
     incoming.classList.add('active');
     gsap.set(active, { zIndex: 2 });
@@ -408,7 +424,7 @@ document.documentElement.classList.replace('no-js', 'js');
   frame.querySelector('.js-prev').addEventListener('click', function () { go(-1); restart(); });
 
   var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce) go(1); }, 6000); };
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !opened && !reduce) go(1); }, 6000); };
   if ('IntersectionObserver' in window) {
     var answer = frame.querySelector('.apx__answer');
     new IntersectionObserver(function (e) {
