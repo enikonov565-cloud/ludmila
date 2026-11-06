@@ -329,99 +329,77 @@ document.documentElement.classList.replace('no-js', 'js');
   } else { visible = true; start(); }
 })();
 
-/* Четвёртый блок «Мой подход» — по примеру Animated clip-path slider Concept (jakewhiteleydev):
-   • наведение на фото: снимок сжимается маской (inset 18%), подписи «мой подход» разъезжаются,
-     буквы слова слетаются в центр, номер сцены переворачивается;
-   • смена сцены: новая картинка раскрывается маской — слева снизу вверх, справа сверху вниз
-     (назад — наоборот) и одновременно чуть уменьшается с 1.2 до 1;
-   • пока блок на экране и курсор не над ним, сцены листаются сами каждые 6 секунд. */
+/* Четвёртый блок «Мой подход» (макет «п-р 20»): квадрат с текстом сцены.
+   Анимация — из примера Animated clip-path slider Concept (jakewhiteleydev, CodePen):
+   • наведение: квадрат сужается маской с 680 до 480 (inset 14.7%), подписи «мой подход»
+     разъезжаются, буквы главной мысли слетаются, номер сцены переворачивается;
+   • смена сцены: новая раскрывается маской снизу вверх (назад — сверху вниз) и уменьшается с 1.2 до 1;
+   • автолистание каждые 6 секунд, пока блок на экране и курсор не над квадратом. */
 (function () {
   'use strict';
   var root = document.querySelector('[data-approach]');
   if (!root || !window.gsap) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  var sides = root.querySelectorAll('.ap__side');
-  var photoSlides = Array.prototype.slice.call(sides[0].querySelectorAll('.ap__slide'));
-  var total = photoSlides.length;
-  var current = 0;
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.apx__slide'));
+  var total = slides.length;
+  var frame = root.closest('.approach__frame');
+  var cur = frame.querySelector('.apx__cur');
+  var current = 0, busy = false, over = false, inView = false;
 
-  /* разлёт букв: симметрично от центра, как $sceneOffsets в примере (−300% … 300%) */
-  photoSlides.forEach(function (slide) {
-    var letters = slide.querySelectorAll('.ap__word span');
+  slides.forEach(function (s, i) {
+    gsap.set(s, { autoAlpha: i === 0 ? 1 : 0, zIndex: i === 0 ? 2 : 1 });
+    var letters = s.querySelectorAll('.apx__word span');
     var mid = (letters.length - 1) / 2;
-    letters.forEach(function (l, i) { gsap.set(l, { xPercent: (i - mid) * 150, y: '-3rem', opacity: 0 }); });
+    letters.forEach(function (l, k) { gsap.set(l, { xPercent: (k - mid) * 150, y: '-2rem', opacity: 0 }); });
   });
 
-  var hoverTl = photoSlides.map(function (slide) {
-    var more = slide.querySelectorAll('.ap__more');
-    var tl = gsap.timeline({ paused: true, defaults: { duration: 1.1, ease: 'power2.inOut' } });
-    tl.to(slide.querySelector('.ap__img'), { clipPath: 'inset(18%)', scale: 0.95 }, 0)
-      .to(more[0], { x: '2rem' }, 0)
-      .to(more[1], { x: '-2rem' }, 0)
-      .to(slide.querySelector('.ap__num'), { y: 0, duration: 1 }, 0.3)
-      .to(slide.querySelector('.ap__num'), { opacity: 1 }, 0.4)
-      .to(slide.querySelectorAll('.ap__num span'), { rotateY: 0, duration: 1.6 }, 0)
-      .to(slide.querySelectorAll('.ap__word span'), { xPercent: 0, y: 0, opacity: 1, duration: 1.2 }, 0.2);
-    return tl;
+  var hoverTl = slides.map(function (s) {
+    var more = s.querySelectorAll('.apx__more');
+    var num = s.querySelector('.apx__num');
+    return gsap.timeline({ paused: true, defaults: { duration: 1.1, ease: 'power2.inOut' } })
+      .to(s.querySelector('.apx__card'), { clipPath: 'inset(14.7%)', scale: 0.97 }, 0)
+      .to(more[0], { x: '1.5rem', opacity: 1 }, 0)
+      .to(more[1], { x: '-1.5rem', opacity: 1 }, 0)
+      .to(num, { y: 0, duration: 1 }, 0.3)
+      .to(num, { opacity: 1 }, 0.4)
+      .to(num.querySelectorAll('span'), { rotateY: 0, duration: 1.6 }, 0)
+      .to(s.querySelectorAll('.apx__word span'), { xPercent: 0, y: 0, opacity: 1, duration: 1.2 }, 0.2);
   });
 
-  var hovering = false;
-  var side0 = sides[0];
+  var showMeaning = function () { if (!reduce && (over || !canHover)) hoverTl[current].play(); };
   if (canHover) {
-    side0.addEventListener('mouseenter', function () { hovering = true; hoverTl[current].play(); });
-    side0.addEventListener('mouseleave', function () { hovering = false; hoverTl[current].reverse(); });
+    root.addEventListener('mouseenter', function () { over = true; hoverTl[current].play(); });
+    root.addEventListener('mouseleave', function () { over = false; hoverTl[current].reverse(); });
   }
 
-  var busy = false;
   var go = function (dir) {
     if (busy) return;
     busy = true;
-    /* на каждую смену — свой таймлайн: так сцены всегда сменяются полностью */
-    var navTl = gsap.timeline({ onComplete: function () { busy = false; } });
-    hoverTl[current].reverse();
     var next = (current + dir + total) % total;
-    sides.forEach(function (side, k) {
-      var slides = side.querySelectorAll('.ap__slide');
-      var active = slides[current], incoming = slides[next];
-      /* вперёд: левая половина раскрывается снизу, правая сверху; назад — наоборот */
-      var fromBottom = dir > 0 ? k === 0 : k === 1;
-      var clip = fromBottom ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)';
-      active.classList.remove('active');
-      incoming.classList.add('active');
-      gsap.set(incoming, { autoAlpha: 1, zIndex: 3, scale: reduce ? 1 : 1.2, clipPath: reduce ? 'inset(0% 0% 0%)' : clip });
-      gsap.set(active, { zIndex: 2 });
-      navTl.to(incoming, {
-        clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
-        onComplete: function () { gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2 }); }
-      }, 0);
-    });
+    var active = slides[current], incoming = slides[next];
+    hoverTl[current].reverse();
+    active.classList.remove('active');
+    incoming.classList.add('active');
+    gsap.set(active, { zIndex: 2 });
+    gsap.set(incoming, { autoAlpha: 1, zIndex: 3, scale: reduce ? 1 : 1.2,
+      clipPath: reduce ? 'inset(0% 0% 0%)' : (dir > 0 ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)') });
+    gsap.to(incoming, { clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
+      onComplete: function () {
+        gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
+        busy = false; showMeaning();
+      } });
     current = next;
-    /* на телефоне наведения нет — надписи на фото показываются сами и прячутся перед сменой */
-    if (!canHover && !reduce) gsap.delayedCall(1.1, function () { hoverTl[current].play(); });
-    else if (hovering) gsap.delayedCall(1, function () { if (hovering) hoverTl[current].play(); });
+    if (cur) cur.textContent = String(current + 1).padStart(2, '0');
   };
 
-  /* стартовое состояние: видна только первая сцена */
-  sides.forEach(function (side) {
-    side.querySelectorAll('.ap__slide').forEach(function (s, i) { gsap.set(s, { autoAlpha: i === 0 ? 1 : 0, zIndex: i === 0 ? 2 : 1 }); });
-  });
-
-  var frame = root.parentNode;
   frame.querySelector('.js-next').addEventListener('click', function () { go(1); restart(); });
   frame.querySelector('.js-prev').addEventListener('click', function () { go(-1); restart(); });
 
-  /* автолистание, пока блок виден и курсор не над слайдером */
-  var timer = 0, inView = false, over = false;
-  var tick = function () { if (inView && !over && !reduce) go(1); };
-  var restart = function () { clearInterval(timer); timer = setInterval(tick, 6000); };
-  root.addEventListener('mouseenter', function () { over = true; });
-  root.addEventListener('mouseleave', function () { over = false; });
+  var timer = 0;
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce) go(1); }, 6000); };
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (e) {
-      inView = e[0].isIntersecting;
-      if (inView && !canHover && !reduce) hoverTl[current].play();
-    }, { threshold: 0.5 }).observe(root);
+    new IntersectionObserver(function (e) { inView = e[0].isIntersecting; if (inView) showMeaning(); }, { threshold: 0.4 }).observe(root);
   }
   restart();
 })();

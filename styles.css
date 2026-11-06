@@ -419,121 +419,110 @@ a { color: inherit; text-decoration: none; }
   .works__face, .works__back { border-radius: 12px; }
 }
 
-/* ===== Четвёртый блок «Мой подход»: слайдер из двух половин (clip-path), по примеру
-   Animated clip-path slider Concept. Слева — фото Людмилы, справа — панель с текстом.
-   Сцены сменяются раскрытием маской: левая половина снизу вверх, правая сверху вниз. ===== */
+/* ===== Четвёртый блок «Мой подход» по макету Figma «п-р 20» (1920 × 1080) =====
+   Фон #968E83 на 90% поверх белого. Слева два квадрата (680 и 480) — сцены в них сменяются
+   анимацией из примера Animated clip-path slider: внешний раскрывается снизу, внутренний сверху. */
 .approach {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
   position: relative; overflow: hidden;
   height: 100svh; min-height: calc(1080 * var(--u));
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(180deg, #1A2C30 0, #070F10 70%);
-  color: #BDB7B1;
+  background: #A1998F; color: #182C31;
 }
 .approach__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
+/* заголовок: рукописная «М» Good Vibes Pro 96 + Inter Medium 77 прописными */
 .approach__title {
-  position: absolute; left: calc(60 * var(--u)); top: calc(96 * var(--u)); margin: 0;
-  font-weight: 500; font-size: calc(77 * var(--u)); line-height: .96; letter-spacing: -.02em; color: #BDB7B1;
+  position: absolute; left: calc(60 * var(--u)); top: calc(151 * var(--u)); margin: 0;
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; text-transform: uppercase; color: #182C31;
 }
-.approach__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; margin-right: calc(4 * var(--u)); }
+.approach__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; text-transform: none; margin-right: calc(10 * var(--u)); }
+.approach__photo { position: absolute; left: calc(995 * var(--u)); top: calc(68 * var(--u)); width: calc(1060 * var(--u)); height: auto; pointer-events: none; }
 
-.ap {
-  position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u));
-  top: calc(230 * var(--u)); bottom: calc(150 * var(--u));
-  display: flex;
+/* квадрат 680 со сценой: текст стоит во внутренней зоне 480 (поля по 100),
+   поэтому при сужении до 480 он не обрезается */
+.apx { position: absolute; left: calc(60 * var(--u)); top: calc(335 * var(--u)); width: calc(680 * var(--u)); height: calc(680 * var(--u)); }
+.apx__slide { position: absolute; inset: 0; visibility: hidden; }
+.apx__slide.active { visibility: visible; }
+.apx__card {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: calc(130 * var(--u)) calc(130 * var(--u));
+  background: #EDE8E1; color: #1C3238; clip-path: inset(0%);
 }
-.ap__side { position: relative; width: 50%; height: 100%; overflow: hidden; }
-.ap__slide {
-  position: absolute; inset: 0; overflow: hidden;
-  visibility: hidden; background: #0B1416;
-}
-.ap__slide.active { visibility: visible; z-index: 2; }
-.ap__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(0%); display: block; }
+.apx__label { margin: 0; font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.2; }
+.apx__head { margin: 0; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }
+.apx__sub { margin: calc(22 * var(--u)) 0 0; font-weight: 700; font-size: calc(24 * var(--u)); line-height: 1.25; }
 
-/* надписи на фото — появляются при наведении (как в примере) */
-.ap__content { position: absolute; inset: 0; z-index: 3; pointer-events: none; color: #E8DCC8; }
-.ap__more {
-  position: absolute; top: 50%; left: 6%;
+/* главная мысль и номер — проявляются вокруг суженного квадрата */
+.apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #182C31; }
+.apx__more {
+  position: absolute; top: 50%; left: calc(40 * var(--u));
   font-size: calc(15 * var(--u)); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
-  transform: rotate(-90deg); transform-origin: 0 100%; backface-visibility: hidden;
+  transform: rotate(-90deg); transform-origin: 0 100%; opacity: 0;
 }
-.ap__more + .ap__more { left: auto; right: 6%; transform: rotate(90deg); transform-origin: 100% 100%; }
-.ap__word {
-  position: absolute; left: 0; right: 0; top: 14%;
+.apx__more + .apx__more { left: auto; right: calc(40 * var(--u)); transform: rotate(90deg); transform-origin: 100% 100%; }
+.apx__word {
+  position: absolute; left: 0; right: 0; top: calc(-6 * var(--u));
   display: flex; justify-content: center;
   font-family: var(--display); font-style: italic; font-weight: 500;
-  font-size: calc(110 * var(--u)); line-height: 1; letter-spacing: -.01em;
+  font-size: calc(96 * var(--u)); line-height: 1;
 }
-.ap__word span { opacity: 0; display: block; }
-.ap__num {
-  position: absolute; right: 14%; bottom: 8%;
-  display: flex; opacity: 0; transform: translateY(calc(80 * var(--u)));
+.apx__word span { display: block; opacity: 0; }
+.apx__num {
+  position: absolute; right: calc(20 * var(--u)); bottom: calc(-24 * var(--u));
+  display: flex; opacity: 0; transform: translateY(calc(60 * var(--u)));
   font-family: var(--display); font-style: italic; font-weight: 500;
-  font-size: calc(150 * var(--u)); line-height: 1; perspective: 600px;
+  font-size: calc(130 * var(--u)); line-height: 1; perspective: 600px;
 }
-.ap__num span { display: block; transform: rotateY(90deg); }
-.ap__num span + span { transform: rotateY(-90deg); }
+.apx__num span { display: block; transform: rotateY(90deg); }
+.apx__num span + span { transform: rotateY(-90deg); }
 
-/* панель с текстом */
-.ap__panel {
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: calc(56 * var(--u)) calc(60 * var(--u));
-  background: radial-gradient(120% 95% at 72% 28%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
-  color: #1A2C30;
+/* итог — плашка 10% #182C31, текст по правому краю: Inter Medium 64 и Inter Bold 28 */
+.apx__answer {
+  position: absolute; left: calc(781 * var(--u)); top: calc(736 * var(--u));
+  display: flex; flex-direction: column; align-items: flex-end; gap: calc(30 * var(--u));
+  padding: calc(15 * var(--u)) calc(40 * var(--u));
+  background: rgba(24, 44, 49, .1); color: #1C3238; text-align: right;
 }
-.ap__panel--dark { background: radial-gradient(120% 95% at 30% 20%, #24393E 0%, #1A2C30 50%, #0E1B1E 100%); color: #E8DCC8; }
-.ap__label {
-  margin: 0; display: flex; justify-content: space-between;
-  font-size: calc(15 * var(--u)); line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: #6A5F51;
-}
-.ap__panel--dark .ap__label { color: #9FA9A6; }
-.ap__text {
-  margin: 0; font-weight: 500; font-size: calc(56 * var(--u)); line-height: 1.04; letter-spacing: -.03em;
-}
-.ap__text .cap { width: auto; font-weight: 400; font-size: 1.45em; line-height: .5; letter-spacing: 0; margin-right: .02em; }
-.ap__panel--dark .ap__text { font-size: calc(56 * var(--u)); }
-/* заголовок сцены и пояснение к нему — одной группой внизу панели */
-.ap__body { display: flex; flex-direction: column; gap: calc(26 * var(--u)); }
-.ap__sub { margin: 0; font-size: calc(22 * var(--u)); line-height: 1.3; letter-spacing: -.015em; color: #6A5F51; }
-.ap__panel--dark .ap__sub { color: #9FA9A6; }
+.apx__answer-head { margin: 0; font-weight: 500; font-size: calc(64 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
+.apx__answer-sub { margin: 0; width: calc(533 * var(--u)); font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
 
-/* кнопки — полукруг внизу, как в примере: верхняя часть круга выглядывает из-под края блока */
-.ap__controls {
-  position: absolute; left: 50%; bottom: calc(-120 * var(--u)); transform: translateX(-50%);
-  width: calc(220 * var(--u)); height: calc(220 * var(--u)); border-radius: 50%;
-  background: #C8BDAB; color: #1A2C30;
-  display: flex; align-items: flex-start; justify-content: center; gap: calc(30 * var(--u));
-  padding-top: calc(36 * var(--u));
+/* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
+.apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(951 * var(--u)); width: calc(217 * var(--u)); height: calc(60 * var(--u)); }
+.apx__count { position: absolute; left: 0; top: 0; width: calc(147 * var(--u)); margin: 0; display: flex; justify-content: flex-end; gap: calc(13 * var(--u));
+  font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; color: #182C31; }
+.apx__arrow {
+  position: absolute; top: calc(44 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u));
+  padding: 0; border: 0; background: none; color: #182C31; cursor: pointer;
+  display: flex; align-items: center; transition: color .35s, transform .5s var(--ease);
 }
-.ap__btn {
-  width: calc(46 * var(--u)); height: calc(46 * var(--u)); border: 0; border-radius: 50%; padding: 0;
-  background: transparent; color: inherit; cursor: pointer;
-  display: grid; place-items: center; transition: background-color .4s var(--ease), color .4s var(--ease);
-}
-.ap__btn svg { width: calc(20 * var(--u)); height: auto; }
-.ap__btn--down svg { transform: rotate(180deg); }
-.ap__btn:hover { background: #A9502C; color: #F6EFE5; }
-.ap__btn:focus-visible { outline: 2px solid #A9502C; outline-offset: 3px; }
+.apx__arrow svg { width: 100%; height: auto; display: block; }
+.apx__arrow--prev { left: 0; transform: scaleX(-1); }
+.apx__arrow.js-next { left: calc(117 * var(--u)); }
+.apx__arrow:hover { color: #A9502C; }
+.apx__arrow.js-next:hover { transform: translateX(calc(6 * var(--u))); }
+.apx__arrow--prev:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
+.apx__arrow:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .approach { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 0; }
-  .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 28px; }
-  .approach__title { position: static; font-size: clamp(38px, 10.5vw, 64px); }
-  .ap { position: relative; left: auto; right: auto; top: auto; bottom: auto; flex-direction: column; }
-  .ap__side { width: 100%; }
-  .ap__side--photo { height: min(74vw, 520px); }
-  .ap__side--text { height: clamp(260px, 72vw, 420px); }
-  .ap__panel { padding: 24px 22px; }
-  .ap__label { font-size: 12px; }
-  .ap__text, .ap__panel--dark .ap__text { font-size: clamp(24px, 6.6vw, 40px); }
-  .ap__body { gap: 12px; }
-  .ap__sub { font-size: clamp(14px, 3.8vw, 18px); }
-  .ap__br { display: none; }
-  .ap__word { font-size: clamp(54px, 15vw, 96px); }
-  .ap__num { font-size: clamp(70px, 20vw, 120px); }
-  .ap__more { font-size: 11px; }
-  .ap__controls { position: relative; left: auto; bottom: auto; transform: none; align-self: center;
-    width: 180px; height: 90px; border-radius: 90px 90px 0 0; padding-top: 22px; gap: 22px; margin-top: 6px; }
-  .ap__btn { width: 44px; height: 44px; }
-  .ap__btn svg { width: 18px; }
+  .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
+  .approach__title { position: static; font-size: clamp(36px, 10vw, 64px); }
+  .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
+  .apx__card { padding: 15%; }
+  .apx__word { font-size: clamp(40px, 12vw, 80px); top: 0; }
+  .apx__num { font-size: clamp(56px, 16vw, 110px); bottom: -8px; right: 10px; }
+  .apx__more { font-size: 10px; left: 14px; }
+  .apx__more + .apx__more { right: 14px; }
+  .apx__label { font-size: 13px; }
+  .apx__head { font-size: clamp(20px, 5.6vw, 34px); }
+  .apx__sub { margin-top: 10px; font-size: clamp(13px, 3.6vw, 18px); }
+  .apx__answer { position: static; align-self: flex-end; gap: 12px; padding: 12px 18px; }
+  .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
+  .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
+  .apx__nav { position: relative; left: auto; top: auto; align-self: flex-end; width: 217px; height: 64px; margin-right: 18px; }
+  .apx__count { width: 147px; gap: 13px; font-size: 24px; }
+  .apx__arrow { top: 40px; width: 100px; height: 24px; }
+  .apx__arrow.js-next { left: 117px; }
+  .approach__photo { position: static; width: calc(100% + 40px); margin: 0 -20px; }
 }
