@@ -45,19 +45,38 @@ document.documentElement.classList.replace('no-js', 'js');
   });
 })();
 
-/* Появление второго блока при прокрутке: элементы проявляются по очереди */
+/* Появление второго блока — одна синхронная цепочка.
+   На компьютере блок помещается в окно целиком, поэтому всё запускается разом, когда блок
+   въехал на треть: имя по буквам, подпись, «20+», карточки слева направо, подпись и плашки.
+   На телефоне блок длинный — там каждый элемент проявляется, когда до него докрутили. */
 (function () {
   'use strict';
-  var items = document.querySelectorAll('[data-reveal]');
-  if (!('IntersectionObserver' in window)) { items.forEach(function (el) { el.classList.add('is-in'); }); return; }
-  var order = 0;
-  items.forEach(function (el) { el.style.setProperty('--d', (order++ % 4) * 0.12 + 's'); });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+  var about = document.querySelector('.about');
+  var items = about ? Array.prototype.slice.call(about.querySelectorAll('[data-reveal]')) : [];
+  if (!items.length) return;
+  var show = function (el) { el.classList.add('is-in'); };
+  if (!('IntersectionObserver' in window)) { items.forEach(show); return; }
+
+  var order = ['.about__name', '.about__adapt', '.about__count', '.tile--portrait', '.tile--photo', '.case-card', '.about__hook', '.tags'];
+  var step = 0.12;
+  var desktop = !window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
+
+  if (desktop) {
+    order.forEach(function (sel, n) {
+      var el = about.querySelector(sel);
+      if (!el) return;
+      el.style.setProperty('--d', (n * step).toFixed(2) + 's');
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-  items.forEach(function (el) { io.observe(el); });
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { items.forEach(show); io.disconnect(); }
+    }, { threshold: 0.33 });
+    io.observe(about);
+  } else {
+    var io2 = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { show(e.target); io2.unobserve(e.target); } });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io2.observe(el); });
+  }
 })();
 
 /* Параллакс в духе Osmo: слоям с data-parallax="layer" внутри data-parallax="trigger"
@@ -100,7 +119,7 @@ document.documentElement.classList.replace('no-js', 'js');
   var room = document.querySelector('[data-depth="room"]');
   var person = document.querySelector('[data-depth="person"]');
   var text = document.querySelector('[data-depth="text"]');
-  var desktop = window.matchMedia('(min-width: 1001px)').matches;
+  var desktop = !window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
   if (stage && room && person) {
     var tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: 'bottom top', scrub: true } });
     tl.to(room, { yPercent: desktop ? 70 : 18, ease: 'none', duration: 1 }, 0)
@@ -112,7 +131,7 @@ document.documentElement.classList.replace('no-js', 'js');
 
     /* На компьютере главная — один экран без прокрутки, поэтому слои отзываются на курсор:
        комната почти стоит, Людмила смещается сильнее, тексты — сильнее всего */
-    if (window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1001px)').matches) {
+    if (desktop && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       var depth = [
         { el: room, k: 10 },
         { el: document.querySelector('[data-depth="text"]'), k: 16 },

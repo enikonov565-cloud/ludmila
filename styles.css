@@ -31,7 +31,7 @@ a { color: inherit; text-decoration: none; }
 /* Сцена: фон и затемнения — ровно #182C31 */
 .stage {
   position: relative; overflow: hidden;
-  width: 100%; height: max(calc(1080 * var(--u)), 100svh);
+  width: 100%; height: 100svh; min-height: calc(560 * var(--u)); /* главная — ровно высота окна */
   background: var(--teal);
 }
 .stage__media { position: absolute; inset: 0; will-change: transform; }
@@ -103,13 +103,15 @@ a { color: inherit; text-decoration: none; }
   .stage__photo { animation: bg 2.4s var(--ease) both; }
   .says .ch, .about__name.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.45s + var(--i) * 42ms); }
   .says .ch.cap, .about__name.is-in .ch.cap { animation-duration: 1.6s; }
+  /* имя во втором блоке начинается вместе с цепочкой появления блока */
+  .about__name.is-in .ch { animation-delay: calc(.05s + var(--i) * 32ms); }
 }
 @keyframes bg { from { transform: scale(1.06); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ch { from { opacity: 0; transform: translateY(.4em); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
 
 /* Телефон и планшет: фото на весь экран, надпись сверху и снизу справа поверх фото
    (вокруг головы на узком экране нет места, чтобы спрятать надпись за неё) */
-@media (max-width: 1000px) {
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   :root { --u: 1px; --screen: min(175vw, max(calc(100svh - var(--ptop)), 520px)); --ptop: clamp(120px, 34vw, 170px); }
   .stage { height: auto; }
   .stage__photo { left: 0; top: var(--ptop); width: 100%; height: var(--screen); min-height: 0; aspect-ratio: auto; }
@@ -128,12 +130,18 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== Второй блок по макету «п-р 19»: фон #1A2C30 → #070F10 ===== */
+/* Блок подгоняется под окно целиком: единица — меньшая из ширины и высоты,
+   кадр 1920 × 1080 по центру, фон — на всю ширину */
 .about {
+  --u: min(calc(100vw / 1920), calc(100svh / 1080));
   position: relative; overflow: hidden;
-  height: calc(1080 * var(--u));
+  height: 100svh; min-height: calc(1080 * var(--u));
+  display: flex; align-items: center; justify-content: center;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);
   color: #BDB7B1; /* все светлые тексты сайта — один цвет, как надпись на главной */
 }
+
+.about__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
 
 /* Имя: рукописные заглавные Good Vibes Pro 96 + Inter Medium 77 */
 .about__name {
@@ -294,12 +302,14 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Телефон и планшет: блоки друг под другом */
-@media (max-width: 1000px) {
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .about {
+    --u: 1px; min-height: 0;
     height: auto; padding: 56px 20px 64px;
     background: linear-gradient(180deg, #1A2C30 0, #070F10 420px, #070F10 100%);
-    display: flex; flex-direction: column; gap: 28px;
+    display: flex; flex-direction: column; gap: 28px; align-items: stretch; justify-content: flex-start;
   }
+  .about__frame { display: contents; }
   .about__name, .about__adapt, .about__count, .about__grid { position: static; }
   .about__name { font-size: clamp(42px, 11.5vw, 77px); line-height: 1.3; }
   .about__name .cap { margin-right: .1em; }
@@ -333,7 +343,7 @@ a { color: inherit; text-decoration: none; }
   .tag--wide { min-width: 0; }
   .tag:nth-child(n+2) { width: auto; }
 }
-@media (min-width: 640px) and (max-width: 1000px) {
+@media (min-width: 640px) and (max-width: 1000px), (min-width: 640px) and (max-aspect-ratio: 7/5) {
   .about__grid { grid-template-columns: 1fr 1fr; }
   .about__side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
 }
