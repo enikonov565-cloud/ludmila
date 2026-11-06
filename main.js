@@ -17,9 +17,9 @@ document.documentElement.classList.replace('no-js', 'js');
    слова не разрываются при переносе. Следующий абзац группы начинается с паузой. */
 (function () {
   'use strict';
-  document.querySelectorAll('.says, .about__name').forEach(function (group) {
+  document.querySelectorAll('.says, .about__name, .apx__answer').forEach(function (group) {
     var i = 0, prev = null;
-    group.querySelectorAll('.say__line, .about__name-line').forEach(function (line) {
+    group.querySelectorAll('.say__line, .about__name-line, .apx__line').forEach(function (line) {
       var block = line.closest('.say') || group;
       if (prev && block !== prev) i += 6;
       prev = block;
@@ -346,9 +346,19 @@ document.documentElement.classList.replace('no-js', 'js');
   var frame = root.closest('.approach__frame');
   var cur = frame.querySelector('.apx__cur');
   var current = 0, busy = false, over = false, inView = false;
+  var section = root.closest('.approach');
+  /* у каждой сцены своя пара цветов: фон блока и текст + цвет квадрата и его текста */
+  var THEMES = [
+    { bg: '#A1998F', ink: '#182C31', sq: '#182C31', sqInk: '#EDE8E1' },
+    { bg: '#C8BDAB', ink: '#182C31', sq: '#A9502C', sqInk: '#F6EFE5' },
+    { bg: '#6F7B74', ink: '#F1ECE4', sq: '#EDE8E1', sqInk: '#1C3238' },
+    { bg: '#1A2C30', ink: '#E8DCC8', sq: '#C8BDAB', sqInk: '#1A2C30' }
+  ];
+  var theme = function (i) { return THEMES[i % THEMES.length]; };
 
+  gsap.set(section, { '--bg': theme(0).bg, '--ink': theme(0).ink });
   slides.forEach(function (s, i) {
-    gsap.set(s, { autoAlpha: i === 0 ? 1 : 0, zIndex: i === 0 ? 2 : 1 });
+    gsap.set(s, { autoAlpha: i === 0 ? 1 : 0, zIndex: i === 0 ? 2 : 1, '--sq': theme(i).sq, '--sq-ink': theme(i).sqInk });
     var letters = s.querySelectorAll('.apx__word span');
     var mid = (letters.length - 1) / 2;
     letters.forEach(function (l, k) { gsap.set(l, { xPercent: (k - mid) * 150, y: '-2rem', opacity: 0 }); });
@@ -384,6 +394,7 @@ document.documentElement.classList.replace('no-js', 'js');
     gsap.set(active, { zIndex: 2 });
     gsap.set(incoming, { autoAlpha: 1, zIndex: 3, scale: reduce ? 1 : 1.2,
       clipPath: reduce ? 'inset(0% 0% 0%)' : (dir > 0 ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)') });
+    gsap.to(section, { '--bg': theme(next).bg, '--ink': theme(next).ink, duration: reduce ? 0.01 : 1.1, ease: 'power2.inOut' });
     gsap.to(incoming, { clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
       onComplete: function () {
         gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
@@ -399,7 +410,11 @@ document.documentElement.classList.replace('no-js', 'js');
   var timer = 0;
   var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce) go(1); }, 6000); };
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (e) { inView = e[0].isIntersecting; if (inView) showMeaning(); }, { threshold: 0.4 }).observe(root);
+    var answer = frame.querySelector('.apx__answer');
+    new IntersectionObserver(function (e) {
+      inView = e[0].isIntersecting;
+      if (inView) { showMeaning(); if (answer) answer.classList.add('is-in'); }
+    }, { threshold: 0.4 }).observe(root);
   }
   restart();
 })();

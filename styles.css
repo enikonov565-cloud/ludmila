@@ -103,6 +103,8 @@ a { color: inherit; text-decoration: none; }
   .stage__photo { animation: bg 2.4s var(--ease) both; }
   .says .ch, .about__name.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.45s + var(--i) * 42ms); }
   .says .ch.cap, .about__name.is-in .ch.cap { animation-duration: 1.6s; }
+  .js .apx__answer .ch { opacity: 0; }
+  .apx__answer.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.1s + var(--i) * 30ms); }
   /* имя во втором блоке начинается вместе с цепочкой появления блока */
   .about__name.is-in .ch { animation-delay: calc(.05s + var(--i) * 32ms); }
 }
@@ -427,16 +429,19 @@ a { color: inherit; text-decoration: none; }
   position: relative; overflow: hidden;
   height: 100svh; min-height: calc(1080 * var(--u));
   display: flex; align-items: center; justify-content: center;
-  background: #A1998F; color: #182C31;
+  /* цвета меняются вместе со сценой (скрипт плавно переводит переменные) */
+  --bg: #A1998F; --ink: #182C31;
+  background: var(--bg); color: var(--ink);
 }
 .approach__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
 /* заголовок: рукописная «М» Good Vibes Pro 96 + Inter Medium 77 прописными */
 .approach__title {
   position: absolute; left: calc(60 * var(--u)); top: calc(151 * var(--u)); margin: 0;
-  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; text-transform: uppercase; color: #182C31;
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; text-transform: uppercase; color: var(--ink);
 }
 .approach__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; text-transform: none; margin-right: calc(10 * var(--u)); }
-.approach__photo { position: absolute; left: calc(995 * var(--u)); top: calc(68 * var(--u)); width: calc(1060 * var(--u)); height: auto; pointer-events: none; }
+/* фото — вплотную к правому и нижнему краю окна, без полей */
+.approach__photo { position: absolute; right: calc(-115 * var(--u)); bottom: 0; height: calc(900 * var(--u)); width: auto; pointer-events: none; } /* у вырезанного фото справа пустое поле — сдвигаем его за край, чтобы фигура стояла вплотную */
 
 /* квадрат 680 со сценой: текст стоит во внутренней зоне 480 (поля по 100),
    поэтому при сужении до 480 он не обрезается */
@@ -446,15 +451,16 @@ a { color: inherit; text-decoration: none; }
 .apx__card {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: space-between;
-  padding: calc(130 * var(--u)) calc(130 * var(--u));
-  background: #EDE8E1; color: #1C3238; clip-path: inset(0%);
+  justify-content: center;
+  padding: calc(120 * var(--u));
+  background: var(--sq); color: var(--sq-ink); clip-path: inset(0%);
 }
-.apx__label { margin: 0; font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.2; }
-.apx__head { margin: 0; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }
-.apx__sub { margin: calc(22 * var(--u)) 0 0; font-weight: 700; font-size: calc(24 * var(--u)); line-height: 1.25; }
+/* одна короткая фраза на сцену — крупно, с рукописной заглавной */
+.apx__phrase { margin: 0; font-weight: 500; font-size: calc(70 * var(--u)); line-height: 1.04; letter-spacing: -.03em; }
+.apx__phrase .cap { width: auto; font-weight: 400; font-size: 1.4em; line-height: .5; letter-spacing: 0; margin-right: .02em; }
 
 /* главная мысль и номер — проявляются вокруг суженного квадрата */
-.apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #182C31; }
+.apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: var(--ink); }
 .apx__more {
   position: absolute; top: 50%; left: calc(40 * var(--u));
   font-size: calc(15 * var(--u)); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
@@ -479,21 +485,21 @@ a { color: inherit; text-decoration: none; }
 
 /* итог — плашка 10% #182C31, текст по правому краю: Inter Medium 64 и Inter Bold 28 */
 .apx__answer {
-  position: absolute; left: calc(781 * var(--u)); top: calc(736 * var(--u));
+  position: absolute; right: calc(630 * var(--u)); top: calc(736 * var(--u)); /* заканчивается до фото — текст не ложится на пиджак */
   display: flex; flex-direction: column; align-items: flex-end; gap: calc(30 * var(--u));
-  padding: calc(15 * var(--u)) calc(40 * var(--u));
-  background: rgba(24, 44, 49, .1); color: #1C3238; text-align: right;
+  padding: 0; color: var(--ink); text-align: right;
 }
-.apx__answer-head { margin: 0; font-weight: 500; font-size: calc(64 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
-.apx__answer-sub { margin: 0; width: calc(533 * var(--u)); font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
+.apx__line { display: block; }
+.apx__answer-head { margin: 0; font-weight: 500; font-size: calc(60 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
+.apx__answer-sub { margin: 0; width: auto; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
 
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
 .apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(951 * var(--u)); width: calc(217 * var(--u)); height: calc(60 * var(--u)); }
 .apx__count { position: absolute; left: 0; top: 0; width: calc(147 * var(--u)); margin: 0; display: flex; justify-content: flex-end; gap: calc(13 * var(--u));
-  font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; color: #182C31; }
+  font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; color: var(--ink); }
 .apx__arrow {
   position: absolute; top: calc(44 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u));
-  padding: 0; border: 0; background: none; color: #182C31; cursor: pointer;
+  padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer;
   display: flex; align-items: center; transition: color .35s, transform .5s var(--ease);
 }
 .apx__arrow svg { width: 100%; height: auto; display: block; }
@@ -505,24 +511,22 @@ a { color: inherit; text-decoration: none; }
 .apx__arrow:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .approach { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 0; }
+  .approach { --u: 1px; height: auto; min-height: 0; display: flex; flex-direction: column; align-items: stretch; padding: 56px 20px 0; }
   .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
   .approach__title { position: static; font-size: clamp(36px, 10vw, 64px); }
   .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
-  .apx__card { padding: 15%; }
   .apx__word { font-size: clamp(40px, 12vw, 80px); top: 0; }
   .apx__num { font-size: clamp(56px, 16vw, 110px); bottom: -8px; right: 10px; }
   .apx__more { font-size: 10px; left: 14px; }
   .apx__more + .apx__more { right: 14px; }
-  .apx__label { font-size: 13px; }
-  .apx__head { font-size: clamp(20px, 5.6vw, 34px); }
-  .apx__sub { margin-top: 10px; font-size: clamp(13px, 3.6vw, 18px); }
-  .apx__answer { position: static; align-self: flex-end; gap: 12px; padding: 12px 18px; }
+  .apx__answer { position: static; align-self: flex-end; gap: 12px; padding: 0; }
+  .apx__phrase { font-size: clamp(30px, 9vw, 60px); }
+  .apx__card { padding: 16%; }
   .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
   .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
   .apx__nav { position: relative; left: auto; top: auto; align-self: flex-end; width: 217px; height: 64px; margin-right: 18px; }
   .apx__count { width: 147px; gap: 13px; font-size: 24px; }
   .apx__arrow { top: 40px; width: 100px; height: 24px; }
   .apx__arrow.js-next { left: 117px; }
-  .approach__photo { position: static; width: calc(100% + 40px); margin: 0 -20px; }
+  .approach__photo { position: static; order: 9; align-self: flex-end; height: auto; width: calc(100% + 20px); margin-right: -20px; }
 }

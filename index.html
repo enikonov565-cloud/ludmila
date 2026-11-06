@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=79">
+<link rel="stylesheet" href="styles.css?v=81">
 </head>
 <body>
 
@@ -156,19 +156,15 @@
 <!-- Четвёртый блок «Мой подход» по макету Figma «п-р 20»: два квадрата со сценами сменяют друг друга
      анимацией из примера Animated clip-path slider (внешний раскрывается снизу, внутренний сверху) -->
 <section class="approach" aria-labelledby="approach-title">
+  <img class="approach__photo" src="img/approach/ludmila-cut.webp" width="1060" height="1060" alt="Людмила Иващенко в белом пиджаке" loading="lazy">
   <div class="approach__frame">
     <h2 class="approach__title" id="approach-title"><span class="cap">М</span>ой подход</h2>
-    <img class="approach__photo" src="img/approach/ludmila-cut.webp" width="1060" height="1060" alt="Людмила Иващенко в белом пиджаке" loading="lazy">
     <!-- Квадрат 680 с текстом сцены; при наведении сужается до 480 (как фото в примере CodePen),
          вокруг проявляются главная мысль и номер сцены -->
     <div class="apx" data-approach aria-live="polite">
       <div class="apx__slide active">
         <div class="apx__card">
-          <p class="apx__label">Знакомая ситуация</p>
-          <div>
-            <p class="apx__head">Почему заказанный дизайн часто разочаровывает?</p>
-            <p class="apx__sub">Деньги потрачены, сайт готов — а&nbsp;заявок больше не&nbsp;стало</p>
-          </div>
+          <p class="apx__phrase"><span class="cap">Д</span>изайн разочаровал?</p>
         </div>
         <div class="apx__over" aria-hidden="true">
           <span class="apx__more">мой подход</span><span class="apx__more">мой подход</span>
@@ -178,11 +174,7 @@
       </div>
       <div class="apx__slide">
         <div class="apx__card">
-          <p class="apx__label">Причина первая</p>
-          <div>
-            <p class="apx__head">Дизайнер делает красиво, но&nbsp;не&nbsp;знает, как вы&nbsp;продаёте</p>
-            <p class="apx__sub">Покупатель так и&nbsp;не&nbsp;понял, чем вы&nbsp;лучше других</p>
-          </div>
+          <p class="apx__phrase"><span class="cap">К</span>расиво, но&nbsp;не&nbsp;продаёт</p>
         </div>
         <div class="apx__over" aria-hidden="true">
           <span class="apx__more">мой подход</span><span class="apx__more">мой подход</span>
@@ -192,11 +184,7 @@
       </div>
       <div class="apx__slide">
         <div class="apx__card">
-          <p class="apx__label">Причина вторая</p>
-          <div>
-            <p class="apx__head">Объяснять свой бизнес дизайнеру приходится вам</p>
-            <p class="apx__sub">Правка за&nbsp;правкой — и&nbsp;всё равно переделывать</p>
-          </div>
+          <p class="apx__phrase"><span class="cap">П</span>равки без конца</p>
         </div>
         <div class="apx__over" aria-hidden="true">
           <span class="apx__more">мой подход</span><span class="apx__more">мой подход</span>
@@ -206,11 +194,7 @@
       </div>
       <div class="apx__slide">
         <div class="apx__card">
-          <p class="apx__label">Чем это заканчивается</p>
-          <div>
-            <p class="apx__head">Три недели, нервы и&nbsp;сайт «ну,&nbsp;в&nbsp;целом&nbsp;ок»</p>
-            <p class="apx__sub">Работа сдана, а&nbsp;задачу бизнеса сайт не&nbsp;решает</p>
-          </div>
+          <p class="apx__phrase"><span class="cap">Т</span>ри&nbsp;недели —<br>и&nbsp;«ну,&nbsp;ок»</p>
         </div>
         <div class="apx__over" aria-hidden="true">
           <span class="apx__more">мой подход</span><span class="apx__more">мой подход</span>
@@ -220,8 +204,8 @@
       </div>
     </div>
     <div class="apx__answer">
-      <p class="apx__answer-head">Я&nbsp;работаю иначе.</p>
-      <p class="apx__answer-sub">Я&nbsp;читаю бизнес — и&nbsp;сразу<br>делаю то, что нужно</p>
+      <p class="apx__answer-head"><span class="apx__line">Я&nbsp;работаю иначе.</span></p>
+      <p class="apx__answer-sub"><span class="apx__line">Я&nbsp;читаю бизнес — и&nbsp;сразу</span><span class="apx__line">делаю то, что нужно</span></p>
     </div>
     <div class="apx__nav">
       <p class="apx__count"><span class="apx__cur">01</span><span>04</span></p>
@@ -235,6 +219,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=30"></script>
+<script src="main.js?v=32"></script>
 </body>
 </html>
