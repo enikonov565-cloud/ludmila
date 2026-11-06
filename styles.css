@@ -195,7 +195,6 @@ a { color: inherit; text-decoration: none; }
 /* Единый стиль текстов в карточках:
    заголовки — Inter 500, плотный трекинг; пояснения — Inter 400, 20, полутон */
 .tile--photo, .case-card { --ink: #1A2C30; --ink-soft: #6A5F51; }
-.text-soft { font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; }
 
 /* Призыв: заголовок, пояснение и кнопка одной группой, без пустот */
 .pitch {
@@ -405,9 +404,9 @@ a { color: inherit; text-decoration: none; }
   object-fit: cover; background-size: cover; background-position: center;
   pointer-events: none;
 }
-.works__face { box-shadow: 0 calc(10 * var(--u)) calc(30 * var(--u)) rgba(40, 28, 16, .35); }
 /* изнанка плашек — приглушённая (как innerDim 2) */
-.works__back { transform: rotateY(180deg); filter: brightness(.2); }
+/* изнанка плашек — затемнение заливкой, а не фильтром: фильтр на 13 крутящихся 3D-плашках тормозил */
+.works__back { transform: rotateY(180deg); box-shadow: inset 0 0 0 100vmax rgba(10, 8, 6, .8); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .works { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 56px; }

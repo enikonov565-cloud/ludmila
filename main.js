@@ -92,7 +92,7 @@ document.documentElement.classList.replace('no-js', 'js');
     var lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(250, 33); // после долгого кадра анимации не «прыгают» вперёд, а чуть притормаживают
   }
 
   document.querySelectorAll('[data-parallax="trigger"]').forEach(function (trigger) {
@@ -457,9 +457,9 @@ document.documentElement.classList.replace('no-js', 'js');
   /* на компьютере заголовок обычный — частицы там летают крупно на заднем плане (код ниже) */
   if (!window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) return;
   var ctx = canvas.getContext('2d');
-  var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var W = 0, H = 0, padX = 0, padY = 0, targets = [], parts = [], raf = 0, calm = 0, started = false, scale = 1;
-  var MAX = 2200;
+  var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  var color = '', W = 0, H = 0, padX = 0, padY = 0, targets = [], parts = [], raf = 0, calm = 0, started = false, scale = 1;
+  var MAX = 1100; // меньше частиц — легче для телефона, надпись так же читается
 
   var rand = function (a, b) { return a + Math.random() * (b - a); };
 
@@ -517,8 +517,11 @@ document.documentElement.classList.replace('no-js', 'js');
     ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.fillRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'source-over';
-    var color = getComputedStyle(section).color, moving = 0;
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
+    var moving = 0;
+    /* все штрихи — одним путём и одной заливкой: в десятки раз меньше работы для браузера */
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round'; ctx.lineWidth = 1.2 * Math.max(0.6, scale);
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath();
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
       var dx = p.tx - p.x, dy = p.ty - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -528,19 +531,17 @@ document.documentElement.classList.replace('no-js', 'js');
       if (sm > p.maxForce) { sx = sx / sm * p.maxForce; sy = sy / sm * p.maxForce; }
       p.vx += sx; p.vy += sy;
       var v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; v = p.maxSpeed; }
+      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; }
       if (d < 40) { p.vx *= 0.9; p.vy *= 0.9; }
       p.x += p.vx; p.y += p.vy;
       if (d < 0.6 && v < 0.4) { p.x = p.tx; p.y = p.ty; p.vx = p.vy = 0; }
-      var k = Math.min(1, v / p.maxSpeed);
       if (d > 1.5) moving++;
-      ctx.globalAlpha = 0.15 + k * 0.7;
-      ctx.lineWidth = p.size * (0.5 + k * 0.5);
-      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
-      ctx.globalAlpha = 0.9;
-      ctx.fillRect(p.x - p.size * 0.5, p.y - p.size * 0.5, p.size, p.size);
+      if (v > 0.3) { ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); }
       p.px = p.x; p.py = p.y;
     }
+    ctx.stroke();
+    ctx.globalAlpha = 0.9;
+    for (var q = 0; q < parts.length; q++) { var pp = parts[q]; ctx.fillRect(pp.x - pp.size * 0.5, pp.y - pp.size * 0.5, pp.size, pp.size); }
     ctx.globalAlpha = 1;
     /* собрались — проявляем настоящий текст и гасим частицы */
     calm = moving < parts.length * 0.03 ? calm + 1 : 0;
@@ -554,6 +555,7 @@ document.documentElement.classList.replace('no-js', 'js');
   };
 
   var run = function () {
+    color = getComputedStyle(section).color; // цвет читаем один раз за запуск, а не каждый кадр
     canvas.style.opacity = '1';
     title.classList.add('is-particles');
     calm = 0;
@@ -569,6 +571,8 @@ document.documentElement.classList.replace('no-js', 'js');
       p.vx = Math.cos(a) * f; p.vy = Math.sin(a) * f;
     });
     run();
+    setTimeout(function () { color = getComputedStyle(section).color; }, 600);
+    setTimeout(function () { color = getComputedStyle(section).color; }, 1150);
   };
 
   var start = function () {
@@ -609,9 +613,9 @@ document.documentElement.classList.replace('no-js', 'js');
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
   var ctx = canvas.getContext('2d');
-  var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-  var W = 0, H = 0, parts = [], targets = [], raf = 0, visible = false, built = false;
-  var MAX = 2600;
+  var dpr = 1; // фон полупрозрачный — чёткость ретины не нужна, а нагрузка вчетверо меньше
+  var W = 0, H = 0, parts = [], targets = [], raf = 0, visible = false, built = false, color = '', tick = 0;
+  var MAX = 1300;
   var rand = function (a, b) { return a + Math.random() * (b - a); };
 
   var build = function () {
@@ -655,36 +659,38 @@ document.documentElement.classList.replace('no-js', 'js');
   };
 
   var frame = function () {
+    raf = visible ? requestAnimationFrame(frame) : 0;
+    /* фон рисуем через кадр (~30 кадров в секунду) — глазу незаметно, процессору вдвое легче */
+    if ((tick++ & 1) === 1) return;
+    if (tick % 40 === 0 || !color) color = getComputedStyle(section).color;
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.fillRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'source-over';
-    var color = getComputedStyle(section).color;
-    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round'; ctx.lineWidth = 1.4 * W / 1920;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
-      p.a += p.sp;                                   // точка-цель медленно кружит — частицы не замирают
+      p.a += p.sp * 2;                               // точка-цель медленно кружит — частицы не замирают
       var gx = p.tx + Math.cos(p.a) * p.r, gy = p.ty + Math.sin(p.a) * p.r;
       var dx = gx - p.x, dy = gy - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
-      var want = d < 40 ? p.maxSpeed * d / 40 : p.maxSpeed; // у своей точки тормозит, но не замирает — цель кружит
+      var want = d < 40 ? p.maxSpeed * d / 40 : p.maxSpeed;
       var sx = dx / d * want - p.vx, sy = dy / d * want - p.vy;
       var sm = Math.sqrt(sx * sx + sy * sy);
       if (sm > p.maxForce) { sx = sx / sm * p.maxForce; sy = sy / sm * p.maxForce; }
       p.vx += sx; p.vy += sy;
       var v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; v = p.maxSpeed; }
+      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; }
       if (d < 40) { p.vx *= 0.9; p.vy *= 0.9; }
-      p.x += p.vx; p.y += p.vy;
-      var k = Math.min(1, v / p.maxSpeed);
-      ctx.globalAlpha = 0.35 + k * 0.55;
-      ctx.lineWidth = p.size * (0.5 + k * 0.5);
-      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
-      ctx.globalAlpha = 0.85;
-      ctx.fillRect(p.x - p.size * 0.6, p.y - p.size * 0.6, p.size * 1.2, p.size * 1.2);
+      p.x += p.vx * 2; p.y += p.vy * 2;              // шаг вдвое длиннее — скорость та же при 30 кадрах
+      ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y);
       p.px = p.x; p.py = p.y;
     }
+    ctx.stroke();
+    ctx.globalAlpha = 0.85;
+    for (var q = 0; q < parts.length; q++) { var pp = parts[q]; ctx.fillRect(pp.x - pp.size * 0.6, pp.y - pp.size * 0.6, pp.size * 1.2, pp.size * 1.2); }
     ctx.globalAlpha = 1;
-    raf = visible ? requestAnimationFrame(frame) : 0;
   };
   var start = function () {
     if (stacked.matches) return;
@@ -696,6 +702,8 @@ document.documentElement.classList.replace('no-js', 'js');
     if (!built || stacked.matches) return;
     var s = W / 1920;
     parts.forEach(function (p) { var a = rand(0, 6.283), f = rand(10, 30) * s; p.vx = Math.cos(a) * f; p.vy = Math.sin(a) * f; });
+    setTimeout(function () { color = getComputedStyle(section).color; }, 600);
+    setTimeout(function () { color = getComputedStyle(section).color; }, 1150);
   };
 
   var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
