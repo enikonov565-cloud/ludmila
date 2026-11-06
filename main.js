@@ -412,6 +412,7 @@ document.documentElement.classList.replace('no-js', 'js');
       clipPath: reduce ? 'inset(0% 0% 0%)' : (dir > 0 ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)') });
     gsap.to(section, { '--bg': theme(next).bg, '--ink': theme(next).ink, duration: reduce ? 0.01 : 1.1, ease: 'power2.inOut' });
     if (window.approachTitleReform) window.approachTitleReform(); /* заголовок из частиц пересобирается новым цветом */
+    if (window.approachBgReform) window.approachBgReform();
     gsap.to(incoming, { clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
       onComplete: function () {
         gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
@@ -448,6 +449,8 @@ document.documentElement.classList.replace('no-js', 'js');
   var textEl = title.querySelector('.approach__title-text');
   var section = title.closest('.approach');
   if (!canvas || !canvas.getContext || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  /* на компьютере заголовок обычный — частицы там летают крупно на заднем плане (код ниже) */
+  if (!window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) return;
   var ctx = canvas.getContext('2d');
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
   var W = 0, H = 0, padX = 0, padY = 0, targets = [], parts = [], raf = 0, calm = 0, started = false, scale = 1;
@@ -585,5 +588,121 @@ document.documentElement.classList.replace('no-js', 'js');
       parts.forEach(function (p, i) { var t = targets[i % targets.length]; p.tx = t[0]; p.ty = t[1]; });
       run();
     }, 200);
+  });
+})();
+
+/* Компьютер: крупное «МОЙ ПОДХОД» из частиц на заднем плане блока — как в примере VoXelo,
+   частицы не замирают, а всё время кружат вокруг своих точек и оставляют тающие следы.
+   Заголовок блока не трогаем. Цвет — текущий цвет текста блока (меняется вместе со сценой);
+   при смене сцены надпись разлетается и собирается заново. На телефоне не работает —
+   там частицы собирают сам заголовок (код выше). */
+(function () {
+  'use strict';
+  var section = document.querySelector('.approach');
+  var canvas = section && section.querySelector('.approach__bg');
+  if (!canvas || !canvas.getContext) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  var W = 0, H = 0, parts = [], targets = [], raf = 0, visible = false, built = false;
+  var MAX = 2600;
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+
+  var build = function () {
+    W = section.clientWidth; H = section.clientHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var off = document.createElement('canvas'); off.width = W; off.height = H;
+    var o = off.getContext('2d');
+    /* надпись во всю ширину: рукописная «М» и «ОЙ ПОДХОД» прописными */
+    var size = W * 0.135;
+    var capFont = '400 ' + (size * 1.3) + 'px "Good Vibes Pro", "Great Vibes", cursive';
+    var restFont = '500 ' + size + 'px Inter, system-ui, sans-serif';
+    o.font = capFont; var capW = o.measureText('М').width;
+    o.font = restFont; var restW = o.measureText('ОЙ ПОДХОД').width;
+    var total = capW + size * 0.05 + restW;
+    var k = Math.min(1, W * 0.94 / total);
+    size *= k; capFont = '400 ' + (size * 1.3) + 'px "Good Vibes Pro", "Great Vibes", cursive'; restFont = '500 ' + size + 'px Inter, system-ui, sans-serif';
+    o.font = capFont; capW = o.measureText('М').width;
+    o.font = restFont; restW = o.measureText('ОЙ ПОДХОД').width;
+    total = capW + size * 0.05 + restW;
+    var x = (W - total) / 2, y = H * 0.58;
+    o.fillStyle = '#000';
+    o.font = capFont; o.fillText('М', x, y);
+    o.font = restFont; o.fillText('ОЙ ПОДХОД', x + capW + size * 0.05, y);
+    var step = Math.max(3, Math.round(size / 34));
+    var data = o.getImageData(0, 0, W, H).data, pts = [];
+    for (var yy = 0; yy < H; yy += step) for (var xx = 0; xx < W; xx += step) if (data[(yy * W + xx) * 4 + 3] > 140) pts.push([xx, yy]);
+    for (var i = pts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = pts[i]; pts[i] = pts[j]; pts[j] = t; }
+    targets = pts.slice(0, MAX);
+    var s = W / 1920;
+    if (!parts.length) {
+      parts = targets.map(function (t) {
+        var px = t[0] + rand(-260, 260) * s, py = t[1] + rand(-220, 220) * s; // стартуют облаком вокруг букв
+        return { x: px, y: py, px: px, py: py, vx: 0, vy: 0, tx: 0, ty: 0, a: rand(0, 6.283), r: rand(1.5, 6) * s, sp: rand(0.02, 0.06) * (Math.random() < .5 ? -1 : 1),
+          maxSpeed: rand(4, 14) * s, maxForce: rand(0.4, 1) * s, size: rand(0.6, 2.4) * s };
+      });
+    }
+    parts.forEach(function (p, i) { var t = targets[i % targets.length]; p.tx = t[0]; p.ty = t[1]; });
+    built = true;
+  };
+
+  var frame = function () {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+    var color = getComputedStyle(section).color;
+    ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      p.a += p.sp;                                   // точка-цель медленно кружит — частицы не замирают
+      var gx = p.tx + Math.cos(p.a) * p.r, gy = p.ty + Math.sin(p.a) * p.r;
+      var dx = gx - p.x, dy = gy - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+      var want = d < 40 ? p.maxSpeed * d / 40 : p.maxSpeed; // у своей точки тормозит, но не замирает — цель кружит
+      var sx = dx / d * want - p.vx, sy = dy / d * want - p.vy;
+      var sm = Math.sqrt(sx * sx + sy * sy);
+      if (sm > p.maxForce) { sx = sx / sm * p.maxForce; sy = sy / sm * p.maxForce; }
+      p.vx += sx; p.vy += sy;
+      var v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (v > p.maxSpeed) { p.vx = p.vx / v * p.maxSpeed; p.vy = p.vy / v * p.maxSpeed; v = p.maxSpeed; }
+      if (d < 40) { p.vx *= 0.9; p.vy *= 0.9; }
+      p.x += p.vx; p.y += p.vy;
+      var k = Math.min(1, v / p.maxSpeed);
+      ctx.globalAlpha = 0.35 + k * 0.55;
+      ctx.lineWidth = p.size * (0.5 + k * 0.5);
+      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
+      ctx.globalAlpha = 0.85;
+      ctx.fillRect(p.x - p.size * 0.6, p.y - p.size * 0.6, p.size * 1.2, p.size * 1.2);
+      p.px = p.x; p.py = p.y;
+    }
+    ctx.globalAlpha = 1;
+    raf = visible ? requestAnimationFrame(frame) : 0;
+  };
+  var start = function () {
+    if (stacked.matches) return;
+    if (!built) build();
+    if (!raf) raf = requestAnimationFrame(frame);
+  };
+
+  window.approachBgReform = function () {
+    if (!built || stacked.matches) return;
+    var s = W / 1920;
+    parts.forEach(function (p) { var a = rand(0, 6.283), f = rand(10, 30) * s; p.vx = Math.cos(a) * f; p.vy = Math.sin(a) * f; });
+  };
+
+  var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  ready.then(function () {
+    new IntersectionObserver(function (e) {
+      visible = e[0].isIntersecting;
+      if (visible) start();
+    }, { rootMargin: '100px' }).observe(section);
+  });
+  var rt = 0;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { if (!stacked.matches && built) build(); if (visible) start(); }, 200);
   });
 })();
