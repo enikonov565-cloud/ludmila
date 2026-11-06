@@ -232,18 +232,43 @@ document.documentElement.classList.replace('no-js', 'js');
     return m;
   };
 
+  /* Самая высокая проекция по вертикали с учётом наклона колеса (rotateX −10°):
+     задний ряд поднимается — он не должен заходить на заголовок */
+  var TILT = -10 * Math.PI / 180;
+  var vertical = function (g, h) {
+    var up = 0, down = 0;
+    for (var t = 0; t < 360; t += 6) {
+      g.angles.forEach(function (a0) {
+        var a = (a0 + t) * Math.PI / 180;
+        var z = g.R * Math.cos(a) - g.R;
+        [-h / 2, h / 2].forEach(function (y) {
+          var y2 = y * Math.cos(TILT) - z * Math.sin(TILT);
+          var z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
+          if (PERSPECTIVE - z2 > 1) { var p = y2 * PERSPECTIVE / (PERSPECTIVE - z2); up = Math.max(up, -p); down = Math.max(down, p); }
+        });
+      });
+    }
+    return { up: up, down: down };
+  };
+
   /* Подбор высоты плашек: кольцо целиком помещается между полями и по высоте сцены */
   var layout = function () {
     var availW = stage.clientWidth, availH = stage.clientHeight;
     /* на телефоне кольцо целиком было бы крошечным — там оно шире экрана, видны 3–4 передние работы */
     var spread = stage.clientWidth < 700 ? 2.4 : 1;
-    var lo = 40, hi = availH / 1.3;
+    var lo = 20, hi = availH;
     for (var n = 0; n < 22; n++) {
       var mid = (lo + hi) / 2;
-      if (halfExtent(geometry(mid)) * 2 <= availW * spread) lo = mid; else hi = mid;
+      var gm = geometry(mid);
+      var v = vertical(gm, mid);
+      if (halfExtent(gm) * 2 <= availW * spread && v.up + v.down <= availH) lo = mid; else hi = mid;
     }
     var h = Math.floor(lo);
     ring.style.height = h + 'px';
+    /* задний ряд поднят наклоном — сдвигаем колесо так, чтобы его видимая фигура стояла
+       ровно посередине между заголовком и кнопкой */
+    var vv = vertical(geometry(h), h);
+    stage.querySelector('.works__tilt').style.translate = '0 ' + ((vv.up - vv.down) / 2) + 'px';
     var g = geometry(h);
     radius = g.R;
     items.forEach(function (el, i) {

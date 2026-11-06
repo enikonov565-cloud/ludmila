@@ -365,16 +365,20 @@ a { color: inherit; text-decoration: none; }
 /* Заголовок в стиле имени во втором блоке: рукописная заглавная + Inter 500 */
 .works__title {
   position: absolute; left: calc(60 * var(--u)); top: calc(96 * var(--u)); margin: 0;
-  font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30;
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: .96; letter-spacing: -.02em; color: #1A2C30;
 }
 .works__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; margin-right: calc(4 * var(--u)); }
-/* Кольцо — под заголовком, по центру, строго между полями 60 (размер подбирает скрипт) */
+/* Кольцо — под заголовком, по центру, строго между полями 60; размер подбирает скрипт так,
+   чтобы колесо с наклоном не заходило ни на заголовок, ни на кнопку (отступы по 60) */
 .works__stage {
-  position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(300 * var(--u)); bottom: calc(40 * var(--u));
+  position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(325 * var(--u)); bottom: calc(188 * var(--u));
   display: flex; align-items: center; justify-content: center;
   perspective: 3000px; cursor: grab; touch-action: pan-y; user-select: none;
 }
 .works__stage.is-dragging { cursor: grabbing; }
+/* Кнопка под колесом — та же медная, что «Заказать дизайн», по центру, 60 от низа */
+.works__cta { position: absolute; left: 50%; bottom: calc(60 * var(--u)); transform: translateX(-50%); }
+.works__cta:hover { transform: translateX(-50%) translateY(calc(-2 * var(--u))); }
 /* наклон: передний край колеса опущен вниз, задний ряд поднят — взгляд чуть сверху */
 .works__tilt { transform-style: preserve-3d; transform: rotateX(-10deg); }
 .works__ring {
@@ -394,9 +398,11 @@ a { color: inherit; text-decoration: none; }
 .works__back { transform: rotateY(180deg); filter: brightness(.2); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .works { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 40px; }
-  .works__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
+  .works { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 56px; }
+  .works__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 44px; }
   .works__title { position: static; font-size: clamp(38px, 10.5vw, 64px); }
   .works__stage { position: relative; left: auto; right: auto; top: auto; bottom: auto; height: min(56svh, 420px); }
+  .works__cta { position: static; transform: none; align-self: center; }
+  .works__cta:hover { transform: translateY(-2px); }
   .works__face, .works__back { border-radius: 12px; }
 }
