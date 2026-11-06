@@ -371,9 +371,11 @@ a { color: inherit; text-decoration: none; }
    последняя строка — на одной линии с «который продаёт» */
 .works__note {
   position: absolute; right: calc(60 * var(--u)); bottom: calc(var(--note-bottom, 840.1) * var(--u)); margin: 0;
-  width: calc(560 * var(--u)); text-align: left; /* блок у правого поля, текст всегда по левому краю, ровно две строки */
+  width: max-content; text-align: left; /* ширина — по самой длинной строке: она касается правого поля, текст по левому краю */
   font-size: calc(20 * var(--u)); line-height: 1.3; letter-spacing: -.015em; color: #6A5F51;
 }
+.works__note p { margin: 0; }
+.works__note cite { display: block; margin-top: calc(6 * var(--u)); font-style: italic; }
 .works__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; margin-right: calc(4 * var(--u)); }
 /* Кольцо — под заголовком, по центру, строго между полями 60; размер подбирает скрипт так,
    чтобы колесо с наклоном не заходило ни на заголовок, ни на кнопку (отступы по 60) */
@@ -384,6 +386,7 @@ a { color: inherit; text-decoration: none; }
 }
 .works__stage.is-dragging { cursor: grabbing; }
 /* Кнопка под колесом — та же медная, что «Заказать дизайн», по центру, 60 от низа */
+.works__cta { padding-inline: calc(72 * var(--u)); font-size: calc(26 * var(--u)); } /* шире и крупнее основной медной */
 .works__cta { position: absolute; left: 50%; bottom: calc(60 * var(--u)); transform: translateX(-50%); }
 .works__cta:hover { transform: translateX(-50%) translateY(calc(-2 * var(--u))); }
 /* наклон: передний край колеса опущен вниз, задний ряд поднят — взгляд чуть сверху */
@@ -409,8 +412,9 @@ a { color: inherit; text-decoration: none; }
   .works__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 44px; }
   .works__title { position: static; font-size: clamp(38px, 10.5vw, 64px); }
   .works__note { position: static; width: auto; max-width: 560px; font-size: clamp(12px, 3.2vw, 18px); letter-spacing: -.025em; margin-top: -24px; }
+  .works__br { display: none; }
   .works__stage { position: relative; left: auto; right: auto; top: auto; bottom: auto; height: min(56svh, 420px); }
-  .works__cta { position: static; transform: none; align-self: center; }
+  .works__cta { position: static; transform: none; align-self: center; padding-inline: 48px; font-size: clamp(17px, 4.6vw, 20px); }
   .works__cta:hover { transform: translateY(-2px); }
   .works__face, .works__back { border-radius: 12px; }
 }
