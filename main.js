@@ -179,16 +179,29 @@ document.documentElement.classList.replace('no-js', 'js');
   var count = items.length;
   if (!count) return;
 
-  var SPACING = 3, SPEED = 7, SENSITIVITY = 5;
-  var angle = 360 / count;
+  var SPEED = 7, SENSITIVITY = 5, GAP = 0.34; // зазор между плашками — доля их высоты (как spacing 3 в образце)
   var degPerSec = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : SPEED * 6;
   var radius = 0, rotY = 0, vel = 0, last = 0, raf = 0, visible = false;
   var drag = { active: false, x: 0, y: 0, decided: false, horizontal: false };
+  var ratios = Array.prototype.map.call(items, function (el) { return parseFloat(el.getAttribute('data-ratio')) || 0.75; });
 
+  /* Плашки разной ширины (экраны сайтов широкие, карточки 3:4): каждая занимает на кольце
+     дугу по своей ширине, радиус — из общей длины всех плашек с зазорами */
   var layout = function () {
-    var w = ring.offsetWidth; // размер без 3D-проекции
-    radius = (w * (1 + SPACING * 0.15)) / (2 * Math.tan(Math.PI / count));
-    items.forEach(function (el, i) { el.style.transform = 'rotateY(' + (i * angle) + 'deg) translateZ(' + radius + 'px)'; });
+    var h = ring.offsetHeight; // размер без 3D-проекции
+    var gap = h * GAP;
+    var widths = ratios.map(function (r) { return h * r; });
+    var total = widths.reduce(function (s, w) { return s + w + gap; }, 0);
+    radius = total / (2 * Math.PI);
+    var arc = 0;
+    items.forEach(function (el, i) {
+      var w = widths[i];
+      var a = (arc + (w + gap) / 2) / radius * 180 / Math.PI;
+      arc += w + gap;
+      el.style.width = w + 'px';
+      el.style.marginLeft = (-w / 2) + 'px';
+      el.style.transform = 'rotateY(' + a + 'deg) translateZ(' + radius + 'px)';
+    });
     apply();
   };
   var apply = function () { ring.style.transform = 'translateZ(' + (-radius) + 'px) rotateY(' + rotY + 'deg)'; };
