@@ -16,14 +16,43 @@
 <meta name="theme-color" content="#182C31">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=94">
+<link rel="stylesheet" href="styles.css?v=96">
 </head>
 <body>
+<!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
+<header class="site-header" data-header>
+  <div class="site-header__left">
+    <button class="burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-menu"><span></span><span></span></button>
+    <a class="brand" href="#top" aria-label="Людмила Иващенко — на главную">
+      <svg class="mono" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50 1 L51.6 8.4 L59 10 L51.6 11.6 L50 19 L48.4 11.6 L41 10 L48.4 8.4 Z" fill="currentColor"/>
+        <path d="M50 81 L51.3 87.7 L58 89 L51.3 90.3 L50 97 L48.7 90.3 L42 89 L48.7 87.7 Z" fill="currentColor"/>
+        <path d="M50 10 A40 40 0 0 0 50 89" fill="none" stroke="currentColor" stroke-width=".9"/>
+        <path d="M50 10 A40 40 0 0 1 50 89" fill="none" stroke="currentColor" stroke-width=".9"/>
+        <text x="40" y="66" text-anchor="middle" font-family="Cormorant Garamond, serif" font-weight="500" font-size="54" fill="currentColor">Л</text>
+        <text x="61" y="72" text-anchor="middle" font-family="Cormorant Garamond, serif" font-weight="500" font-size="54" fill="currentColor">И</text>
+        <path d="M22 60 C 30 44, 46 46, 52 58 S 74 74, 82 62" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+      </svg>
+      <span class="brand__role">веб-дизайнер</span>
+    </a>
+  </div>
+  <a class="header-cta" href="#">Связаться со мной</a>
+</header>
+
+<nav class="site-menu" id="site-menu" aria-label="Разделы сайта" hidden>
+  <ul class="site-menu__list">
+    <li><a href="#top"><span>01</span>Главная</a></li>
+    <li><a href="#about"><span>02</span>Обо мне</a></li>
+    <li><a href="#works"><span>03</span>Работы</a></li>
+    <li><a href="#approach"><span>04</span>Мой подход</a></li>
+  </ul>
+  <a class="site-menu__cta" href="#">Связаться со мной</a>
+</nav>
 
 <main>
-<section class="stage" data-parallax="trigger">
+<section class="stage" id="top" data-parallax="trigger">
   <h1 class="sr-only">Людмила Иващенко — веб-дизайнер, который думает вашей головой</h1>
   <div class="stage__media">
     <div class="stage__photo">
@@ -66,7 +95,7 @@
 </section>
 
 <!-- Второй блок по макету «п-р 19» -->
-<section class="about" aria-labelledby="about-name">
+<section class="about" id="about" aria-labelledby="about-name">
   <div class="about__frame">
     <h2 class="about__name" id="about-name" data-reveal>
       <span class="about__name-line"><span class="cap">Л</span>юдмила</span>
@@ -124,7 +153,7 @@
 </section>
 <!-- Третий блок: кольцо из плашек с работами — сайты, карточки, баннеры.
      Эффект: Round Carousel (Originkit), переписан без React -->
-<section class="works" aria-labelledby="works-title">
+<section class="works" id="works" aria-labelledby="works-title">
   <div class="works__frame">
   <h2 class="works__title" id="works-title"><span class="cap">Д</span>изайн,<br>который продаёт</h2>
   <blockquote class="works__note">
@@ -155,7 +184,7 @@
 </section>
 <!-- Четвёртый блок «Мой подход» по макету Figma «п-р 20»: два квадрата со сценами сменяют друг друга
      анимацией из примера Animated clip-path slider (внешний раскрывается снизу, внутренний сверху) -->
-<section class="approach" aria-labelledby="approach-title">
+<section class="approach" id="approach" aria-labelledby="approach-title">
   <canvas class="approach__bg" aria-hidden="true"></canvas>
   <img class="approach__photo" src="img/approach/ludmila-cut.webp" width="1060" height="1060" alt="Людмила Иващенко в белом пиджаке" loading="lazy">
   <div class="approach__frame">
@@ -272,6 +301,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=44"></script>
+<script src="main.js?v=45"></script>
 </body>
 </html>

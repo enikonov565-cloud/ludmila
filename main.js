@@ -90,6 +90,7 @@ document.documentElement.classList.replace('no-js', 'js');
 
   if (window.Lenis) {
     var lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    window.lenis = lenis; // нужен меню для плавного перехода к блокам
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
     gsap.ticker.lagSmoothing(250, 33); // после долгого кадра анимации не «прыгают» вперёд, а чуть притормаживают
@@ -717,5 +718,43 @@ document.documentElement.classList.replace('no-js', 'js');
   window.addEventListener('resize', function () {
     clearTimeout(rt);
     rt = setTimeout(function () { if (!stacked.matches && built) build(); if (visible) start(); }, 200);
+  });
+})();
+
+/* Шапка: подложка при прокрутке, бургер-меню, плавный переход к блокам */
+(function () {
+  'use strict';
+  var header = document.querySelector('[data-header]');
+  var menu = document.getElementById('site-menu');
+  if (!header || !menu) return;
+  var burger = header.querySelector('.burger');
+  var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 40); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  var setOpen = function (open) {
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+    if (open) { menu.hidden = false; requestAnimationFrame(function () { menu.classList.add('is-open'); }); }
+    else { menu.classList.remove('is-open'); setTimeout(function () { if (!menu.classList.contains('is-open')) menu.hidden = true; }, 700); }
+    document.body.classList.toggle('menu-open', open);
+    if (window.lenis) { open ? window.lenis.stop() : window.lenis.start(); }
+  };
+  burger.addEventListener('click', function () { setOpen(burger.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') { setOpen(false); burger.focus(); } });
+
+  /* ссылки на блоки — плавно (через Lenis, если он есть) */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    var id = a.getAttribute('href');
+    if (id.length < 2) return;
+    a.addEventListener('click', function (e) {
+      var target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      var wasOpen = burger.getAttribute('aria-expanded') === 'true';
+      if (wasOpen) setOpen(false);
+      var goTo = function () { if (window.lenis) window.lenis.scrollTo(target, { duration: 1.4 }); else target.scrollIntoView({ behavior: 'smooth' }); };
+      wasOpen ? setTimeout(goTo, 350) : goTo();
+    });
   });
 })();
