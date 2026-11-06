@@ -470,7 +470,7 @@ a { color: inherit; text-decoration: none; }
 /* подсказка «нажмите» — пилюля с пульсирующей точкой */
 /* кнопка «Нажмите» — ниже и длиннее: во всю ширину текста карточки */
 .apx__hint {
-  align-self: stretch; margin-top: calc(64 * var(--u));
+  align-self: stretch; margin-top: auto;
   display: flex; align-items: center; justify-content: center; gap: calc(14 * var(--u));
   padding: calc(16 * var(--u)) calc(28 * var(--u)); border: 1px solid currentColor; border-radius: 99px;
   background: transparent; color: inherit; font: inherit; cursor: pointer;
@@ -487,7 +487,7 @@ a { color: inherit; text-decoration: none; }
 .apx__back::after { content: ""; position: absolute; inset: 14.7%; background: linear-gradient(180deg, rgba(14, 27, 30, .55) 0%, rgba(14, 27, 30, 0) 26%, rgba(14, 27, 30, 0) 40%, rgba(14, 27, 30, .85) 100%); }
 .apx__solution {
   position: absolute; z-index: 1; left: calc(130 * var(--u)); right: calc(130 * var(--u)); bottom: calc(196 * var(--u)); margin: 0;
-  font-weight: 400; font-size: calc(27 * var(--u)); line-height: 1.25; color: #F6EFE5;
+  font-weight: 300; font-size: calc(27 * var(--u)); line-height: 1.25; color: #F6EFE5;
 }
 /* на обороте понятно, как вернуться и как листать дальше, не ища стрелки */
 .apx__back-nav {
@@ -497,7 +497,7 @@ a { color: inherit; text-decoration: none; }
 .apx__back-btn {
   display: inline-flex; align-items: center; gap: calc(10 * var(--u));
   padding: calc(6 * var(--u)) 0; border: 0; background: none; cursor: pointer; color: #F6EFE5;
-  font: inherit; font-size: calc(21 * var(--u)); line-height: 1.2;
+  font: inherit; font-weight: 300; font-size: calc(21 * var(--u)); line-height: 1.2;
   transition: color .4s var(--ease);
 }
 .apx__back-btn--next { margin-left: auto; }
@@ -514,7 +514,10 @@ a { color: inherit; text-decoration: none; }
 .apx__phrase .cap { width: auto; font-weight: 400; font-size: 1.4em; line-height: .5; letter-spacing: 0; margin-right: .02em; vertical-align: baseline; position: relative; top: -.04em; }
 .nw { white-space: nowrap; }
 /* уточнение под фразой: Inter Bold, как в макете */
-.apx__note { margin: calc(26 * var(--u)) 0 0; font-weight: 700; font-size: calc(24 * var(--u)); line-height: 1.3; opacity: .85; }
+/* уточнение — тонкое, в полутоне, чуть ниже фразы */
+.apx__note { margin: calc(36 * var(--u)) 0 0; font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.3; opacity: .65; }
+/* фраза с уточнением — посередине свободного места, кнопка «Нажмите» — у нижнего поля */
+.apx__front .apx__phrase { margin-top: auto; }
 
 /* главная мысль и номер — проявляются вокруг суженного квадрата */
 .apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: var(--ink); }
@@ -584,7 +587,7 @@ a { color: inherit; text-decoration: none; }
   .apx__more { font-size: 10px; left: 14px; }
   .apx__more + .apx__more { right: 14px; }
   .apx__answer { position: static; align-self: flex-start; gap: 12px; padding: 0; }
-  .apx__note { margin-top: 14px; font-size: clamp(13px, 3.6vw, 18px); }
+  .apx__note { margin-top: 16px; font-size: clamp(13px, 3.6vw, 18px); }
   .apx__phrase { font-size: clamp(30px, 9vw, 60px); }
   .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
   .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
@@ -593,7 +596,7 @@ a { color: inherit; text-decoration: none; }
   .apx__cur { font-size: 38px; }
   .apx__total { font-size: 18px; }
   .apx__sep { width: 22px; }
-  .apx__hint { margin-top: 26px; padding: 12px 14px; font-size: 14px; gap: 8px; }
+  .apx__hint { margin-top: auto; padding: 12px 14px; font-size: 14px; gap: 8px; }
   .apx__solution { bottom: calc(18% + 44px); }
   .apx__back-nav { left: 18%; right: 18%; bottom: 18%; gap: 6px; }
   .apx__back-btn { padding: 4px 0; font-size: 14px; gap: 6px; }
