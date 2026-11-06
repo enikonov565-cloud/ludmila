@@ -352,7 +352,7 @@ a { color: inherit; text-decoration: none; }
    Фон — тот же беж, что у карточек второго блока; сверху мягко выходит из тёмного */
 .works {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
-  --tile-w: calc(360 * var(--u)); --tile-h: calc(398 * var(--u)); /* пропорции плашки 300 × 332, как в образце */
+  --tile-w: calc(300 * var(--u)); --tile-h: calc(400 * var(--u)); /* плашки 3:4 — карточки товаров видны целиком */
   position: relative; overflow: hidden;
   height: 100svh; min-height: calc(1080 * var(--u));
   background: radial-gradient(120% 95% at 50% 45%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
@@ -385,6 +385,6 @@ a { color: inherit; text-decoration: none; }
 .works__back { transform: rotateY(180deg); filter: brightness(.2); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .works { --u: 1px; --tile-w: clamp(150px, 34vw, 260px); --tile-h: calc(var(--tile-w) * 1.1067); height: min(100svh, calc(var(--tile-w) * 3.2)); min-height: 520px; }
+  .works { --u: 1px; --tile-w: clamp(140px, 32vw, 240px); --tile-h: calc(var(--tile-w) * 4 / 3); height: min(100svh, calc(var(--tile-w) * 3.6)); min-height: 560px; }
   .works__face, .works__back { border-radius: 12px; }
 }
