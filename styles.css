@@ -418,3 +418,115 @@ a { color: inherit; text-decoration: none; }
   .works__cta:hover { transform: translateY(-2px); }
   .works__face, .works__back { border-radius: 12px; }
 }
+
+/* ===== Четвёртый блок «Мой подход»: слайдер из двух половин (clip-path), по примеру
+   Animated clip-path slider Concept. Слева — фото Людмилы, справа — панель с текстом.
+   Сцены сменяются раскрытием маской: левая половина снизу вверх, правая сверху вниз. ===== */
+.approach {
+  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  position: relative; overflow: hidden;
+  height: 100svh; min-height: calc(1080 * var(--u));
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, #1A2C30 0, #070F10 70%);
+  color: #BDB7B1;
+}
+.approach__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
+.approach__title {
+  position: absolute; left: calc(60 * var(--u)); top: calc(96 * var(--u)); margin: 0;
+  font-weight: 500; font-size: calc(77 * var(--u)); line-height: .96; letter-spacing: -.02em; color: #BDB7B1;
+}
+.approach__title .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; margin-right: calc(4 * var(--u)); }
+
+.ap {
+  position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u));
+  top: calc(230 * var(--u)); bottom: calc(150 * var(--u));
+  display: flex;
+}
+.ap__side { position: relative; width: 50%; height: 100%; overflow: hidden; }
+.ap__slide {
+  position: absolute; inset: 0; overflow: hidden;
+  visibility: hidden; background: #0B1416;
+}
+.ap__slide.active { visibility: visible; z-index: 2; }
+.ap__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(0%); display: block; }
+
+/* надписи на фото — появляются при наведении (как в примере) */
+.ap__content { position: absolute; inset: 0; z-index: 3; pointer-events: none; color: #E8DCC8; }
+.ap__more {
+  position: absolute; top: 50%; left: 6%;
+  font-size: calc(15 * var(--u)); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
+  transform: rotate(-90deg); transform-origin: 0 100%; backface-visibility: hidden;
+}
+.ap__more + .ap__more { left: auto; right: 6%; transform: rotate(90deg); transform-origin: 100% 100%; }
+.ap__word {
+  position: absolute; left: 0; right: 0; top: 14%;
+  display: flex; justify-content: center;
+  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-size: calc(110 * var(--u)); line-height: 1; letter-spacing: -.01em;
+}
+.ap__word span { opacity: 0; display: block; }
+.ap__num {
+  position: absolute; right: 14%; bottom: 8%;
+  display: flex; opacity: 0; transform: translateY(calc(80 * var(--u)));
+  font-family: var(--display); font-style: italic; font-weight: 500;
+  font-size: calc(150 * var(--u)); line-height: 1; perspective: 600px;
+}
+.ap__num span { display: block; transform: rotateY(90deg); }
+.ap__num span + span { transform: rotateY(-90deg); }
+
+/* панель с текстом */
+.ap__panel {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: calc(56 * var(--u)) calc(60 * var(--u));
+  background: radial-gradient(120% 95% at 72% 28%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%);
+  color: #1A2C30;
+}
+.ap__panel--dark { background: radial-gradient(120% 95% at 30% 20%, #24393E 0%, #1A2C30 50%, #0E1B1E 100%); color: #E8DCC8; }
+.ap__label {
+  margin: 0; display: flex; justify-content: space-between;
+  font-size: calc(15 * var(--u)); line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: #6A5F51;
+}
+.ap__panel--dark .ap__label { color: #9FA9A6; }
+.ap__text {
+  margin: 0; font-weight: 500; font-size: calc(64 * var(--u)); line-height: 1.02; letter-spacing: -.03em;
+}
+.ap__text .cap { width: auto; font-weight: 400; font-size: 1.45em; line-height: .5; letter-spacing: 0; margin-right: .02em; }
+.ap__panel--dark .ap__text { font-size: calc(60 * var(--u)); }
+
+/* кнопки — полукруг внизу, как в примере: верхняя часть круга выглядывает из-под края блока */
+.ap__controls {
+  position: absolute; left: 50%; bottom: calc(-120 * var(--u)); transform: translateX(-50%);
+  width: calc(220 * var(--u)); height: calc(220 * var(--u)); border-radius: 50%;
+  background: #C8BDAB; color: #1A2C30;
+  display: flex; align-items: flex-start; justify-content: center; gap: calc(30 * var(--u));
+  padding-top: calc(36 * var(--u));
+}
+.ap__btn {
+  width: calc(46 * var(--u)); height: calc(46 * var(--u)); border: 0; border-radius: 50%; padding: 0;
+  background: transparent; color: inherit; cursor: pointer;
+  display: grid; place-items: center; transition: background-color .4s var(--ease), color .4s var(--ease);
+}
+.ap__btn svg { width: calc(20 * var(--u)); height: auto; }
+.ap__btn--down svg { transform: rotate(180deg); }
+.ap__btn:hover { background: #A9502C; color: #F6EFE5; }
+.ap__btn:focus-visible { outline: 2px solid #A9502C; outline-offset: 3px; }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .approach { --u: 1px; height: auto; min-height: 0; display: block; padding: 56px 20px 0; }
+  .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 28px; }
+  .approach__title { position: static; font-size: clamp(38px, 10.5vw, 64px); }
+  .ap { position: relative; left: auto; right: auto; top: auto; bottom: auto; flex-direction: column; }
+  .ap__side { width: 100%; }
+  .ap__side--photo { height: min(74vw, 520px); }
+  .ap__side--text { height: clamp(260px, 72vw, 420px); }
+  .ap__panel { padding: 24px 22px; }
+  .ap__label { font-size: 12px; }
+  .ap__text, .ap__panel--dark .ap__text { font-size: clamp(26px, 7.4vw, 44px); }
+  .ap__word { font-size: clamp(54px, 15vw, 96px); }
+  .ap__num { font-size: clamp(70px, 20vw, 120px); }
+  .ap__more { font-size: 11px; }
+  .ap__controls { position: relative; left: auto; bottom: auto; transform: none; align-self: center;
+    width: 180px; height: 90px; border-radius: 90px 90px 0 0; padding-top: 22px; gap: 22px; margin-top: 6px; }
+  .ap__btn { width: 44px; height: 44px; }
+  .ap__btn svg { width: 18px; }
+}
