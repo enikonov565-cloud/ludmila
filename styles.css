@@ -426,7 +426,7 @@ a { color: inherit; text-decoration: none; }
    анимацией из примера Animated clip-path slider: внешний раскрывается снизу, внутренний сверху. */
 .approach {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; overflow: clip; /* clip — блок нельзя «прокрутить» вбок фокусом или прокруткой к элементу */
   height: 100svh; min-height: calc(1080 * var(--u));
   display: flex; align-items: center; justify-content: center;
   /* цвета меняются вместе со сценой (скрипт плавно переводит переменные) */
@@ -548,7 +548,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .approach { --u: 1px; height: auto; min-height: 0; display: flex; flex-direction: column; align-items: stretch; padding: 56px 20px 0; }
   .approach__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
-  .approach__title { position: relative; font-size: clamp(36px, 10vw, 64px); }
+  .approach__title { position: relative; left: auto; top: auto; font-size: clamp(36px, 10vw, 64px); }
   .approach__particles { left: -20px; top: -20px; }
   .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
   .apx__word { font-size: clamp(40px, 12vw, 80px); top: 0; }
