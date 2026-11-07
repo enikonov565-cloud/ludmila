@@ -627,11 +627,14 @@ a { color: inherit; text-decoration: none; }
   padding: 0; border: 0; background: none; color: inherit; cursor: pointer;
 }
 .burger span { position: absolute; left: 18%; right: 18%; height: 1.5px; background: currentColor; transition: transform .45s var(--ease), top .45s var(--ease), right .45s var(--ease); }
-.burger span:first-child { top: 38%; }
-.burger span:last-child { top: 60%; right: 34%; }
-.burger:hover span:last-child { right: 18%; }
-.burger[aria-expanded="true"] span:first-child { top: 49%; transform: rotate(45deg); }
-.burger[aria-expanded="true"] span:last-child { top: 49%; right: 18%; transform: rotate(-45deg); }
+/* три линии; нижняя короче и вытягивается при наведении; при открытии — крестик */
+.burger span:nth-child(1) { top: 32%; }
+.burger span:nth-child(2) { top: 49%; transition: opacity .3s, transform .45s var(--ease); }
+.burger span:nth-child(3) { top: 66%; right: 34%; }
+.burger:hover span:nth-child(3) { right: 18%; }
+.burger[aria-expanded="true"] span:nth-child(1) { top: 49%; transform: rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(.2); }
+.burger[aria-expanded="true"] span:nth-child(3) { top: 49%; right: 18%; transform: rotate(-45deg); }
 .burger:focus-visible, .brand:focus-visible, .header-cta:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
 
 .brand { display: flex; align-items: center; gap: calc(16 * var(--hu)); color: inherit; }
