@@ -189,13 +189,16 @@ async function init() {
   const box2 = new THREE.Box3().setFromObject(laptop);
   const c2 = box2.getCenter(new THREE.Vector3());
   laptop.position.x -= c2.x; laptop.position.z -= c2.z; laptop.position.y -= box2.min.y; // низ корпуса — на столе
-  const turn = new THREE.Group(); turn.add(laptop); scene.add(turn);
+  const turn = new THREE.Group(); turn.add(laptop);
+  /* «стол-поворотник»: ноутбук, ваза и тени поворачиваются вместе, ничто ни сквозь что не проходит */
+  const rig = new THREE.Group(); rig.add(turn); scene.add(rig);
 
   /* ваза с белыми лилиями на столе слева — объёмная, освещена как ноутбук */
   const bouquet = makeBouquet(), vase = bouquet.root;
   vase.scale.setScalar(0.95); scene.add(vase);
   const vaseShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.5), new THREE.MeshBasicMaterial({ map: shadow.material.map, transparent: true, depthWrite: false, opacity: 0.9 }));
   vaseShadow.rotation.x = -Math.PI / 2; vaseShadow.position.y = 0.003; scene.add(vaseShadow);
+  rig.add(shadow, vase, vaseShadow);
 
   /* крышка: открываем как в демо (состояние «open») */
   const lid = laptop.getObjectByName('Bevels_2');
@@ -229,10 +232,32 @@ async function init() {
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
     render();
+    fitGhost(w, h);
   };
+  /* «Тогда» занимает всё место справа от ноутбука: правый край ноутбука считаем по 3D-сцене */
+  const ghostEl = section.querySelector('.story__ghost--then');
+  let laptopBox = null;
+  function fitGhost(w, h) {
+    if (!ghostEl || state.slide > 0 || state.spin > 0.02) return;
+    if (camera.aspect < 1.2) { ghostEl.style.fontSize = ''; return; }
+    if (!laptopBox) laptopBox = new THREE.Box3().setFromObject(lid || turn, true); // крышка — она на уровне слова
+    let right = -Infinity; const v = new THREE.Vector3();
+    for (let i = 0; i < 8; i++) {
+      v.set(i & 1 ? laptopBox.max.x : laptopBox.min.x, i & 2 ? laptopBox.max.y : laptopBox.min.y, i & 4 ? laptopBox.max.z : laptopBox.min.z).project(camera);
+      right = Math.max(right, (v.x + 1) / 2 * w);
+    }
+    ghostEl.style.fontSize = '';
+    const cs = getComputedStyle(ghostEl), fs0 = parseFloat(cs.fontSize);
+    const mc = document.createElement('canvas').getContext('2d'); mc.font = '300 100px Inter, sans-serif';
+    const word = ghostEl.textContent;
+    const ratio = mc.measureText(word).width / 100 - 0.03 * (word.length - 1); // ширина слова в em (с учётом letter-spacing -.03em)
+    const avail = w - parseFloat(cs.right) - right - 0.004 * w;
+    ghostEl.style.fontSize = Math.max(40, Math.min(fs0, avail / ratio)) + 'px';
+  }
   const camFar = new THREE.Vector3(), camNear = new THREE.Vector3(), look = new THREE.Vector3();
   function render() {
-    turn.rotation.y = Math.PI - 0.12 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
+    turn.rotation.y = Math.PI - 0.12;              // модель смотрит назад — разворачиваем к зрителю
+    rig.rotation.y = state.spin * Math.PI * 2;     // поворот на 180° — вместе с вазой
     turn.rotation.x = 0;
     /* букет чуть покачивается — сцена живая */
     const t = performance.now() / 1000;

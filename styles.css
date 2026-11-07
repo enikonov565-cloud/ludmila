@@ -750,8 +750,8 @@ a { color: inherit; text-decoration: none; }
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 /* «Тогда» / «Сейчас» — Inter Light крупнее заголовка, в полутоне, справа — посередине между хедером и столом */
-.story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: calc(-94 * var(--u)) 0 0; pointer-events: none;
-  font-weight: 300; font-size: calc(172 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
+.story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: -.55em 0 0; pointer-events: none;
+  font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
 .story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
 .story__ghost .ch { display: inline-block; will-change: transform, opacity; }
 .story__ghost--now { opacity: 0; visibility: hidden; color: #F6EFE5; }
