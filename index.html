@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=115">
+<link rel="stylesheet" href="styles.css?v=117">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -299,12 +299,11 @@
 
 <!-- Блок «Мой путь» (Figma «п-р10»): 3D-ноутбук на тёмном интерьерном фоне, сцена по прокрутке — story3d.js -->
 <section class="story" id="story" aria-labelledby="story-title">
-  <div class="story__bg" aria-hidden="true"></div>
   <p class="story__ghost story__ghost--then" aria-hidden="true">Тогда</p>
   <canvas class="story__gl" aria-hidden="true"></canvas>
 
   <div class="story__then">
-    <h2 class="story__title" id="story-title"><span class="story__mask"><span class="story__reveal">30 лет я&nbsp;учила людей</span></span><span class="story__mask"><span class="story__reveal">понимать сложное.</span></span></h2>
+    <h2 class="story__title" id="story-title"><span class="story__mask"><span class="story__reveal"><span class="story__num">30</span> лет я&nbsp;учила людей</span></span><span class="story__mask"><span class="story__reveal">понимать сложное.</span></span></h2>
   </div>
 
   <div class="story__now">
@@ -327,6 +326,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js?v=52"></script>
-<script type="module" src="story3d.js?v=16"></script>
+<script type="module" src="story3d.js?v=18"></script>
 </body>
 </html>

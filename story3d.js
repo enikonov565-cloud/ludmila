@@ -65,10 +65,12 @@ async function init() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   const key = new THREE.DirectionalLight(0xffe7cc, 1.1); key.position.set(3, 5, 4); scene.add(key);
-  /* ноутбук стоит на столешнице фирменного тёмно-зелёного цвета; дальний край уходит в туман того же цвета */
-  scene.fog = new THREE.Fog(0x0E1B1E, 5, 14);
-  const desk = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x1A2C30, roughness: 0.55, metalness: 0.1 }));
-  desk.rotation.x = -Math.PI / 2; scene.add(desk);
+  /* столешница фирменного тёмно-зелёного цвета, стоит наискосок: дальний край идёт по диагонали
+     снизу слева вверх направо; за ним — фон блока. Без серых отражений окружения */
+  scene.fog = new THREE.Fog(0x10262B, 6, 22);
+  const deskGeo = new THREE.PlaneGeometry(40, 8); deskGeo.translate(0, -2.1, 0); // дальний край — в 1,9 за ноутбуком
+  const desk = new THREE.Mesh(deskGeo, new THREE.MeshStandardMaterial({ color: 0x2E6470, roughness: 0.75, metalness: 0, envMapIntensity: 0.25 }));
+  desk.rotation.set(-Math.PI / 2, 0.6, 0, 'YXZ'); scene.add(desk);
   /* мягкая тень под ноутбуком */
   const sh = document.createElement('canvas'); sh.width = sh.height = 256;
   const sg = sh.getContext('2d'); const rg = sg.createRadialGradient(128, 128, 10, 128, 128, 128);
@@ -80,9 +82,10 @@ async function init() {
 
   const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
   const loader = new GLTFLoader().setDRACOLoader(draco);
-  const [gltf, pastImg] = await Promise.all([
+  const [gltf, pastImg, vaseTex] = await Promise.all([
     loader.loadAsync('models/macbook.glb'),
     loadImage('img/story/past-screen.jpg'),
+    new THREE.TextureLoader().loadAsync('img/story/vase.webp'),
   ]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
@@ -96,6 +99,14 @@ async function init() {
   const c2 = box2.getCenter(new THREE.Vector3());
   laptop.position.x -= c2.x; laptop.position.z -= c2.z; laptop.position.y -= box2.min.y; // низ корпуса — на столе
   const turn = new THREE.Group(); turn.add(laptop); scene.add(turn);
+
+  /* ваза с белыми цветами на столе справа — немного оживляет интерьер */
+  vaseTex.colorSpace = THREE.SRGBColorSpace;
+  const vaseGeo = new THREE.PlaneGeometry(1.25 * 408 / 557, 1.25); vaseGeo.translate(0, 0.625, 0);
+  const vase = new THREE.Mesh(vaseGeo, new THREE.MeshBasicMaterial({ map: vaseTex, transparent: true, alphaTest: 0.05, color: 0xd9d4cb }));
+  scene.add(vase);
+  const vaseShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.45), new THREE.MeshBasicMaterial({ map: shadow.material.map, transparent: true, depthWrite: false, opacity: 0.8 }));
+  vaseShadow.rotation.x = -Math.PI / 2; vaseShadow.position.y = 0.003; scene.add(vaseShadow);
 
   /* крышка: открываем как в демо (состояние «open») */
   const lid = laptop.getObjectByName('Bevels_2');
@@ -142,12 +153,15 @@ async function init() {
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
+    vase.position.set(portrait ? 0.95 : 1.8, 0, portrait ? -1.5 : -1.1);
+    vaseShadow.position.set(vase.position.x, 0.003, vase.position.z);
     camFar.set(0, portrait ? 2.1 : 1.35, portrait ? 4.9 / Math.max(0.42, camera.aspect) : 4.6); // камера ближе — экран крупный, текст читается
-    const dist = camFar.length(); scene.fog.near = dist - 0.5; scene.fog.far = dist + 9; // дальний край стола растворяется в фоне
+    const dist = camFar.length(); scene.fog.near = dist + 1; scene.fog.far = dist + 16; // дальний правый край стола мягко уходит в фон
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
     look.set(0, portrait ? 0.95 : 1.02, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
     camera.lookAt(look);
+    vase.rotation.y = Math.atan2(camera.position.x - vase.position.x, camera.position.z - vase.position.z); // ваза всегда лицом к зрителю
     renderer.render(scene, camera);
   }
   window.addEventListener('resize', resize);
@@ -172,7 +186,7 @@ async function init() {
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
     .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
     .set(canvas, { autoAlpha: 0 })
-    .to(q('.story__ghost--now'), { autoAlpha: 0.16, duration: 1.4, ease: 'power2.out' })
+    .to(q('.story__ghost--now'), { autoAlpha: 0.5, duration: 1.4, ease: 'power2.out' })
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, '<')
     .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
     .to({}, { duration: 1.6 });
