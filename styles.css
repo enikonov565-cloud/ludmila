@@ -722,3 +722,68 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 420px) {
   .brand__role { display: none; }   /* на узком телефоне — монограмма без подписи, чтобы влезла кнопка */
 }
+
+
+/* ===== Блок «История» по макету Figma «п-р10» (1920 × 1080) ===== */
+.story {
+  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  position: relative; overflow: hidden; overflow: clip;
+  height: 100svh; min-height: calc(1080 * var(--u));
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(120% 90% at 70% 10%, #1F3439 0%, #121F22 45%, #070F10 100%);
+  color: #BDB7B1;
+}
+.story__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
+
+/* заголовок и финал — Inter Medium 77 (H1 макета), рукописные акценты как по всему сайту */
+.story__title, .story__final { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #E8DCC8; }
+.story__title { position: absolute; left: calc(60 * var(--u)); top: calc(120 * var(--u)); width: calc(900 * var(--u)); }
+.story__line { display: block; overflow: hidden; padding-bottom: .06em; }
+.story__line > span { display: inline-block; will-change: transform; }
+.story .cap { font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.25em; line-height: .5; letter-spacing: 0; color: #C9A27A; }
+.story__final { position: absolute; left: calc(716 * var(--u)); top: calc(916 * var(--u)); width: calc(1144 * var(--u)); white-space: nowrap; }
+.story__accent { position: relative; display: inline-block; color: #C9A27A; }
+.story__accent::after { content: ""; position: absolute; left: 0; right: 0; bottom: .04em; height: max(1px, calc(2 * var(--u))); background: currentColor; transform: scaleX(var(--uline, 0)); transform-origin: left; }
+
+/* карточки «тогда» и «сейчас»: фото 374 + текст 271, скругление 20, как в макете */
+.story-card {
+  position: absolute; width: calc(587 * var(--u)); height: calc(645 * var(--u));
+  display: flex; flex-direction: column; border-radius: calc(20 * var(--u)); overflow: hidden;
+  background: #EDE8E1; color: #1A2C30; will-change: transform;
+  box-shadow: 0 calc(40 * var(--u)) calc(80 * var(--u)) calc(-40 * var(--u)) rgba(0, 0, 0, .6);
+}
+.story-card--past { left: calc(60 * var(--u)); top: calc(353 * var(--u)); }
+.story-card--now { left: calc(1273 * var(--u)); top: calc(144 * var(--u)); }
+.story-card__photo { position: relative; flex: none; height: calc(374 * var(--u)); overflow: hidden; border-radius: calc(20 * var(--u)); }
+.story-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.story-card__img--bw { opacity: 0; }
+.story-card__tag {
+  position: absolute; left: calc(20 * var(--u)); top: calc(20 * var(--u));
+  padding: calc(8 * var(--u)) calc(16 * var(--u)); border-radius: 99px;
+  background: rgba(14, 27, 30, .55); color: #F6EFE5; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  font-weight: 300; font-size: calc(16 * var(--u)); letter-spacing: .14em; text-transform: uppercase; line-height: 1;
+}
+.story-card__text { flex: 1; display: flex; align-items: center; margin: 0; padding: calc(20 * var(--u)) calc(40 * var(--u)); font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; }
+
+/* плашки — как плашки навыков во втором блоке, но светлые (как в макете) */
+.story__chips { position: absolute; left: calc(716 * var(--u)); top: calc(350 * var(--u)); width: calc(483 * var(--u)); margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(4 * var(--u)); }
+.story__chip { padding: calc(14 * var(--u)) calc(28 * var(--u)); border-radius: calc(28 * var(--u)); background: #EDE8E1; color: #1A2C30; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; line-height: 1; white-space: nowrap; }
+.story__note { position: absolute; left: calc(718 * var(--u)); top: calc(681 * var(--u)); width: calc(483 * var(--u)); margin: 0; font-weight: 300; font-size: calc(30 * var(--u)); line-height: 1.2; letter-spacing: .015em; color: #BDB7B1; }
+
+.story__path { position: absolute; inset: 0; width: 100%; height: 100%; color: #C9A27A; opacity: .7; pointer-events: none; }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .story { --u: 1px; height: auto; min-height: 0; display: block; padding: 80px 20px 64px; }
+  .story__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 24px; }
+  .story__title, .story__final, .story-card, .story__chips, .story__note { position: relative; left: auto; top: auto; width: auto; }
+  .story__title, .story__final { font-size: clamp(34px, 9.4vw, 64px); white-space: normal; }
+  .story-card { height: auto; border-radius: 16px; }
+  .story-card__photo { height: auto; aspect-ratio: 587 / 374; border-radius: 16px; }
+  .story-card__text { padding: 20px 22px 24px; font-size: clamp(17px, 4.6vw, 24px); }
+  .story-card__tag { left: 14px; top: 14px; font-size: 11px; padding: 7px 12px; }
+  .story__chip { font-size: clamp(14px, 3.8vw, 18px); padding: 11px 18px; border-radius: 24px; }
+  .story__note { font-size: clamp(17px, 4.6vw, 24px); }
+  .story__path { display: none; }
+  .story-card--now { order: 5; }
+  .story__final { order: 6; margin-top: 8px; }
+}
