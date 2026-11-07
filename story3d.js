@@ -168,6 +168,7 @@ function depthPhoto(frame, opts) {
       });
       scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
       window.addEventListener('resize', resize); resize();
+      if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
       frame.classList.add('is-3d');
       if (opts.reduce) return;
       window.addEventListener('pointermove', e => { mx = e.clientX / window.innerWidth * 2 - 1; my = e.clientY / window.innerHeight * 2 - 1; }, { passive: true });
@@ -347,6 +348,7 @@ async function init() {
     renderer.render(scene, camera);
   }
   window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(() => resize()).observe(canvas);   // закрепление блока меняет размер холста без resize окна — без этого картинка растягивается
   resize();
   section.classList.add('gl-ready');
 
@@ -385,19 +387,19 @@ async function init() {
     .fromTo(hint, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.6)
     .addPause(2.4, () => { if (wantGo) gsap.delayedCall(0.05, () => tl.play()); }) // «Тогда» ждёт прокрутки
     .to(hint, { autoAlpha: 0, y: 12, duration: 0.4, ease: 'power2.in' }, 2.4)
-    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 2.4)          // поворот на 180°, надписи остаются
-    .to(ghostThen.children, { yPercent: -12, duration: 1.8, ease: 'sine.inOut', stagger: { each: 0.06, yoyo: true, repeat: 1 } }, '<')
-    .addLabel('away')
+    .to(state, { spin: 0.5, duration: 1.1, ease: 'power2.inOut' }, 2.4)          // поворот на 180°, надписи остаются
+    .to(ghostThen.children, { yPercent: -12, duration: 0.5, ease: 'sine.inOut', stagger: { each: 0.04, yoyo: true, repeat: 1 } }, '<')
+    .addLabel('away', 3.15)                                                        // уход начинается, пока ноутбук ещё доворачивается
     .call(() => drift && drift.kill(), null, 'away')
-    .to(state, { slide: 1, duration: 1.4, ease: 'power2.in' }, 'away')            // вся сцена уходит влево…
-    .to([q('.story__then'), ghostThen], { x: away, duration: 1.4, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
-    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
+    .to(state, { slide: 1, duration: 0.95, ease: 'power2.in' }, 'away')            // вся сцена уходит влево…
+    .to([q('.story__then'), ghostThen], { x: away, duration: 0.95, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
+    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 0.95, ease: 'power2.inOut' }, 'away') // …фото справа налево
     .call(() => depth.start(), null, 'away')                                      // 3D-фото готовится, пока уходит ноутбук
-    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
+    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 8, scale: 1.08, duration: 1.6, ease: 'power2.out' }, 'away')
     /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
-    .addLabel('now', 'away+=0.95')
-    .set(canvas, { autoAlpha: 0 }, 'away+=1.4')
-    .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
+    .addLabel('now', 'away+=0.6')
+    .set(canvas, { autoAlpha: 0 }, 'away+=1')
+    .call(() => section.classList.add('is-now'), null, 'away+=0.7')                // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
@@ -432,10 +434,14 @@ async function init() {
     if (!en.isIntersecting && en.boundingClientRect.top > 0) reset();
   }, { threshold: [0, 0.65] }).observe(section);
   /* блок закреплён: первые шаги прокрутки — переход к «Сейчас», дальше страница едет как обычно */
+  /* при пересчёте закрепления (смена размера окна) страница сама сдвигается — это не прокрутка пользователя */
+  let quietUntil = 0;
+  if (window.ScrollTrigger) ['refreshInit', 'refresh'].forEach(ev => window.ScrollTrigger.addEventListener(ev, () => { quietUntil = performance.now() + 700; }));
+  window.addEventListener('resize', () => { quietUntil = performance.now() + 900; });
   if (window.ScrollTrigger) {
     window.ScrollTrigger.create({
       trigger: section, start: 'top top', end: '+=110%', pin: true, pinSpacing: true, refreshPriority: -2,
-      onUpdate: (self) => { if (self.progress > 0.08 && self.direction > 0) go(); },
+      onUpdate: (self) => { if (self.progress > 0.08 && self.direction > 0 && performance.now() > quietUntil) go(); },
     });
     window.ScrollTrigger.sort(); window.ScrollTrigger.refresh();
   }

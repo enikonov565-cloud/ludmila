@@ -778,18 +778,19 @@ a { color: inherit; text-decoration: none; }
 .story__now-frame.is-3d .story__depth { opacity: 1; }
 .story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(163 * var(--u)); max-width: calc(1144 * var(--u)); }
 /* «сейчас» — тёмный текст на светлом фото, как в макете «п-р 21» */
-.story__now .story__title { color: #202020; line-height: 1.1; }
-.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #191919; }
+.story__now .story__title { color: #1A2C30; line-height: 1.1; }
+.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #1A2C30; }
 .story__note .story__mask { padding: 0 0 .04em; margin: 0; }
 .story__note .story__reveal { white-space: nowrap; } /* строки — как в макете */
 /* правый текст — на светлой матовой подложке: под ним листья растения */
-.story__note--right { right: calc(50 * var(--u)); top: calc(156 * var(--u)); padding: calc(22 * var(--u)) calc(26 * var(--u)); border-radius: calc(20 * var(--u));
-  background: rgba(255, 255, 255, .62); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+/* правый текст — на полупрозрачной подложке, как теги внизу: тот же размер текста, скругление и прозрачность */
+.story__note--right { right: calc(60 * var(--u)); top: calc(170 * var(--u)); padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u));
+  background: rgba(255, 255, 255, .3); font-size: calc(22.31 * var(--u)); line-height: 1.3; letter-spacing: -.02em; }
 .story__note .w { display: inline-block; }
 .story__note--left { left: calc(60 * var(--u)); top: calc(530 * var(--u)); width: calc(483 * var(--u)); letter-spacing: .015em; }
 .story__tags { position: absolute; z-index: 3; margin: 0; left: calc(60 * var(--u)); top: calc(884 * var(--u)); width: calc(520 * var(--u)); display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); }
 .story__tags span { padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u)); background: rgba(255, 255, 255, .3);
-  font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #191919; white-space: nowrap; }
+  font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #1A2C30; white-space: nowrap; }
 
 /* без WebGL — сразу показываем «сейчас» */
 .story.no-gl .story__then { display: none; }
@@ -814,7 +815,7 @@ a { color: inherit; text-decoration: none; }
   .story__note .story__reveal { white-space: normal; display: inline; }
   .story__note .story__mask { display: inline; overflow: visible; } /* на телефоне строки текут вместе */
   .story__note .story__mask:not(:last-child)::after { content: " "; }
-  .story__note--right { margin-top: 14px; padding: 12px 14px; border-radius: 16px; }
+  .story__note--right { margin-top: 14px; padding: 9px 16px; border-radius: 20px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }
   .story__ghost--now { color: rgba(25, 25, 25, .3); text-shadow: none; margin: auto 0 4px; align-self: flex-end; font-size: clamp(64px, 20vw, 120px); }
   .story__tags { margin-top: 14px; gap: 6px 8px; }
   .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }
