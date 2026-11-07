@@ -739,7 +739,7 @@ a { color: inherit; text-decoration: none; }
 /* заголовки — как «Людмила Иващенко»: Inter 500 77, #BDB7B1, рукописная заглавная */
 .story__title { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #BDB7B1; }
 .story__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
-.story__mask { display: block; overflow: hidden; padding: .1em 0 .06em; margin-top: -.1em; }
+.story__mask { display: block; overflow: hidden; padding: .1em 0 .4em; margin: -.1em 0 -.34em; } /* снизу место под «хвост» цифры 3 */
 .story__reveal { display: inline-block; will-change: transform; }
 /* «30» — как цифра «30+» в блоке «Обо мне» */
 .story__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 1.5em; line-height: .8; letter-spacing: -.03em; }
@@ -756,7 +756,7 @@ a { color: inherit; text-decoration: none; }
   font: 300 calc(20 * var(--u)) / 1.2 Inter, sans-serif; letter-spacing: .03em; color: #BDB7B1; white-space: nowrap; }
 .story__scroll:hover { color: #E8DCC8; }
 /* круглая кнопка-значок со стрелкой и «пульсом»: видно, что сюда нажимать */
-.story__tap { position: relative; display: grid; place-items: center; width: calc(84 * var(--u)); height: calc(84 * var(--u)); border-radius: 50%; border: 1px solid currentColor; transition: background-color .3s ease, border-color .3s ease; }
+.story__tap { position: relative; display: grid; place-items: center; width: calc(84 * var(--u)); height: calc(84 * var(--u)); border-radius: 50%; transition: background-color .3s ease; } /* без статичного кружка — только «пульс» */
 .story__tap::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid currentColor; animation: tap-pulse 2s ease-out infinite; }
 .story__tap .hint-arrow { width: calc(34 * var(--u)); }
 .story__scroll:hover .story__tap { background: rgba(189, 183, 177, .14); }
