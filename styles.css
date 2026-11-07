@@ -724,58 +724,54 @@ a { color: inherit; text-decoration: none; }
 }
 
 
-/* ===== Блок «Мой путь» по макету Figma «п-р10» — в стиле сайта: крупные фото, минимум текста ===== */
+/* ===== Блок «Мой путь» (Figma «п-р10»): 3D-ноутбук на тёмном интерьере ===== */
 .story {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
   position: relative; overflow: hidden; overflow: clip;
-  height: 100svh; min-height: calc(1080 * var(--u));
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(180deg, #070F10 0, #1A2C30 100%);
-  color: #BDB7B1;
+  height: 100svh; min-height: 560px; background: #070F10; color: #E8DCC8;
 }
-.story__frame { position: relative; flex: none; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); }
+.story__bg { position: absolute; inset: 0; background: url(img/story/interior.jpg) center / cover no-repeat; }
+.story__bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 70% at 62% 55%, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .55) 70%, rgba(7, 15, 16, .85) 100%); }
+.story__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .8s var(--ease); }
+.story.gl-ready .story__gl { opacity: 1; }
 
-/* заголовок — как «Людмила Иващенко» и «Дизайн, который продаёт»: Inter 500 77 + рукописный акцент */
-.story__title { position: absolute; left: calc(60 * var(--u)); top: calc(150 * var(--u)); margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: .98; letter-spacing: -.02em; color: #BDB7B1; }
-.story__line { display: block; overflow: hidden; padding-bottom: .08em; }
-.story__line > span { display: inline-block; will-change: transform; }
-.story .cap { font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.3em; line-height: .5; letter-spacing: 0; color: #C9A27A; margin-right: .06em; }
+/* заголовки — Inter Medium 77, подзаголовок — тонкий разреженный, как подписи сайта */
+.story__title { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.04; letter-spacing: -.02em; color: #E8DCC8; }
+.story__mask { display: block; overflow: hidden; padding-bottom: .06em; }
+.story__reveal { display: inline-block; will-change: transform; }
+.story__sub { margin: calc(22 * var(--u)) 0 0; font-weight: 300; font-size: calc(22 * var(--u)); letter-spacing: .32em; text-transform: uppercase; color: #C9A27A; }
+.story__accent { font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.35em; line-height: .9; letter-spacing: 0; color: #C9A27A; }
 
-/* фото-карточки без рамок и подложек — подпись лежит прямо на фото, как на обороте карточек «Моего подхода» */
-.story-card { position: absolute; margin: 0; overflow: hidden; will-change: transform; }
-.story-card--past { left: calc(60 * var(--u)); top: calc(420 * var(--u)); width: calc(700 * var(--u)); height: calc(560 * var(--u)); }
-.story-card--now { left: calc(1240 * var(--u)); top: calc(150 * var(--u)); width: calc(620 * var(--u)); height: calc(600 * var(--u)); }
-.story-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
-.story-card__img--bw { opacity: 0; }
-.story-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 15, 16, 0) 45%, rgba(7, 15, 16, .82) 100%); pointer-events: none; }
-.story-card__cap {
-  position: absolute; z-index: 1; left: calc(36 * var(--u)); right: calc(36 * var(--u)); bottom: calc(32 * var(--u));
-  font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.25; color: #F6EFE5;
+.story__then { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(820 * var(--u)); pointer-events: none; }
+
+/* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
+.story__now { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; }
+.story__now-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+.story__now-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7, 15, 16, .78) 0%, rgba(7, 15, 16, .35) 46%, rgba(7, 15, 16, 0) 70%), linear-gradient(0deg, rgba(7, 15, 16, .6) 0%, rgba(7, 15, 16, 0) 40%); }
+.story__now-text { visibility: hidden; position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(900 * var(--u)); }
+.story__plates { position: absolute; z-index: 2; left: calc(60 * var(--u)); bottom: calc(60 * var(--u)); display: flex; flex-direction: column; align-items: flex-start; gap: calc(14 * var(--u)); max-width: calc(760 * var(--u)); }
+.story__glass {
+  margin: 0; padding: calc(20 * var(--u)) calc(28 * var(--u)); border-radius: calc(20 * var(--u));
+  background: rgba(237, 232, 225, .12); border: 1px solid rgba(237, 232, 225, .22);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.3; color: #F6EFE5;
 }
-.story-card__label { display: block; margin-bottom: calc(8 * var(--u)); font-size: calc(15 * var(--u)); letter-spacing: .16em; text-transform: uppercase; opacity: .75; }
+.story__glass--row { display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); padding: 0; border: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.story__glass--row span { padding: calc(12 * var(--u)) calc(22 * var(--u)); border-radius: 99px; background: rgba(237, 232, 225, .12); border: 1px solid rgba(237, 232, 225, .22); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); font-size: calc(20 * var(--u)); white-space: nowrap; }
 
-/* три качества — тонкой строкой в полутоне через медные точки, без плашек */
-.story__words { position: absolute; left: calc(820 * var(--u)); top: calc(950 * var(--u)); margin: 0; display: flex; align-items: center; gap: calc(22 * var(--u)); font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: .02em; color: #BDB7B1; white-space: nowrap; }
-.story__words i { width: calc(6 * var(--u)); height: calc(6 * var(--u)); border-radius: 50%; background: #C9A27A; }
-
-/* финал — крупно, в одну строку под фото «сейчас» */
-.story__final { position: absolute; right: calc(60 * var(--u)); top: calc(770 * var(--u)); margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1; letter-spacing: -.02em; color: #BDB7B1; white-space: nowrap; }
-.story__final-text { display: inline-block; }
-.story__accent { position: relative; display: inline-block; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.3em; letter-spacing: 0; color: #C9A27A; }
-.story__accent::after { content: ""; position: absolute; left: 0; right: 0; bottom: .02em; height: max(1px, calc(2 * var(--u))); background: currentColor; transform: scaleX(var(--uline, 0)); transform-origin: left; }
-
-.story__path { position: absolute; inset: 0; width: 100%; height: 100%; color: #C9A27A; opacity: .6; pointer-events: none; }
+/* без WebGL — сразу показываем «сейчас» */
+.story.no-gl .story__then { display: none; }
+.story.no-gl .story__now-photo { opacity: 1; visibility: visible; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .story { --u: 1px; height: auto; min-height: 0; display: block; padding: 80px 20px 64px; }
-  .story__frame { width: auto; height: auto; display: flex; flex-direction: column; gap: 22px; }
-  .story__title, .story__final, .story-card, .story__words { position: relative; left: auto; right: auto; top: auto; }
-  .story__title, .story__final { font-size: clamp(34px, 9.4vw, 64px); white-space: normal; }
-  .story-card { width: 100%; height: auto; aspect-ratio: 4 / 3; }
-  .story-card__cap { left: 18px; right: 18px; bottom: 16px; font-size: clamp(15px, 4.2vw, 20px); }
-  .story-card__label { font-size: 11px; margin-bottom: 6px; }
-  .story__words { flex-wrap: wrap; gap: 10px 14px; font-size: clamp(16px, 4.4vw, 22px); white-space: normal; }
-  .story__words i { width: 5px; height: 5px; }
-  .story__path { display: none; }
-  .story__final { align-self: flex-end; }
+  .story { --u: 1px; }
+  .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
+  .story__title { font-size: clamp(32px, 8.6vw, 60px); }
+  .story__sub { margin-top: 12px; font-size: 13px; }
+  .story__plates { left: 20px; right: 20px; bottom: 28px; max-width: none; gap: 8px; }
+  .story__glass { padding: 14px 16px; font-size: clamp(14px, 3.8vw, 18px); border-radius: 14px; }
+  .story__glass--row span { padding: 9px 14px; font-size: clamp(12px, 3.4vw, 16px); }
+  .story__now-photo img { object-position: 60% 30%; }
+  .story__now-photo::after { background: linear-gradient(180deg, rgba(7, 15, 16, .75) 0%, rgba(7, 15, 16, .1) 38%, rgba(7, 15, 16, .2) 55%, rgba(7, 15, 16, .85) 100%); }
 }
