@@ -768,7 +768,7 @@ a { color: inherit; text-decoration: none; }
 .story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
 .story__ghost .ch { display: inline-block; will-change: transform, opacity; }
 /* «Сейчас» парит перед растением: светлые буквы с мягкой тенью, сдвигаются вместе с объёмом фото (--fx/--fy) */
-.story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: calc(79% + var(--fx, 0px)); top: calc(40% + var(--fy, 0px)); right: auto; margin: 0;
+.story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: auto; right: calc(60 * var(--u) - .06em - var(--fx, 0px)); top: calc(40% + var(--fy, 0px)); margin: 0; /* правый край — по линии подложки и «связаться со мной» */
   font-weight: 300; font-size: calc(180 * var(--u)); letter-spacing: -.02em; color: rgba(255, 255, 255, .4); /* полутон */
   text-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, .1); }
 .story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }

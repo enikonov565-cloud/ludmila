@@ -359,10 +359,10 @@ async function init() {
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
   /* «Сейчас» висит в воздухе перед растением — на «глубине» 0.8: при движении фото смещается как ближний план */
   const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
-  if (!stacked) gsap.set(ghostNowEl, { xPercent: -50, yPercent: -50 });           // центр слова — в точке над растением
+  if (!stacked) gsap.set(ghostNowEl, { yPercent: -50 });           // центр слова — в точке над растением
   const depth = depthPhoto(nowFrame, { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36], onMove: stacked ? null : (ox, oy, z) => {
     const W = nowFrame.clientWidth, k = (0.8 - 0.42) * z;
-    ghostNowEl.style.setProperty('--fx', (-ox * k * W).toFixed(1) + 'px');
+    ghostNowEl.style.setProperty('--fx', (-ox * k * W * 0.35).toFixed(1) + 'px');  // вбок — чуть-чуть, чтобы край держал линию
     ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
   } });
   const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
@@ -387,19 +387,19 @@ async function init() {
     .fromTo(hint, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.6)
     .addPause(2.4, () => { if (wantGo) gsap.delayedCall(0.05, () => tl.play()); }) // «Тогда» ждёт прокрутки
     .to(hint, { autoAlpha: 0, y: 12, duration: 0.4, ease: 'power2.in' }, 2.4)
-    .to(state, { spin: 0.5, duration: 1.1, ease: 'power2.inOut' }, 2.4)          // поворот на 180°, надписи остаются
-    .to(ghostThen.children, { yPercent: -12, duration: 0.5, ease: 'sine.inOut', stagger: { each: 0.04, yoyo: true, repeat: 1 } }, '<')
-    .addLabel('away', 3.15)                                                        // уход начинается, пока ноутбук ещё доворачивается
+    .to(state, { spin: 0.5, duration: 1.5, ease: 'sine.inOut' }, 2.4)          // поворот на 180°, надписи остаются
+    .to(ghostThen.children, { yPercent: -12, duration: 0.7, ease: 'sine.inOut', stagger: { each: 0.05, yoyo: true, repeat: 1 } }, '<')
+    .addLabel('away', 3.4)                                                        // уход начинается, пока ноутбук ещё доворачивается
     .call(() => drift && drift.kill(), null, 'away')
-    .to(state, { slide: 1, duration: 0.95, ease: 'power2.in' }, 'away')            // вся сцена уходит влево…
-    .to([q('.story__then'), ghostThen], { x: away, duration: 0.95, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
-    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 0.95, ease: 'power2.inOut' }, 'away') // …фото справа налево
+    .to(state, { slide: 1, duration: 1.5, ease: 'power2.inOut' }, 'away')            // вся сцена уходит влево…
+    .to([q('.story__then'), ghostThen], { x: away, duration: 1.5, ease: 'power2.inOut' }, 'away') // …надписи — вместе с ней
+    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.5, ease: 'power2.inOut' }, 'away') // …фото справа налево
     .call(() => depth.start(), null, 'away')                                      // 3D-фото готовится, пока уходит ноутбук
-    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 8, scale: 1.08, duration: 1.6, ease: 'power2.out' }, 'away')
+    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 6, scale: 1.06, duration: 2.2, ease: 'power2.out' }, 'away')
     /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
-    .addLabel('now', 'away+=0.6')
-    .set(canvas, { autoAlpha: 0 }, 'away+=1')
-    .call(() => section.classList.add('is-now'), null, 'away+=0.7')                // шапка — тёмными буквами
+    .addLabel('now', 'away+=1.1')
+    .set(canvas, { autoAlpha: 0 }, 'away+=1.5')
+    .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
