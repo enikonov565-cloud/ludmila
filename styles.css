@@ -564,10 +564,11 @@ a { color: inherit; text-decoration: none; }
   transition: opacity .5s var(--ease);
 }
 .apx__scroll.is-done { opacity: 0; }
-.apx__mouse { position: relative; width: calc(22 * var(--u)); height: calc(34 * var(--u)); border: 1.5px solid currentColor; border-radius: calc(12 * var(--u)); }
-.apx__mouse span { position: absolute; left: 50%; top: calc(6 * var(--u)); width: 2px; height: calc(7 * var(--u)); margin-left: -1px; border-radius: 2px; background: currentColor; animation: mouse-wheel 1.6s var(--ease) infinite; }
-@keyframes mouse-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(calc(10 * var(--u))); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .apx__mouse span { animation: none; } }
+/* подсказка «листай»: тонкая стрелка бежит вправо (как стрелки навигации сайта) */
+.hint-arrow { position: relative; display: inline-block; width: calc(64 * var(--u)); height: 1px; background: currentColor; overflow: visible; animation: hint-run 1.8s cubic-bezier(.6, 0, .2, 1) infinite; }
+.hint-arrow::after { content: ""; position: absolute; right: 0; top: 50%; width: calc(9 * var(--u)); height: calc(9 * var(--u)); border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: translateY(-50%) rotate(45deg); }
+@keyframes hint-run { 0% { transform: translateX(calc(-10 * var(--u))); opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { transform: translateX(calc(16 * var(--u))); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hint-arrow { animation: none; } }
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
 .apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(905 * var(--u)); width: calc(218 * var(--u)); height: calc(110 * var(--u)); }
 .apx__count {
@@ -750,7 +751,7 @@ a { color: inherit; text-decoration: none; }
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 /* подсказка в «Тогда»: мышка с бегущим колёсиком — прокрутка открывает «Сейчас» */
-.story__scroll { position: absolute; z-index: 4; left: calc(54 * var(--u)); bottom: calc(44 * var(--u)); margin: 0; padding: calc(10 * var(--u)) calc(6 * var(--u));
+.story__scroll { position: absolute; z-index: 4; right: calc(60 * var(--u)); bottom: calc(44 * var(--u)); margin: 0; padding: calc(10 * var(--u)) calc(6 * var(--u));
   display: flex; align-items: center; gap: calc(14 * var(--u)); background: none; border: 0; cursor: pointer;
   font: 300 calc(20 * var(--u)) / 1.2 Inter, sans-serif; letter-spacing: .03em; color: #BDB7B1; white-space: nowrap; }
 .story__scroll:hover { color: #E8DCC8; }
@@ -792,8 +793,9 @@ a { color: inherit; text-decoration: none; }
   .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
   .story__num { font-size: 1.28em; }
-  .story__scroll { left: 50%; translate: -50% 0; bottom: 28px; font-size: 14px; gap: 10px; }
-  .story__scroll .apx__mouse { width: 18px; height: 28px; border-radius: 10px; }
+  .story__scroll { right: 20px; bottom: 28px; font-size: 15px; gap: 12px; }
+  .story__scroll .hint-arrow { width: 44px; }
+  .story__scroll .hint-arrow::after { width: 7px; height: 7px; }
   .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
   .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: 96px 20px 24px; }
   .story__now-frame { left: 0; top: 0; border-radius: 0; }
