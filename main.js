@@ -857,13 +857,12 @@ document.documentElement.classList.replace('no-js', 'js');
     tl.from(qa('.story__line > span'), { yPercent: 110, duration: 0.6, stagger: 0.12 }, 0)
       .from(q('.story-card--past'), { xPercent: -40, yPercent: 12, rotate: -4, autoAlpha: 0, duration: 0.8 }, 0.15)
       .from(q('.story-card--past .story-card__img'), { scale: 1.25, duration: 1 }, 0.15)
-      .from(qa('.story__chip'), { y: 40, scale: 0.85, autoAlpha: 0, duration: 0.4, stagger: 0.12, ease: 'back.out(2)' }, 0.55)
+      .from(qa('.story__words > *'), { y: 24, autoAlpha: 0, duration: 0.4, stagger: 0.08 }, 1.4)
       .to(q('.story-card--past .story-card__img--bw'), { opacity: 1, duration: 0.6, ease: 'none' }, 0.9)   // прошлое выцветает
       .to(q('.story-card--past'), { scale: 0.94, duration: 0.6, ease: 'none' }, 0.9)
       .to(path, { clipPath: 'inset(0 0% 0 0)', duration: 0.7, ease: 'none' }, 0.85)
       .from(q('.story-card--now'), { xPercent: 40, yPercent: -10, rotate: 4, autoAlpha: 0, duration: 0.8 }, 1.15)
       .from(q('.story-card--now .story-card__img'), { scale: 1.25, duration: 1 }, 1.15)
-      .from(q('.story__note'), { y: 30, autoAlpha: 0, duration: 0.5 }, 1.35)
       .from(q('.story__final-text'), { yPercent: 100, autoAlpha: 0, duration: 0.6 }, 1.6)
       .to(section, { '--uline': 1, duration: 0.4, ease: 'power2.inOut' }, 2.0)
       .to({}, { duration: 0.3 });
@@ -871,7 +870,7 @@ document.documentElement.classList.replace('no-js', 'js');
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
   } else {
-    var items = [q('.story__title'), q('.story-card--past'), q('.story__chips'), q('.story__note'), q('.story-card--now'), q('.story__final')];
+    var items = [q('.story__title'), q('.story-card--past'), q('.story-card--now'), q('.story__words'), q('.story__final')];
     items.forEach(function (el) {
       gsap.from(el, { y: 50, autoAlpha: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' } });
     });

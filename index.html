@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=108">
+<link rel="stylesheet" href="styles.css?v=109">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -154,41 +154,28 @@
 <section class="story" id="story" aria-labelledby="story-title">
   <div class="story__frame">
     <h2 class="story__title" id="story-title">
-      <span class="story__line"><span><span class="cap">30</span> лет я&nbsp;учила людей</span></span>
-      <span class="story__line"><span>понимать сложное.</span></span>
+      <span class="story__line"><span><span class="cap">30</span> лет я&nbsp;учила</span></span>
+      <span class="story__line"><span>понимать сложное</span></span>
     </h2>
 
-    <!-- соединительная линия «тогда → сейчас» рисуется при прокрутке -->
     <svg class="story__path" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M647 560 C 820 560, 760 260, 960 250 S 1120 420, 1273 420" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <path d="M760 690 C 900 690, 900 470, 1040 470 S 1160 330, 1240 330" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 9" stroke-linecap="round"/>
     </svg>
 
-    <article class="story-card story-card--past">
-      <div class="story-card__photo">
-        <img class="story-card__img" src="img/story/past.jpg" width="1174" height="748" alt="Людмила-педагог с детьми в детском саду" loading="lazy">
-        <img class="story-card__img story-card__img--bw" src="img/story/past-bw.jpg" width="1174" height="748" alt="" aria-hidden="true" loading="lazy">
-        <span class="story-card__tag">Тогда</span>
-      </div>
-      <p class="story-card__text">Педагог дошкольного образования делает понятным хаотичный мир для&nbsp;тех, кто ещё не&nbsp;умеет читать.</p>
-    </article>
+    <figure class="story-card story-card--past">
+      <img class="story-card__img" src="img/story/past.jpg" width="1174" height="748" alt="Людмила-педагог с детьми в детском саду" loading="lazy">
+      <img class="story-card__img story-card__img--bw" src="img/story/past-bw.jpg" width="1174" height="748" alt="" aria-hidden="true" loading="lazy">
+      <figcaption class="story-card__cap"><span class="story-card__label">Тогда</span>Педагог: объясняла мир тем, кто ещё не&nbsp;читает</figcaption>
+    </figure>
 
-    <ul class="story__chips" aria-label="Что я принесла из педагогики">
-      <li class="story__chip">Системность</li>
-      <li class="story__chip">Эмпатия к&nbsp;аудитории</li>
-      <li class="story__chip">Результат без&nbsp;переделок</li>
-    </ul>
+    <figure class="story-card story-card--now">
+      <img class="story-card__img" src="img/story/now.jpg" width="1174" height="748" alt="Людмила за ноутбуком — работа над дизайном" loading="lazy">
+      <figcaption class="story-card__cap"><span class="story-card__label">Сейчас</span>Дизайнер: клиент решает за&nbsp;3&nbsp;секунды</figcaption>
+    </figure>
 
-    <p class="story__note">Я&nbsp;умею упаковывать смысл так, чтобы визуальный посыл считывался моментально</p>
+    <p class="story__words" aria-label="Что я принесла из педагогики"><span>системность</span><i aria-hidden="true"></i><span>эмпатия</span><i aria-hidden="true"></i><span>без переделок</span></p>
 
-    <article class="story-card story-card--now">
-      <div class="story-card__photo">
-        <img class="story-card__img" src="img/story/now.jpg" width="1174" height="748" alt="Людмила за ноутбуком — работа над дизайном" loading="lazy">
-        <span class="story-card__tag">Сейчас</span>
-      </div>
-      <p class="story-card__text">В&nbsp;дизайне — то&nbsp;же самое: клиент не&nbsp;читает, а&nbsp;смотрит на&nbsp;экран 3&nbsp;секунды и&nbsp;решает — доверяю или нет.</p>
-    </article>
-
-    <p class="story__final"><span class="story__final-text">Теперь я&nbsp;делаю это <span class="story__accent">визуально.</span></span></p>
+    <p class="story__final"><span class="story__final-text">Теперь — <span class="story__accent">визуально</span></span></p>
   </div>
 </section>
 
@@ -343,6 +330,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=50"></script>
+<script src="main.js?v=51"></script>
 </body>
 </html>
