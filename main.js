@@ -792,3 +792,42 @@ document.documentElement.classList.replace('no-js', 'js');
     });
   });
 })();
+
+/* Шапка подстраивает цвет под блок, который сейчас под ней:
+   на тёмных — светлые буквы и медь, на светлых (кольцо работ, светлые сцены «Моего подхода») — тёмно-зелёные. */
+(function () {
+  'use strict';
+  var header = document.querySelector('[data-header]');
+  if (!header) return;
+  var LIGHT = { hc: '#1A2C30', acc: '#A9502C', bg: '237, 232, 225' };
+  var DARK = { hc: '#E8DCC8', acc: '#C9A27A', bg: '18, 31, 34' };
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section')); // «Мой подход» закреплён и обёрнут — поэтому не только прямые потомки
+  var isLight = function (rgb) {
+    var m = rgb.match(/\d+(\.\d+)?/g); if (!m) return false;
+    return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) > 150;
+  };
+  var last = '';
+  var update = function () {
+    var y = header.offsetHeight / 2, under = null;
+    for (var i = 0; i < sections.length; i++) {
+      var r = sections[i].getBoundingClientRect();
+      if (r.top <= y && r.bottom > y) { under = sections[i]; break; }
+    }
+    var light = false;
+    if (under) {
+      if (under.classList.contains('works')) light = true;
+      /* в «Моём подходе» фон меняется со сценой: светлый текст блока = тёмный фон, и наоборот */
+      else if (under.classList.contains('approach')) light = !isLight(getComputedStyle(under).color);
+    }
+    var key = light ? 'L' : 'D';
+    if (key === last) return;
+    last = key;
+    var t = light ? LIGHT : DARK;
+    header.style.setProperty('--hc', t.hc);
+    header.style.setProperty('--hc-accent', t.acc);
+    header.style.setProperty('--hc-bg', t.bg);
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  setInterval(update, 400); // сцены «Моего подхода» меняют фон и без прокрутки
+  update();
+})();

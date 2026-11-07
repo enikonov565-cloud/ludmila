@@ -632,11 +632,11 @@ a { color: inherit; text-decoration: none; }
   position: fixed; z-index: 50; left: 0; right: 0; top: 0;
   display: flex; align-items: center; justify-content: space-between;
   padding: calc(22 * var(--hu)) calc(60 * var(--hu));
-  color: #E8DCC8;
-  transition: background-color .5s var(--ease), padding .5s var(--ease), transform .5s var(--ease);
+  --hc: #E8DCC8; --hc-accent: #C9A27A; --hc-bg: 18, 31, 34; /* цвета шапки подстраиваются под блок под ней (скрипт) */
+  color: var(--hc); transition: background-color .5s var(--ease), padding .5s var(--ease), transform .5s var(--ease), color .5s var(--ease);
 }
 /* при прокрутке подложка проявляется, чтобы шапка читалась на любом блоке */
-.site-header.is-scrolled { background: rgba(18, 31, 34, .22); text-shadow: 0 1px 10px rgba(7, 15, 16, .45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding-top: calc(14 * var(--hu)); padding-bottom: calc(14 * var(--hu)); }
+.site-header.is-scrolled { background: rgba(var(--hc-bg), .22); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding-top: calc(14 * var(--hu)); padding-bottom: calc(14 * var(--hu)); }
 .site-header__left { display: flex; align-items: center; gap: calc(28 * var(--hu)); }
 
 .burger {
@@ -657,10 +657,10 @@ a { color: inherit; text-decoration: none; }
 .brand { display: flex; align-items: center; gap: calc(16 * var(--hu)); color: inherit; }
 /* логотип «B» в шапке */
 .logo-b { --ls: max(.62, calc(1 * var(--hu) / 1px)); position: relative; display: inline-flex; flex-direction: column; align-items: center; padding-top: calc(22px * var(--ls)); }
-.logo-b__last { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: calc(26px * var(--ls)); line-height: 1; letter-spacing: .34em; padding-left: .34em; color: #E8DCC8; white-space: nowrap; }
-.logo-b__first { position: absolute; left: 50%; top: 0; transform: translateX(-50%) rotate(-6deg); font-family: "Great Vibes", cursive; font-size: calc(42px * var(--ls)); line-height: 1; color: #C9A27A; white-space: nowrap; transition: transform .8s var(--ease); }
+.logo-b__last { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: calc(26px * var(--ls)); line-height: 1; letter-spacing: .34em; padding-left: .34em; color: var(--hc); white-space: nowrap; transition: color .5s var(--ease); }
+.logo-b__first { position: absolute; left: 50%; top: 0; transform: translateX(-50%) rotate(-6deg); font-family: "Great Vibes", cursive; font-size: calc(42px * var(--ls)); line-height: 1; color: var(--hc-accent); white-space: nowrap; transition: transform .8s var(--ease), color .5s var(--ease); }
 .brand:hover .logo-b__first { transform: translateX(-50%) rotate(-2deg); }
-.logo-b__sub { margin-top: calc(8px * var(--ls)); font-family: "Tenor Sans", sans-serif; font-size: calc(9px * var(--ls)); letter-spacing: .6em; padding-left: .6em; color: #E8DCC8; opacity: .7; white-space: nowrap; }
+.logo-b__sub { margin-top: calc(8px * var(--ls)); font-family: "Tenor Sans", sans-serif; font-size: calc(9px * var(--ls)); letter-spacing: .6em; padding-left: .6em; color: var(--hc); opacity: .7; white-space: nowrap; transition: color .5s var(--ease); }
 .brand .mono { width: calc(58 * var(--hu)); height: calc(58 * var(--hu)); min-width: 42px; min-height: 42px; color: #C9A27A; overflow: visible; transition: transform .8s var(--ease); }
 .brand:hover .mono { transform: rotate(-8deg); }
 .brand__role { font-weight: 300; font-size: max(11px, calc(14 * var(--hu))); letter-spacing: .32em; text-transform: uppercase; opacity: .85; }
@@ -669,7 +669,7 @@ a { color: inherit; text-decoration: none; }
 .header-cta {
   position: relative; display: inline-flex; align-items: flex-end; min-height: 44px; padding-bottom: 5px;
   font-weight: 300; font-size: max(17px, calc(26 * var(--hu))); line-height: normal;
-  text-transform: lowercase; color: #BDB7B1; white-space: nowrap; /* тот же цвет, что все светлые тексты сайта */
+  text-transform: lowercase; color: var(--hc); white-space: nowrap; transition: color .5s var(--ease);
 }
 .header-cta::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor; transform-origin: 100% 50%; }
 .header-cta:hover::after, .header-cta:focus-visible::after { animation: line-run .8s cubic-bezier(.65, 0, .35, 1); }
