@@ -121,6 +121,8 @@ a { color: inherit; text-decoration: none; }
   .stage__shade, .stage__depth--text, .stage__fade { display: none; }
   .stage { background: #1A2C30; }
   .stage__depth--person { -webkit-mask-image: none; mask-image: none; }
+  /* фон-комната выше кадра с запасом: при параллаксе она сползает вниз, и раньше над ней открывалась полоса */
+  .stage__depth--room { top: -30%; }
   .stage__media::before, .stage__media::after { content: ""; position: absolute; left: 0; right: 0; z-index: 1; pointer-events: none; }
   .stage__media::before { top: calc(var(--ptop) - 1px); height: calc(var(--screen) * .3); background: linear-gradient(180deg, #1A2C30, rgba(26, 44, 48, 0)); }
   .stage__media::after { top: calc(var(--ptop) + var(--screen) * .5); height: calc(var(--screen) * .5 + 8px); background: linear-gradient(180deg, rgba(26, 44, 48, 0), #1A2C30 88%); }
