@@ -648,13 +648,15 @@ a { color: inherit; text-decoration: none; }
 .brand:hover .mono { transform: rotate(-8deg); }
 .brand__role { font-weight: 300; font-size: max(11px, calc(14 * var(--hu))); letter-spacing: .32em; text-transform: uppercase; opacity: .85; }
 
+/* «связаться со мной» — как на nikonovphoto: крупнее, тонкая, строчными, с бегущим подчёркиванием */
 .header-cta {
-  display: inline-flex; align-items: center;
-  padding: calc(14 * var(--hu)) calc(30 * var(--hu)); border-radius: calc(10 * var(--hu));
-  background: #A9502C; color: #F6EFE5; font-weight: 500; font-size: max(13px, calc(18 * var(--hu))); line-height: 1;
-  transition: background-color .4s var(--ease), color .4s var(--ease);
+  position: relative; display: inline-flex; align-items: flex-end; min-height: 44px; padding-bottom: 5px;
+  font-weight: 300; font-size: max(17px, calc(26 * var(--hu))); line-height: normal;
+  text-transform: lowercase; color: #F6EFE5; white-space: nowrap;
 }
-.header-cta:hover { background: #E8DCC8; color: #1A2C30; }
+.header-cta::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor; transform-origin: 100% 50%; }
+.header-cta:hover::after, .header-cta:focus-visible::after { animation: line-run .8s cubic-bezier(.65, 0, .35, 1); }
+@media (prefers-reduced-motion: reduce) { .header-cta::after { animation: none !important; } }
 
 /* меню — панель слева во всю высоту */
 .site-menu {
@@ -691,7 +693,7 @@ body.menu-open { overflow: hidden; }
   .site-header__left { gap: 10px; }
   .brand { gap: 10px; }
   .brand__role { letter-spacing: .22em; }
-  .header-cta { padding: 11px 16px; border-radius: 8px; }
+  .header-cta { font-size: 16px; }
   .site-menu { padding: 110px 24px 40px; }
 }
 @media (max-width: 420px) {
