@@ -750,9 +750,10 @@ a { color: inherit; text-decoration: none; }
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 /* «Тогда» / «Сейчас» — Inter Light крупнее заголовка, в полутоне, справа — посередине между хедером и столом */
-.story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); transform: translateY(-50%); margin: 0; pointer-events: none;
-  font-weight: 300; font-size: calc(150 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
-.story__ghost--then { opacity: .42; }
+.story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: calc(-94 * var(--u)) 0 0; pointer-events: none;
+  font-weight: 300; font-size: calc(172 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
+.story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
+.story__ghost .ch { display: inline-block; will-change: transform, opacity; }
 .story__ghost--now { opacity: 0; visibility: hidden; color: #F6EFE5; }
 .story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
 .story__now-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
@@ -777,7 +778,7 @@ a { color: inherit; text-decoration: none; }
   .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
   .story__num { font-size: 1.28em; }
-  .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 14px); transform: none; font-size: clamp(48px, 14vw, 90px); }
+  .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
   .story__ghost--now { top: calc(96px + 3.36 * clamp(32px, 8.6vw, 60px) + 14px); }
   .story__plates { left: 20px; right: 20px; bottom: 28px; max-width: none; gap: 8px; }
   .story__glass { padding: 14px 16px; font-size: clamp(14px, 3.8vw, 18px); border-radius: 14px; }

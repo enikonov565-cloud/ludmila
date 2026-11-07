@@ -5,8 +5,8 @@
    Сцена идёт сама, по времени (не по прокрутке), когда блок появился на экране:
    1. «30 лет я учила людей понимать сложное»; за ноутбуком в полутоне — «Тогда»;
       на экране — карточка из макета: фото с детьми и белая плашка с текстом (время на чтение);
-   2. ноутбук поворачивается на 180° — спиной к зрителю — и уходит влево,
-      а за ним справа налево открывается полноэкранное фото «Сейчас»;
+   2. ноутбук поворачивается на 180° — спиной к зрителю — и вся сцена (стол, ваза, ноутбук, надписи)
+      уходит влево, а за ней справа налево открывается полноэкранное фото «Сейчас»;
    3. «Теперь я делаю это визуально.», в полутоне — «Сейчас»; плашки появляются по одной, с паузами на чтение. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -20,6 +20,98 @@ if (section && canvas && gsap) init();
 
 function loadImage(src) {
   return new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = src; });
+}
+
+/* ваза с белыми лилиями — строится из геометрии: гладкая белая керамика, стебли, листья, цветы.
+   Освещается тем же светом, что и ноутбук, поэтому выглядит объёмной частью интерьера */
+function makeBouquet() {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const root = new THREE.Group();
+  // ваза: силуэт-капля, вращённый вокруг оси
+  const prof = [[0, 0], [0.12, 0], [0.17, 0.02], [0.21, 0.08], [0.225, 0.17], [0.21, 0.27], [0.16, 0.36], [0.1, 0.43], [0.064, 0.5], [0.052, 0.57], [0.058, 0.62], [0.05, 0.626]];
+  const pts = new THREE.SplineCurve(prof.map(p => new THREE.Vector2(p[0], p[1]))).getPoints(70);
+  const vase = new THREE.Mesh(new THREE.LatheGeometry(pts, 72),
+    new THREE.MeshPhysicalMaterial({ color: 0xF1EDE6, roughness: 0.24, clearcoat: 0.8, clearcoatRoughness: 0.18, side: THREE.DoubleSide }));
+  root.add(vase);
+
+  const stems = new THREE.Group(); stems.position.y = 0.6; root.add(stems); // букет качается от горлышка
+  const stemMat = new THREE.MeshStandardMaterial({ color: 0x4F7439, roughness: 0.6 });
+  const leafMat = new THREE.MeshStandardMaterial({ color: 0x5C8244, roughness: 0.55, side: THREE.DoubleSide });
+  const petalMat = new THREE.MeshStandardMaterial({ color: 0xF7F3EC, roughness: 0.5, emissive: 0x2A2722, side: THREE.DoubleSide });
+  const budMat = new THREE.MeshStandardMaterial({ color: 0xE3E8CF, roughness: 0.5 });
+  const stamenMat = new THREE.MeshStandardMaterial({ color: 0xC9C08A, roughness: 0.6 });
+  const pollenMat = new THREE.MeshStandardMaterial({ color: 0xA9502C, roughness: 0.7 }); // медный — из палитры сайта
+
+  // лепесток лилии: заострённый, с желобком посередине и отогнутым назад кончиком
+  const petalGeo = (() => {
+    const g = new THREE.PlaneGeometry(1, 1, 6, 14), p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const u = p.getX(i) * 2, t = p.getY(i) + 0.5;
+      const w = 0.05 * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.05)), 0.75) * (1 - 0.2 * t) + 0.004;
+      const x = u * w, y = t * 0.15;
+      const z = -Math.pow(t, 2.2) * 0.075 + u * u * 0.012 - 0.01 * Math.sin(Math.PI * t);
+      p.setXYZ(i, x, y, z);
+    }
+    g.computeVertexNormals(); return g;
+  })();
+  // длинный узкий лист, свисающий дугой
+  const leafGeo = (() => {
+    const g = new THREE.PlaneGeometry(1, 1, 2, 16), p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const u = p.getX(i) * 2, t = p.getY(i) + 0.5;
+      const w = 0.02 * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.02)), 0.6) + 0.002;
+      p.setXYZ(i, u * w, t * 0.34, Math.pow(t, 2) * 0.14 + u * u * 0.006);
+    }
+    g.computeVertexNormals(); return g;
+  })();
+  const up = new THREE.Vector3(0, 1, 0);
+  const lily = () => {
+    const f = new THREE.Group();
+    for (let k = 0; k < 6; k++) {
+      const arm = new THREE.Group(); arm.rotation.y = k * Math.PI / 3 + (k % 2) * 0.12;
+      const pt = new THREE.Mesh(petalGeo, petalMat); pt.rotation.x = k % 2 ? 1.2 : 1.32; pt.scale.setScalar(k % 2 ? 1.45 : 1.55);
+      arm.add(pt); f.add(arm);
+    }
+    for (let k = 0; k < 6; k++) { // тычинки
+      const a = k * Math.PI / 3 + 0.3, sp = 0.32;
+      const d = new THREE.Vector3(Math.sin(sp) * Math.cos(a), Math.cos(sp), Math.sin(sp) * Math.sin(a));
+      const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0016, 0.0016, 0.085, 4), stamenMat);
+      st.quaternion.setFromUnitVectors(up, d); st.position.copy(d).multiplyScalar(0.0425); f.add(st);
+      const an = new THREE.Mesh(new THREE.SphereGeometry(0.0065, 6, 4), pollenMat);
+      an.scale.set(1, 0.5, 1.8); an.position.copy(d).multiplyScalar(0.087); an.quaternion.copy(st.quaternion); f.add(an);
+    }
+    return f;
+  };
+
+  const N = 11;
+  for (let i = 0; i < N; i++) {
+    const a = i / N * Math.PI * 2 + rnd() * 0.5, s = 0.2 + rnd() * 0.2, hgt = 0.3 + rnd() * 0.24;
+    const out = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -0.06, 0),
+      new THREE.Vector3(out.x * 0.02, 0.06, out.z * 0.02),
+      new THREE.Vector3(out.x * s * 0.45, hgt * 0.6, out.z * s * 0.45),
+      new THREE.Vector3(out.x * s, hgt, out.z * s),
+    ]);
+    stems.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 28, 0.0055, 5), stemMat));
+    const tip = curve.getPoint(1), tan = curve.getTangent(1);
+    if (i % 3 !== 2) { // цветок
+      const f = lily();
+      f.quaternion.setFromUnitVectors(up, tan.clone().add(out.clone().multiplyScalar(0.7)).normalize());
+      f.position.copy(tip); stems.add(f);
+    } else {           // бутон
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), budMat);
+      b.scale.set(1, 3.2, 1); b.quaternion.setFromUnitVectors(up, tan);
+      b.position.copy(tip).addScaledVector(tan, 0.05); stems.add(b);
+    }
+    if (i % 2 === 0) { // лист
+      const at = 0.25 + rnd() * 0.25, p = curve.getPoint(at), tg = curve.getTangent(at);
+      const l = new THREE.Mesh(leafGeo, leafMat);
+      l.quaternion.setFromUnitVectors(up, tg.clone().multiplyScalar(0.6).add(out.clone().multiplyScalar(0.8)).normalize());
+      l.rotateY(rnd() * Math.PI); l.position.copy(p); stems.add(l);
+    }
+  }
+  return { root, stems };
 }
 
 /* текстура экрана — как карточка в макете «п-р10»: фото сверху, белая плашка с тёмным текстом внизу */
@@ -82,10 +174,9 @@ async function init() {
 
   const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
   const loader = new GLTFLoader().setDRACOLoader(draco);
-  const [gltf, pastImg, vaseTex] = await Promise.all([
+  const [gltf, pastImg] = await Promise.all([
     loader.loadAsync('models/macbook.glb'),
     loadImage('img/story/past-screen.jpg'),
-    new THREE.TextureLoader().loadAsync('img/story/vase.webp'),
   ]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
@@ -100,12 +191,10 @@ async function init() {
   laptop.position.x -= c2.x; laptop.position.z -= c2.z; laptop.position.y -= box2.min.y; // низ корпуса — на столе
   const turn = new THREE.Group(); turn.add(laptop); scene.add(turn);
 
-  /* ваза с белыми цветами на столе слева — немного оживляет интерьер */
-  vaseTex.colorSpace = THREE.SRGBColorSpace;
-  const vaseGeo = new THREE.PlaneGeometry(1.36 * 408 / 557, 1.36); vaseGeo.translate(0, 0.68, 0);
-  const vase = new THREE.Mesh(vaseGeo, new THREE.MeshBasicMaterial({ map: vaseTex, transparent: true, alphaTest: 0.05, color: 0xd9d4cb }));
-  scene.add(vase);
-  const vaseShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.45), new THREE.MeshBasicMaterial({ map: shadow.material.map, transparent: true, depthWrite: false, opacity: 0.8 }));
+  /* ваза с белыми лилиями на столе слева — объёмная, освещена как ноутбук */
+  const bouquet = makeBouquet(), vase = bouquet.root;
+  vase.scale.setScalar(0.95); scene.add(vase);
+  const vaseShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.5), new THREE.MeshBasicMaterial({ map: shadow.material.map, transparent: true, depthWrite: false, opacity: 0.9 }));
   vaseShadow.rotation.x = -Math.PI / 2; vaseShadow.position.y = 0.003; scene.add(vaseShadow);
 
   /* крышка: открываем как в демо (состояние «open») */
@@ -145,23 +234,25 @@ async function init() {
   function render() {
     turn.rotation.y = Math.PI - 0.12 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
     turn.rotation.x = 0;
-    /* slide: развёрнутый ноутбук уезжает влево за край кадра */
-    turn.position.set(-state.slide * (camera.aspect < 1.2 ? 4.5 : 7), 0, 0); // по центру; развёрнутый уходит влево
-    shadow.position.x = turn.position.x;
+    /* букет чуть покачивается — сцена живая */
+    const t = performance.now() / 1000;
+    bouquet.stems.rotation.set(Math.sin(t * 0.9) * 0.018, 0, Math.sin(t * 0.7 + 1) * 0.022);
     /* смена картинки, когда ноутбук повернулся спиной */
     const showNow = state.spin > 0.5;
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
-    vase.position.set(portrait ? -0.95 : -1.75, 0, portrait ? -1.2 : -0.2);
+    vase.position.set(portrait ? -0.95 : -1.7, 0, portrait ? -1.2 : -0.25);
     vaseShadow.position.set(vase.position.x, 0.003, vase.position.z);
     camFar.set(0, portrait ? 2.1 : 1.35, portrait ? 4.9 / Math.max(0.42, camera.aspect) : 4.6); // камера ближе — экран крупный, текст читается
     const dist = camFar.length(); scene.fog.near = dist + 1; scene.fog.far = dist + 16; // дальний правый край стола мягко уходит в фон
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
     look.set(0, portrait ? 0.95 : 1.02, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
+    /* slide: камера уезжает вправо — стол, ваза и развёрнутый ноутбук вместе уходят влево */
+    const pan = state.slide * (portrait ? 4.5 : 7);
+    camera.position.x += pan; look.x += pan;
     camera.lookAt(look);
-    vase.rotation.y = Math.atan2(camera.position.x - vase.position.x, camera.position.z - vase.position.z); // ваза всегда лицом к зрителю
     renderer.render(scene, camera);
   }
   window.addEventListener('resize', resize);
@@ -174,19 +265,29 @@ async function init() {
   const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
   const glass = qa('.story__glass');
+  /* «Тогда» и «Сейчас» — по буквам */
+  qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
+  const ghostThen = q('.story__ghost--then'), ghostNow = q('.story__ghost--now');
+  const charsIn = () => ({ yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1.3, ease: 'power3.out', stagger: 0.09 });
+  const away = () => -(window.innerWidth * 1.15);
+  let drift;
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
-    .from(q('.story__ghost--then'), { autoAlpha: 0, scale: 0.94, duration: 1.6, ease: 'power2.out' }, 0.2)
+    .from(ghostThen.children, charsIn(), 0.45)
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
+    .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
     .to({}, { duration: Math.max(4.5, screenText.length * READ) })   // время прочитать заголовок и экран
-    .to([q('.story__then'), q('.story__ghost--then')], { autoAlpha: 0, y: -30, duration: 0.8, ease: 'power2.in' })
-    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, '<')           // поворот на 180°
+    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' })              // поворот на 180°, надписи остаются
+    .to(ghostThen.children, { yPercent: -12, duration: 1.8, ease: 'sine.inOut', stagger: { each: 0.06, yoyo: true, repeat: 1 } }, '<')
     .addLabel('away')
-    .to(state, { slide: 1, duration: 1.4, ease: 'power2.in' }, 'away')            // развёрнутый ноутбук уходит влево…
+    .call(() => drift && drift.kill(), null, 'away')
+    .to(state, { slide: 1, duration: 1.4, ease: 'power2.in' }, 'away')            // вся сцена уходит влево…
+    .to([q('.story__then'), ghostThen], { x: away, duration: 1.4, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
     .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
     .set(canvas, { autoAlpha: 0 })
-    .to(q('.story__ghost--now'), { autoAlpha: 0.5, duration: 1.4, ease: 'power2.out' })
+    .to(ghostNow, { autoAlpha: 0.3, duration: 0.01 })
+    .from(ghostNow.children, charsIn(), '<')
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, '<')
     .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
     .to({}, { duration: 1.6 });
