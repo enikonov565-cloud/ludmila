@@ -128,8 +128,10 @@ function depthPhoto(frame, opts) {
     const t = now / 1000;
     const ax = Math.sin(t * 0.33) * 0.7, ay = Math.sin(t * 0.47 + 1.3) * 0.45;   // сам по себе — медленная «восьмёрка»
     cx += (mx * 0.8 + ax - cx) * 0.045; cy += (my * 0.6 + ay - cy) * 0.045;
-    mat.uniforms.uOff.value.set(-cx * 0.02, cy * 0.014);
-    mat.uniforms.uZoom.value = 1.06 + Math.sin(t * 0.22) * 0.012;
+    const ox = -cx * 0.042, oy = cy * 0.028, z = 1.08 + Math.sin(t * 0.22) * 0.014;
+    mat.uniforms.uOff.value.set(ox, oy);
+    mat.uniforms.uZoom.value = z;
+    if (opts.onMove) opts.onMove(ox, oy, z);
     r.render(scene, cam);
     raf = visible && !opts.reduce ? requestAnimationFrame(loop) : 0;
   };
@@ -352,7 +354,14 @@ async function init() {
   const READ = 0.07;                                    // ~0.07 с на букву — спокойное чтение
   const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
-  const depth = depthPhoto(q('.story__now-frame'), { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36] });
+  /* «Сейчас» висит в воздухе перед растением — на «глубине» 0.8: при движении фото смещается как ближний план */
+  const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
+  if (!stacked) gsap.set(ghostNowEl, { xPercent: -50, yPercent: -50 });           // центр слова — в точке над растением
+  const depth = depthPhoto(nowFrame, { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36], onMove: stacked ? null : (ox, oy, z) => {
+    const W = nowFrame.clientWidth, k = (0.8 - 0.42) * z;
+    ghostNowEl.style.setProperty('--fx', (-ox * k * W).toFixed(1) + 'px');
+    ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
+  } });
   const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
   [noteR, noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
@@ -391,7 +400,10 @@ async function init() {
     .from(noteR.querySelectorAll('.w'), wordsIn(), 'now+=0.55')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
-    .call(() => { gsap.to(ghostNow, { y: -10, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); });
+    .call(() => {                                                                   // парит: покачивается и чуть наклоняется
+      gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+      gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    });
   render();
   if (reduce) { tl.progress(1); render(); depth.start(); return; }
   let played = false;
