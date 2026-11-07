@@ -1,3 +1,13 @@
+/* Сайт всегда открывается с главного экрана: без восстановления прокрутки и без перехода по #якорю из адреса */
+(function () {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  var toTop = function () { window.scrollTo(0, 0); if (window.lenis) window.lenis.scrollTo(0, { immediate: true, force: true }); };
+  toTop();
+  window.addEventListener('DOMContentLoaded', toTop);
+  window.addEventListener('load', function () { toTop(); setTimeout(toTop, 0); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) toTop(); });
+})();
 (function () {
   'use strict';
   /* Типограф: предлоги и союзы переносятся вместе со следующим словом */
