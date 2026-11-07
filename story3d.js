@@ -2,7 +2,8 @@
    Модель — MacBook из демо repalash/threepipe-device-mockup-codrops (MIT; модель с Sketchfab),
    вынута из сцены и ужата до ~230 КБ (draco + webp). Отрисовка — three.js.
 
-   Сцена идёт сама, по времени (не по прокрутке), когда блок появился на экране:
+   Блок закрепляется на экране. «Тогда» открывается само; дальше — подсказка «прокрутите вниз»,
+   и прокрутка (или клик по подсказке) запускает переход к «Сейчас». Ушли вверх — при возвращении снова «Тогда».
    1. «30 лет я учила людей понимать сложное»; за ноутбуком в полутоне — «Тогда»;
       на экране — карточка из макета: фото с детьми и белая плашка с текстом (время на чтение);
    2. ноутбук поворачивается на 180° — спиной к зрителю — и вся сцена (стол, ваза, ноутбук, надписи)
@@ -374,13 +375,17 @@ async function init() {
   const charsIn = () => ({ yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1.3, ease: 'power3.out', stagger: 0.09 });
   const away = () => -(window.innerWidth * 1.15);
   let drift;
+  const hint = q('.story__scroll');
+  let wantGo = false, bob = [];
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
     .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
-    .to({}, { duration: Math.max(4.5, screenText.length * READ) })   // время прочитать заголовок и экран
-    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' })              // поворот на 180°, надписи остаются
+    .fromTo(hint, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.6)
+    .addPause(2.4, () => { if (wantGo) tl.play(); })                              // «Тогда» ждёт прокрутки
+    .to(hint, { autoAlpha: 0, y: 12, duration: 0.4, ease: 'power2.in' }, 2.4)
+    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 2.4)          // поворот на 180°, надписи остаются
     .to(ghostThen.children, { yPercent: -12, duration: 1.8, ease: 'sine.inOut', stagger: { each: 0.06, yoyo: true, repeat: 1 } }, '<')
     .addLabel('away')
     .call(() => drift && drift.kill(), null, 'away')
@@ -402,13 +407,31 @@ async function init() {
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
-      gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-      gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+      bob.forEach(t => t.kill());
+      bob = [gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
+             gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 })];
     });
   render();
-  if (reduce) { tl.progress(1); render(); depth.start(); return; }
-  let played = false;
+  if (reduce) { tl.progress(1); render(); depth.start(); if (hint) hint.hidden = true; return; }
+  const go = () => { if (wantGo) return; wantGo = true; if (tl.paused() && tl.time() >= 2.4) tl.play(); };
+  const reset = () => {                                                            // снова «Тогда»
+    wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
+    tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
+    section.classList.remove('is-now'); render();
+  };
+  hint && hint.addEventListener('click', go);
+  /* «Тогда» стартует, когда блок почти целиком на экране; ушли выше блока — сцена сбрасывается */
   new IntersectionObserver((e) => {
-    if (e[0].isIntersecting && !played) { played = true; tl.play(); }
-  }, { threshold: 0.65 }).observe(section);
+    const en = e[0];
+    if (en.isIntersecting && en.intersectionRatio >= 0.65 && tl.time() === 0) tl.play();
+    if (!en.isIntersecting && en.boundingClientRect.top > 0) reset();
+  }, { threshold: [0, 0.65] }).observe(section);
+  /* блок закреплён: первые шаги прокрутки — переход к «Сейчас», дальше страница едет как обычно */
+  if (window.ScrollTrigger) {
+    window.ScrollTrigger.create({
+      trigger: section, start: 'top top', end: '+=110%', pin: true, pinSpacing: true, refreshPriority: -2,
+      onUpdate: (self) => { if (self.progress > 0.08 && self.direction > 0) go(); },
+    });
+    window.ScrollTrigger.sort(); window.ScrollTrigger.refresh();
+  }
 }

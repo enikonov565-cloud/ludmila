@@ -749,6 +749,11 @@ a { color: inherit; text-decoration: none; }
 
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* подсказка в «Тогда»: мышка с бегущим колёсиком — прокрутка открывает «Сейчас» */
+.story__scroll { position: absolute; z-index: 4; left: calc(54 * var(--u)); bottom: calc(44 * var(--u)); margin: 0; padding: calc(10 * var(--u)) calc(6 * var(--u));
+  display: flex; align-items: center; gap: calc(14 * var(--u)); background: none; border: 0; cursor: pointer;
+  font: 300 calc(20 * var(--u)) / 1.2 Inter, sans-serif; letter-spacing: .03em; color: #BDB7B1; white-space: nowrap; }
+.story__scroll:hover { color: #E8DCC8; }
 /* «Тогда» / «Сейчас» — Inter Light крупнее заголовка, в полутоне, справа — посередине между хедером и столом */
 .story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: -.55em 0 0; pointer-events: none;
   font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
@@ -758,8 +763,8 @@ a { color: inherit; text-decoration: none; }
 .story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: calc(79% + var(--fx, 0px)); top: calc(40% + var(--fy, 0px)); right: auto; margin: 0;
   font-weight: 300; font-size: calc(180 * var(--u)); letter-spacing: -.02em; color: rgba(255, 255, 255, .4); /* полутон */
   text-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, .1); }
-.story__now-photo { position: absolute; inset: 0; background: #fff; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
-.story__now-frame { position: absolute; left: calc(-71 * var(--u)); right: 0; top: calc(29 * var(--u)); bottom: 0; border-radius: calc(20 * var(--u)); overflow: hidden; }
+.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
+.story__now-frame { position: absolute; left: calc(-71 * var(--u)); right: 0; top: 0; bottom: 0; border-radius: calc(20 * var(--u)); overflow: hidden; }
 .story__now-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; }
 .story__depth { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
 .story__now-frame.is-3d .story__depth { opacity: 1; }
@@ -787,6 +792,8 @@ a { color: inherit; text-decoration: none; }
   .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
   .story__num { font-size: 1.28em; }
+  .story__scroll { left: 50%; translate: -50% 0; bottom: 28px; font-size: 14px; gap: 10px; }
+  .story__scroll .apx__mouse { width: 18px; height: 28px; border-radius: 10px; }
   .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
   .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: 96px 20px 24px; }
   .story__now-frame { left: 0; top: 0; border-radius: 0; }
