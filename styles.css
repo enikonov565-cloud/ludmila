@@ -756,8 +756,8 @@ a { color: inherit; text-decoration: none; }
 .story__ghost .ch { display: inline-block; will-change: transform, opacity; }
 /* «Сейчас» парит перед растением: светлые буквы с мягкой тенью, сдвигаются вместе с объёмом фото (--fx/--fy) */
 .story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: calc(79% + var(--fx, 0px)); top: calc(40% + var(--fy, 0px)); right: auto; margin: 0;
-  font-weight: 400; font-size: calc(180 * var(--u)); letter-spacing: 0; color: rgba(255, 255, 255, .78);
-  text-shadow: 0 calc(24 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .28), 0 0 calc(2 * var(--u)) rgba(255, 255, 255, .4); }
+  font-weight: 300; font-size: calc(180 * var(--u)); letter-spacing: -.02em; color: rgba(255, 255, 255, .4); /* полутон */
+  text-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, .1); }
 .story__now-photo { position: absolute; inset: 0; background: #fff; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
 .story__now-frame { position: absolute; left: calc(-71 * var(--u)); right: 0; top: calc(29 * var(--u)); bottom: 0; border-radius: calc(20 * var(--u)); overflow: hidden; }
 .story__now-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; }
@@ -766,11 +766,12 @@ a { color: inherit; text-decoration: none; }
 .story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(163 * var(--u)); max-width: calc(1144 * var(--u)); }
 /* «сейчас» — тёмный текст на светлом фото, как в макете «п-р 21» */
 .story__now .story__title { color: #202020; line-height: 1.1; }
-.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #191919;
-  text-shadow: 0 0 calc(18 * var(--u)) rgba(255, 255, 255, .95), 0 0 calc(6 * var(--u)) rgba(255, 255, 255, .9), 0 0 calc(2 * var(--u)) rgba(255, 255, 255, .9); } /* светлый ореол — читается и на листьях */
+.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #191919; }
 .story__note .story__mask { padding: 0 0 .04em; margin: 0; }
 .story__note .story__reveal { white-space: nowrap; } /* строки — как в макете */
-.story__note--right { right: calc(74 * var(--u)); top: calc(180 * var(--u)); }
+/* правый текст — на светлой матовой подложке: под ним листья растения */
+.story__note--right { right: calc(50 * var(--u)); top: calc(156 * var(--u)); padding: calc(22 * var(--u)) calc(26 * var(--u)); border-radius: calc(20 * var(--u));
+  background: rgba(255, 255, 255, .62); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
 .story__note .w { display: inline-block; }
 .story__note--left { left: calc(60 * var(--u)); top: calc(530 * var(--u)); width: calc(483 * var(--u)); letter-spacing: .015em; }
 .story__tags { position: absolute; z-index: 3; margin: 0; left: calc(60 * var(--u)); top: calc(884 * var(--u)); width: calc(520 * var(--u)); display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); }
@@ -793,8 +794,10 @@ a { color: inherit; text-decoration: none; }
   .story__now-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, .78) 100%); }
   .story__now-text, .story__note, .story__tags, .story__ghost--now { position: relative; left: auto; right: auto; top: auto; width: auto; max-width: none; }
   .story__note { font-size: clamp(15px, 4.1vw, 19px); letter-spacing: 0; }
-  .story__note .story__reveal { white-space: normal; }
-  .story__note--right { margin-top: 14px; }
+  .story__note .story__reveal { white-space: normal; display: inline; }
+  .story__note .story__mask { display: inline; overflow: visible; } /* на телефоне строки текут вместе */
+  .story__note .story__mask:not(:last-child)::after { content: " "; }
+  .story__note--right { margin-top: 14px; padding: 12px 14px; border-radius: 16px; }
   .story__ghost--now { color: rgba(25, 25, 25, .3); text-shadow: none; margin: auto 0 4px; align-self: flex-end; font-size: clamp(64px, 20vw, 120px); }
   .story__tags { margin-top: 14px; gap: 6px 8px; }
   .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }

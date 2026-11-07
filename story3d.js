@@ -397,6 +397,7 @@ async function init() {
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
+    .from(noteR, { autoAlpha: 0, y: 18, scale: 0.97, duration: 0.6, ease: 'power3.out' }, 'now+=0.45')    // подложка, затем слова
     .from(noteR.querySelectorAll('.w'), wordsIn(), 'now+=0.55')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
