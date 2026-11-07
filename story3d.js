@@ -291,6 +291,11 @@ async function init() {
   const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
   const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
+  /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
+  [noteR, noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
+    r.innerHTML = r.textContent.split(' ').map(w => '<span class="w">' + w + '</span>').join(' ');
+  }));
+  const wordsIn = () => ({ yPercent: 100, autoAlpha: 0, filter: 'blur(6px)', duration: 0.65, ease: 'power3.out', stagger: 0.03 });
   /* «Тогда» и «Сейчас» — по буквам */
   qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
   const ghostThen = q('.story__ghost--then'), ghostNow = q('.story__ghost--now');
@@ -311,19 +316,18 @@ async function init() {
     .to([q('.story__then'), ghostThen], { x: away, duration: 1.4, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
     .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
-    .set(canvas, { autoAlpha: 0 })
-    .call(() => section.classList.add('is-now'))                                  // шапка — тёмными буквами
-    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, '<')
-    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
-    .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, '<0.35')
-    .from(ghostNow.children, charsIn(), '<')
-    .call(() => { gsap.to(ghostNow, { y: -10, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); })
-    .to({}, { duration: 1.4 })                                                     // время прочитать заголовок
-    .from(noteR.querySelectorAll('.story__reveal'), { yPercent: 110, duration: 0.9, ease: 'power3.out', stagger: 0.14 })
-    .to({}, { duration: readTime(noteR) })
-    .from(noteL.querySelectorAll('.story__reveal'), { yPercent: 110, duration: 0.9, ease: 'power3.out', stagger: 0.14 })
-    .to({}, { duration: readTime(noteL) })
-    .from(tags, { y: 24, autoAlpha: 0, filter: 'blur(8px)', duration: 0.8, ease: 'power3.out', stagger: 0.18 });
+    /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
+    .addLabel('now', 'away+=0.95')
+    .set(canvas, { autoAlpha: 0 }, 'away+=1.4')
+    .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
+    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
+    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
+    .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
+    .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
+    .from(noteR.querySelectorAll('.w'), wordsIn(), 'now+=0.55')
+    .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
+    .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
+    .call(() => { gsap.to(ghostNow, { y: -10, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); });
   render();
   if (reduce) { tl.progress(1); render(); return; }
   let played = false;
