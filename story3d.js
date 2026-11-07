@@ -1,12 +1,13 @@
-/* Блок «Мой путь»: 3D-ноутбук на тёмном интерьерном фоне.
+/* Блок «Мой путь»: 3D-ноутбук на тёмно-зелёном фоне сайта.
    Модель — MacBook из демо repalash/threepipe-device-mockup-codrops (MIT; модель с Sketchfab),
-   вынута из сцены и ужата до ~230 КБ (draco + webp). Отрисовка — three.js, без лишних плагинов.
+   вынута из сцены и ужата до ~230 КБ (draco + webp). Отрисовка — three.js.
 
-   Прокрутка (блок закреплён):
-   1. «30 лет я учила людей понимать сложное» / «Тогда» — на экране ноутбука фото с детьми и текст на плашке;
-   2. ноутбук поворачивается на 180° — спиной к зрителю;
-   3. развёрнутый ноутбук уходит влево, а за ним справа налево открывается полноэкранное фото «Сейчас»;
-   4. «Теперь я делаю это визуально.» / «Сейчас» и по очереди — тексты на полупрозрачных плашках. */
+   Сцена идёт сама, по времени (не по прокрутке), когда блок появился на экране:
+   1. «30 лет я учила людей понимать сложное»; за ноутбуком в полутоне — «Тогда»;
+      на экране — карточка из макета: фото с детьми и белая плашка с текстом (время на чтение);
+   2. ноутбук поворачивается на 180° — спиной к зрителю — и уходит влево,
+      а за ним справа налево открывается полноэкранное фото «Сейчас»;
+   3. «Теперь я делаю это визуально.», в полутоне — «Сейчас»; плашки появляются по одной, с паузами на чтение. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -15,38 +16,35 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const section = document.querySelector('.story');
 const canvas = section && section.querySelector('.story__gl');
 const gsap = window.gsap;
-if (section && canvas && gsap && window.ScrollTrigger) init();
+if (section && canvas && gsap) init();
 
 function loadImage(src) {
   return new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = src; });
 }
 
-/* текстура экрана: фото по размеру экрана + (для «тогда») текст на полупрозрачной плашке */
+/* текстура экрана — как карточка в макете «п-р10»: фото сверху, белая плашка с тёмным текстом внизу */
 function screenTexture(img, caption) {
   const W = 1600, H = 1000;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d');
-  const s = Math.max(W / img.width, H / img.height);
+  g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+  const ph = caption ? 600 : H;                       // фото — верхние 60% экрана
+  const s = Math.max(W / img.width, ph / img.height);
   const iw = img.width * s, ih = img.height * s;
-  g.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih);
+  g.save(); g.beginPath(); g.roundRect(0, 0, W, ph, caption ? [0, 0, 40, 40] : 0); g.clip();
+  g.drawImage(img, (W - iw) / 2, (ph - ih) / 2 - ph * 0.08, iw, ih); g.restore();
   if (caption) {
-    const pad = 70, bw = W - pad * 2, bh = 230, bx = pad, by = H - bh - pad;
-    g.fillStyle = 'rgba(14, 27, 30, .62)';
-    g.beginPath(); g.roundRect(bx, by, bw, bh, 28); g.fill();
-    g.fillStyle = '#F6EFE5';
-    g.font = '300 26px Inter, sans-serif';
-    g.fillText('ТОГДА', bx + 48, by + 62);
-    g.font = '400 46px Inter, sans-serif';
-    const words = caption.split(' '); let line = '', y = by + 128;
-    for (const w of words) {
-      const t = line ? line + ' ' + w : w;
-      if (g.measureText(t).width > bw - 96) { g.fillText(line, bx + 48, y); line = w; y += 56; } else line = t;
-    }
-    g.fillText(line, bx + 48, y);
+    g.fillStyle = '#191919';
+    g.font = '400 64px Inter, sans-serif';
+    const words = caption.split(' '), lines = []; let line = '';
+    for (const w of words) { const t = line ? line + ' ' + w : w; if (g.measureText(t).width > W - 200) { lines.push(line); line = w; } else line = t; }
+    lines.push(line);
+    const lh = 78, y0 = ph + (H - ph - lines.length * lh) / 2 + 58;
+    lines.forEach((l, i) => g.fillText(l, 100, y0 + i * lh));
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
+  tex.anisotropy = 8;
   return tex;
 }
 
@@ -134,7 +132,7 @@ async function init() {
   };
   const camFar = new THREE.Vector3(), camNear = new THREE.Vector3(), look = new THREE.Vector3();
   function render() {
-    turn.rotation.y = Math.PI - 0.22 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
+    turn.rotation.y = Math.PI - 0.12 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
     turn.rotation.x = 0;
     /* slide: развёрнутый ноутбук уезжает влево за край кадра */
     turn.position.set(-state.slide * (camera.aspect < 1.2 ? 4.5 : 7), 0, 0); // по центру; развёрнутый уходит влево
@@ -144,11 +142,11 @@ async function init() {
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
-    camFar.set(0, portrait ? 2.6 : 1.9, portrait ? 7.2 / Math.max(0.36, camera.aspect) : 6.4); // камера чуть выше стола, по центру
+    camFar.set(0, portrait ? 2.1 : 1.35, portrait ? 4.9 / Math.max(0.42, camera.aspect) : 4.6); // камера ближе — экран крупный, текст читается
     const dist = camFar.length(); scene.fog.near = dist - 0.5; scene.fog.far = dist + 9; // дальний край стола растворяется в фоне
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
-    look.set(0, portrait ? 1.0 : 1.05, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
+    look.set(0, portrait ? 0.95 : 1.02, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
     camera.lookAt(look);
     renderer.render(scene, camera);
   }
@@ -156,26 +154,36 @@ async function init() {
   resize();
   section.classList.add('gl-ready');
 
-  /* сцена по прокрутке */
+  /* сцена идёт сама, по времени — с паузами на чтение; запускается, когда блок почти целиком на экране */
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
-  const tl = gsap.timeline({
-    defaults: { ease: 'none' },
-    onUpdate: render,
-    scrollTrigger: { trigger: section, start: 'top top', end: reduce ? '+=100%' : '+=340%', pin: true, scrub: 0.8, anticipatePin: 1, refreshPriority: -1 }, // блок ниже закреплённого «Моего подхода» — считаем после него
+  const READ = 0.07;                                    // ~0.07 с на букву — спокойное чтение
+  const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
+  const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
+  const glass = qa('.story__glass');
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
+  tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
+    .from(q('.story__ghost--then'), { autoAlpha: 0, scale: 0.94, duration: 1.6, ease: 'power2.out' }, 0.2)
+    .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
+    .to({}, { duration: Math.max(4.5, screenText.length * READ) })   // время прочитать заголовок и экран
+    .to([q('.story__then'), q('.story__ghost--then')], { autoAlpha: 0, y: -30, duration: 0.8, ease: 'power2.in' })
+    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, '<')           // поворот на 180°
+    .addLabel('away')
+    .to(state, { slide: 1, duration: 1.4, ease: 'power2.in' }, 'away')            // развёрнутый ноутбук уходит влево…
+    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
+    .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
+    .set(canvas, { autoAlpha: 0 })
+    .to(q('.story__ghost--now'), { autoAlpha: 0.16, duration: 1.4, ease: 'power2.out' })
+    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, '<')
+    .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
+    .to({}, { duration: 1.6 });
+  glass.forEach(el => {
+    tl.from(el, { y: 30, autoAlpha: 0, duration: 0.8, ease: 'power3.out' })
+      .to({}, { duration: readTime(el) });              // пауза на чтение каждой плашки
   });
-  tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 0)
-    .from(state, { spin: -0.06, duration: 1, ease: 'power2.out' }, 0) // лёгкий доворот при появлении
-    .to({}, { duration: 0.6 })
-    .to(q('.story__then'), { autoAlpha: 0, y: -40, duration: 0.5 }, 1.5)
-    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 1.5)          // поворот на 180° — спиной к зрителю
-    .to(state, { slide: 1, duration: 1.3, ease: 'power2.in' }, 3.0)                  // развёрнутый ноутбук уходит влево…
-    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.3, ease: 'power2.in' }, 3.0) // …а за ним справа налево открывается фото
-    .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 1.8, ease: 'power2.out' }, 3.0)
-    .set(canvas, { autoAlpha: 0 }, 4.3)
-    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 4.18) // рукописная «в» выходит за маску — прячем текст целиком до появления
-    .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 4.2)
-    .from(qa('.story__glass'), { y: 40, autoAlpha: 0, duration: 0.5, ease: 'power3.out', stagger: 0.28 }, 4.7)
-    .to({}, { duration: 0.6 });
-  window.ScrollTrigger.sort();
-  window.ScrollTrigger.refresh();
+  render();
+  if (reduce) { tl.progress(1); render(); return; }
+  let played = false;
+  new IntersectionObserver((e) => {
+    if (e[0].isIntersecting && !played) { played = true; tl.play(); }
+  }, { threshold: 0.65 }).observe(section);
 }
