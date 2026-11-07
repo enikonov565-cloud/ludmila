@@ -4,8 +4,8 @@
 
    Прокрутка (блок закреплён):
    1. «30 лет я учила людей понимать сложное» / «Тогда» — на экране ноутбука фото с детьми и текст на плашке;
-   2. ноутбук разворачивается на полный оборот — пока он спиной к нам, экран с фото детей гаснет до мягкого тёплого свечения;
-   3. камера наезжает на экран, он заполняет весь кадр и превращается в полноэкранное фото «Сейчас»;
+   2. ноутбук поворачивается на 180° — спиной к зрителю;
+   3. развёрнутый ноутбук уходит влево, а за ним справа налево открывается полноэкранное фото «Сейчас»;
    4. «Теперь я делаю это визуально.» / «Сейчас» и по очереди — тексты на полупрозрачных плашках. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -114,7 +114,7 @@ async function init() {
     new THREE.Box3().setFromObject(screenMesh).getCenter(screenTarget);
   };
 
-  const state = { spin: 0, zoom: 0, swapped: false };
+  const state = { spin: 0, zoom: 0, slide: 0, swapped: false };
   const resize = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     renderer.setSize(w, h, false);
@@ -125,7 +125,8 @@ async function init() {
   function render() {
     turn.rotation.y = Math.PI - 0.42 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
     turn.rotation.x = 0.04;
-    turn.position.set(camera.aspect < 1.2 ? 0 : 0.62, camera.aspect < 1.2 ? -0.6 : -0.28, 0); // на компьютере — правее, чтобы не закрывать заголовок
+    /* slide: развёрнутый ноутбук уезжает влево за край кадра */
+    turn.position.set((camera.aspect < 1.2 ? 0 : 0.62) - state.slide * (camera.aspect < 1.2 ? 4.5 : 6.5), camera.aspect < 1.2 ? -0.6 : -0.28, 0); // на компьютере — правее, чтобы не закрывать заголовок
     /* смена картинки, когда ноутбук повернулся спиной */
     const showNow = state.spin > 0.5;
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
@@ -147,20 +148,20 @@ async function init() {
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     onUpdate: render,
-    scrollTrigger: { trigger: section, start: 'top top', end: reduce ? '+=100%' : '+=360%', pin: true, scrub: 0.8, anticipatePin: 1 },
+    scrollTrigger: { trigger: section, start: 'top top', end: reduce ? '+=100%' : '+=340%', pin: true, scrub: 0.8, anticipatePin: 1 },
   });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 0)
     .from(state, { zoom: -0.35, duration: 1, ease: 'power2.out' }, 0)
     .to({}, { duration: 0.6 })
     .to(q('.story__then'), { autoAlpha: 0, y: -40, duration: 0.5 }, 1.5)
-    .to(state, { spin: 1, duration: 2.2, ease: 'power2.inOut' }, 1.5)
-    .to(state, { zoom: 1, duration: 1.2, ease: 'power2.in' }, 3.5)
-    .to(q('.story__now-photo'), { autoAlpha: 1, duration: 0.35 }, 4.5)
-    .to(canvas, { autoAlpha: 0, duration: 0.3 }, 4.65)
-    .from(q('.story__now-photo img'), { scale: 1.12, duration: 1.4, ease: 'power2.out' }, 4.5)
-    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 4.88) // рукописная «в» выходит за маску — прячем текст целиком до появления
-    .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 4.9)
-    .from(qa('.story__glass'), { y: 40, autoAlpha: 0, duration: 0.5, ease: 'power3.out', stagger: 0.28 }, 5.4)
+    .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 1.5)          // поворот на 180° — спиной к зрителю
+    .to(state, { slide: 1, duration: 1.3, ease: 'power2.in' }, 3.0)                  // развёрнутый ноутбук уходит влево…
+    .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.3, ease: 'power2.in' }, 3.0) // …а за ним справа налево открывается фото
+    .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 1.8, ease: 'power2.out' }, 3.0)
+    .set(canvas, { autoAlpha: 0 }, 4.3)
+    .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 4.18) // рукописная «в» выходит за маску — прячем текст целиком до появления
+    .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 4.2)
+    .from(qa('.story__glass'), { y: 40, autoAlpha: 0, duration: 0.5, ease: 'power3.out', stagger: 0.28 }, 4.7)
     .to({}, { duration: 0.6 });
   window.ScrollTrigger.sort();
   window.ScrollTrigger.refresh();

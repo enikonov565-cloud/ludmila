@@ -746,7 +746,7 @@ a { color: inherit; text-decoration: none; }
 
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; }
+.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
 .story__now-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
 .story__now-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7, 15, 16, .78) 0%, rgba(7, 15, 16, .35) 46%, rgba(7, 15, 16, 0) 70%), linear-gradient(0deg, rgba(7, 15, 16, .6) 0%, rgba(7, 15, 16, 0) 40%); }
 .story__now-text { visibility: hidden; position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(900 * var(--u)); }
