@@ -383,7 +383,7 @@ async function init() {
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
     .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
     .fromTo(hint, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.6)
-    .addPause(2.4, () => { if (wantGo) tl.play(); })                              // «Тогда» ждёт прокрутки
+    .addPause(2.4, () => { if (wantGo) gsap.delayedCall(0.05, () => tl.play()); }) // «Тогда» ждёт прокрутки
     .to(hint, { autoAlpha: 0, y: 12, duration: 0.4, ease: 'power2.in' }, 2.4)
     .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 2.4)          // поворот на 180°, надписи остаются
     .to(ghostThen.children, { yPercent: -12, duration: 1.8, ease: 'sine.inOut', stagger: { each: 0.06, yoyo: true, repeat: 1 } }, '<')
@@ -413,7 +413,12 @@ async function init() {
     });
   render();
   if (reduce) { tl.progress(1); render(); depth.start(); if (hint) hint.hidden = true; return; }
-  const go = () => { if (wantGo) return; wantGo = true; if (tl.paused() && tl.time() >= 2.4) tl.play(); };
+  const go = () => { wantGo = true; if (tl.paused() && tl.time() >= 2.39 && tl.progress() < 1) tl.play(); };
+  /* любое движение вниз на «Тогда» — колесо, тачпад, палец, клавиши — запускает переход */
+  section.addEventListener('wheel', e => { if (e.deltaY > 0) go(); }, { passive: true });
+  let ty = 0; section.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+  section.addEventListener('touchmove', e => { if (ty - e.touches[0].clientY > 12) go(); }, { passive: true });
+  window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
   const reset = () => {                                                            // снова «Тогда»
     wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
     tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
