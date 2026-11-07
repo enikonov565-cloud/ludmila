@@ -28,11 +28,11 @@ function screenTexture(img, caption) {
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d');
   g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
-  const ph = caption ? 600 : H;                       // фото — верхние 60% экрана
+  const ph = caption ? 690 : H;                       // фото — верхние ~70% экрана, плашка с текстом — без пустого поля
   const s = Math.max(W / img.width, ph / img.height);
   const iw = img.width * s, ih = img.height * s;
   g.save(); g.beginPath(); g.roundRect(0, 0, W, ph, caption ? [0, 0, 40, 40] : 0); g.clip();
-  g.drawImage(img, (W - iw) / 2, (ph - ih) / 2 - ph * 0.08, iw, ih); g.restore();
+  g.drawImage(img, (W - iw) / 2, Math.max(ph - ih, -ih * 0.125), iw, ih); g.restore(); // верх кадра виден — голова не обрезана
   if (caption) {
     g.fillStyle = '#191919';
     g.font = '400 64px Inter, sans-serif';
@@ -100,9 +100,9 @@ async function init() {
   laptop.position.x -= c2.x; laptop.position.z -= c2.z; laptop.position.y -= box2.min.y; // низ корпуса — на столе
   const turn = new THREE.Group(); turn.add(laptop); scene.add(turn);
 
-  /* ваза с белыми цветами на столе справа — немного оживляет интерьер */
+  /* ваза с белыми цветами на столе слева — немного оживляет интерьер */
   vaseTex.colorSpace = THREE.SRGBColorSpace;
-  const vaseGeo = new THREE.PlaneGeometry(1.25 * 408 / 557, 1.25); vaseGeo.translate(0, 0.625, 0);
+  const vaseGeo = new THREE.PlaneGeometry(1.36 * 408 / 557, 1.36); vaseGeo.translate(0, 0.68, 0);
   const vase = new THREE.Mesh(vaseGeo, new THREE.MeshBasicMaterial({ map: vaseTex, transparent: true, alphaTest: 0.05, color: 0xd9d4cb }));
   scene.add(vase);
   const vaseShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.45), new THREE.MeshBasicMaterial({ map: shadow.material.map, transparent: true, depthWrite: false, opacity: 0.8 }));
@@ -153,7 +153,7 @@ async function init() {
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
-    vase.position.set(portrait ? 0.95 : 1.8, 0, portrait ? -1.5 : -1.1);
+    vase.position.set(portrait ? -0.95 : -1.75, 0, portrait ? -1.2 : -0.2);
     vaseShadow.position.set(vase.position.x, 0.003, vase.position.z);
     camFar.set(0, portrait ? 2.1 : 1.35, portrait ? 4.9 / Math.max(0.42, camera.aspect) : 4.6); // камера ближе — экран крупный, текст читается
     const dist = camFar.length(); scene.fog.near = dist + 1; scene.fog.far = dist + 16; // дальний правый край стола мягко уходит в фон
