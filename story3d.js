@@ -307,7 +307,8 @@ async function init() {
   let laptopBox = null;
   function fitGhost(w, h) {
     if (!ghostEl || state.slide > 0 || state.spin > 0.02) return;
-    if (camera.aspect < 1.2) { ghostEl.style.fontSize = ''; return; }
+    const gNow = section.querySelector('.story__ghost--now');
+    if (camera.aspect < 1.2) { ghostEl.style.fontSize = ''; if (gNow) gNow.style.fontSize = ''; return; }
     if (!laptopBox) laptopBox = new THREE.Box3().setFromObject(lid || turn, true); // крышка — она на уровне слова
     let right = -Infinity; const v = new THREE.Vector3();
     for (let i = 0; i < 8; i++) {
@@ -321,6 +322,7 @@ async function init() {
     const ratio = mc.measureText(word).width / 100 - 0.03 * (word.length - 1); // ширина слова в em (с учётом letter-spacing -.03em)
     const avail = w - parseFloat(cs.right) - right - 0.004 * w;
     ghostEl.style.fontSize = Math.max(40, Math.min(fs0, avail / ratio)) + 'px';
+    if (gNow) gNow.style.fontSize = ghostEl.style.fontSize;                       // «Сейчас» — того же размера, что «Тогда»
   }
   const camFar = new THREE.Vector3(), camNear = new THREE.Vector3(), look = new THREE.Vector3();
   function render() {
@@ -366,9 +368,9 @@ async function init() {
     ghostNowEl.style.setProperty('--fx', (-ox * k * W * 0.35).toFixed(1) + 'px');  // вбок — чуть-чуть, чтобы край держал линию
     ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
   } });
-  const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
+  const noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
-  [noteR, noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
+  [noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
     r.innerHTML = r.textContent.split(' ').map(w => '<span class="w">' + w + '</span>').join(' ');
   }));
   const wordsIn = () => ({ yPercent: 100, autoAlpha: 0, filter: 'blur(6px)', duration: 0.65, ease: 'power3.out', stagger: 0.03 });
@@ -405,8 +407,6 @@ async function init() {
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
-    .from(noteR, { autoAlpha: 0, y: 18, scale: 0.97, duration: 0.6, ease: 'power3.out' }, 'now+=0.45')    // подложка, затем слова
-    .from(noteR.querySelectorAll('.w'), wordsIn(), 'now+=0.55')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
