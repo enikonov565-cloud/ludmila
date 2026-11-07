@@ -728,6 +728,8 @@ document.documentElement.classList.replace('no-js', 'js');
   var menu = document.getElementById('site-menu');
   if (!header || !menu) return;
   var burger = header.querySelector('.burger');
+  var scrim = document.querySelector('.menu-scrim');
+  if (scrim) scrim.addEventListener('click', function () { setOpen(false); });
   var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 40); };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -737,8 +739,7 @@ document.documentElement.classList.replace('no-js', 'js');
     burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
     if (open) { menu.hidden = false; requestAnimationFrame(function () { menu.classList.add('is-open'); }); }
     else { menu.classList.remove('is-open'); setTimeout(function () { if (!menu.classList.contains('is-open')) menu.hidden = true; }, 700); }
-    document.body.classList.toggle('menu-open', open);
-    if (window.lenis) { open ? window.lenis.stop() : window.lenis.start(); }
+    if (scrim) scrim.classList.toggle('is-on', open); /* окно поверх страницы, прокрутку не блокируем */
   };
   burger.addEventListener('click', function () { setOpen(burger.getAttribute('aria-expanded') !== 'true'); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') { setOpen(false); burger.focus(); } });
