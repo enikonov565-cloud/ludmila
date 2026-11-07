@@ -759,6 +759,8 @@ a { color: inherit; text-decoration: none; }
 .story__now-photo { position: absolute; inset: 0; background: #fff; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
 .story__now-frame { position: absolute; left: calc(-71 * var(--u)); right: 0; top: calc(29 * var(--u)); bottom: 0; border-radius: calc(20 * var(--u)); overflow: hidden; }
 .story__now-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; }
+.story__depth { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
+.story__now-frame.is-3d .story__depth { opacity: 1; }
 .story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(163 * var(--u)); max-width: calc(1144 * var(--u)); }
 /* «сейчас» — тёмный текст на светлом фото, как в макете «п-р 21» */
 .story__now .story__title { color: #202020; line-height: 1.1; }

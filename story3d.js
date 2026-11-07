@@ -115,6 +115,68 @@ function makeBouquet() {
   return { root, stems };
 }
 
+/* 3D-фото «Сейчас»: карта глубины (Depth Anything V2) сдвигает ближние планы сильнее дальних —
+   Людмила и ноутбук отделяются от стены и растения, кадр мягко «дышит» сам и откликается на мышь */
+function depthPhoto(frame, opts) {
+  const img = frame.querySelector('img');
+  const cv = document.createElement('canvas');
+  cv.className = 'story__depth'; cv.setAttribute('aria-hidden', 'true');
+  frame.appendChild(cv);
+  let started = false, r, mat, scene, cam, raf = 0, visible = false;
+  let mx = 0, my = 0, cx = 0, cy = 0;
+  const loop = (now) => {
+    const t = now / 1000;
+    const ax = Math.sin(t * 0.33) * 0.7, ay = Math.sin(t * 0.47 + 1.3) * 0.45;   // сам по себе — медленная «восьмёрка»
+    cx += (mx * 0.8 + ax - cx) * 0.045; cy += (my * 0.6 + ay - cy) * 0.045;
+    mat.uniforms.uOff.value.set(-cx * 0.02, cy * 0.014);
+    mat.uniforms.uZoom.value = 1.06 + Math.sin(t * 0.22) * 0.012;
+    r.render(scene, cam);
+    raf = visible && !opts.reduce ? requestAnimationFrame(loop) : 0;
+  };
+  const resize = () => {
+    if (!r) return;
+    const w = frame.clientWidth, h = frame.clientHeight;
+    r.setSize(w, h, false); mat.uniforms.uRes.value.set(w, h);
+    if (!raf) r.render(scene, cam);
+  };
+  function start() {
+    if (started) return; started = true;
+    try { r = new THREE.WebGLRenderer({ canvas: cv, antialias: false, alpha: false, powerPreference: 'high-performance' }); }
+    catch (e) { cv.remove(); return; }
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    r.outputColorSpace = THREE.LinearSRGBColorSpace;            // цвета фото — как есть, без пересчёта
+    const ld = new THREE.TextureLoader();
+    Promise.all([ld.loadAsync(img.currentSrc || img.src), ld.loadAsync('img/story/now-depth.jpg')]).then(([ti, td]) => {
+      [ti, td].forEach(t => { t.colorSpace = THREE.NoColorSpace; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; });
+      scene = new THREE.Scene(); cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      mat = new THREE.ShaderMaterial({
+        uniforms: { uImg: { value: ti }, uDep: { value: td }, uRes: { value: new THREE.Vector2(1, 1) },
+          uPos: { value: new THREE.Vector2(opts.pos[0], 1 - opts.pos[1]) }, uOff: { value: new THREE.Vector2() }, uZoom: { value: 1.06 } },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+        fragmentShader: `
+          uniform sampler2D uImg, uDep; uniform vec2 uRes, uPos, uOff; uniform float uZoom; varying vec2 vUv;
+          void main(){
+            float fa = uRes.x / uRes.y;
+            vec2 s = (fa > 1.0 ? vec2(1.0, 1.0 / fa) : vec2(fa, 1.0)) / uZoom;   // как object-fit: cover для квадратного фото
+            vec2 base = (1.0 - s) * uPos + vUv * s, uv = base;
+            for (int i = 0; i < 3; i++) { float d = texture2D(uDep, uv).r; uv = base + uOff * (d - 0.42); }
+            gl_FragColor = texture2D(uImg, clamp(uv, 0.001, 0.999));
+          }`,
+      });
+      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+      window.addEventListener('resize', resize); resize();
+      frame.classList.add('is-3d');
+      if (opts.reduce) return;
+      window.addEventListener('pointermove', e => { mx = e.clientX / window.innerWidth * 2 - 1; my = e.clientY / window.innerHeight * 2 - 1; }, { passive: true });
+      new IntersectionObserver(en => {
+        visible = en[0].isIntersecting;
+        if (visible && !raf) raf = requestAnimationFrame(loop);
+      }, { threshold: 0.05 }).observe(frame);
+    }).catch(() => cv.remove());
+  }
+  return { start };
+}
+
 /* текстура экрана — как карточка в макете «п-р10»: фото сверху, белая плашка с тёмным текстом внизу */
 function screenTexture(img, caption) {
   const W = 1600, H = 1000;
@@ -290,6 +352,7 @@ async function init() {
   const READ = 0.07;                                    // ~0.07 с на букву — спокойное чтение
   const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
+  const depth = depthPhoto(q('.story__now-frame'), { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36] });
   const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
   [noteR, noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
@@ -315,7 +378,8 @@ async function init() {
     .to(state, { slide: 1, duration: 1.4, ease: 'power2.in' }, 'away')            // вся сцена уходит влево…
     .to([q('.story__then'), ghostThen], { x: away, duration: 1.4, ease: 'power2.in' }, 'away') // …надписи — вместе с ней
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
-    .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
+    .call(() => depth.start(), null, 'away')                                      // 3D-фото готовится, пока уходит ноутбук
+    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
     /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
     .addLabel('now', 'away+=0.95')
     .set(canvas, { autoAlpha: 0 }, 'away+=1.4')
@@ -329,7 +393,7 @@ async function init() {
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => { gsap.to(ghostNow, { y: -10, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); });
   render();
-  if (reduce) { tl.progress(1); render(); return; }
+  if (reduce) { tl.progress(1); render(); depth.start(); return; }
   let played = false;
   new IntersectionObserver((e) => {
     if (e[0].isIntersecting && !played) { played = true; tl.play(); }
