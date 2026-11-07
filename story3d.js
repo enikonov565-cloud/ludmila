@@ -129,7 +129,7 @@ function depthPhoto(frame, opts) {
     const t = now / 1000;
     const ax = Math.sin(t * 0.33) * 0.7, ay = Math.sin(t * 0.47 + 1.3) * 0.45;   // сам по себе — медленная «восьмёрка»
     cx += (mx * 0.8 + ax - cx) * 0.045; cy += (my * 0.6 + ay - cy) * 0.045;
-    const ox = -cx * 0.042, oy = cy * 0.028, z = 1.08 + Math.sin(t * 0.22) * 0.014;
+    const ox = -cx * 0.05, oy = cy * 0.032, z = 1.08 + Math.sin(t * 0.22) * 0.014;
     mat.uniforms.uOff.value.set(ox, oy);
     mat.uniforms.uZoom.value = z;
     if (opts.onMove) opts.onMove(ox, oy, z);
@@ -149,7 +149,7 @@ function depthPhoto(frame, opts) {
     r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     r.outputColorSpace = THREE.LinearSRGBColorSpace;            // цвета фото — как есть, без пересчёта
     const ld = new THREE.TextureLoader();
-    Promise.all([ld.loadAsync(img.currentSrc || img.src), ld.loadAsync('img/story/now-depth.jpg')]).then(([ti, td]) => {
+    Promise.all([ld.loadAsync(img.currentSrc || img.src), ld.loadAsync('img/story/now-depth.jpg?v=2')]).then(([ti, td]) => {
       [ti, td].forEach(t => { t.colorSpace = THREE.NoColorSpace; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; });
       scene = new THREE.Scene(); cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
       mat = new THREE.ShaderMaterial({
@@ -162,7 +162,8 @@ function depthPhoto(frame, opts) {
             float fa = uRes.x / uRes.y;
             vec2 s = (fa > 1.0 ? vec2(1.0, 1.0 / fa) : vec2(fa, 1.0)) / uZoom;   // как object-fit: cover для квадратного фото
             vec2 base = (1.0 - s) * uPos + vUv * s, uv = base;
-            for (int i = 0; i < 3; i++) { float d = texture2D(uDep, uv).r; uv = base + uOff * (d - 0.42); }
+            float d = texture2D(uDep, base).r;
+            uv = base + uOff * (d - 0.37);   // Людмила и ноутбук (глубина ~0.37) стоят на месте — смещается фон за ними
             gl_FragColor = texture2D(uImg, clamp(uv, 0.001, 0.999));
           }`,
       });
@@ -361,7 +362,7 @@ async function init() {
   const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
   if (!stacked) gsap.set(ghostNowEl, { yPercent: -50 });           // центр слова — в точке над растением
   const depth = depthPhoto(nowFrame, { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36], onMove: stacked ? null : (ox, oy, z) => {
-    const W = nowFrame.clientWidth, k = (0.8 - 0.42) * z;
+    const W = nowFrame.clientWidth, k = (0.6 - 0.37) * z;
     ghostNowEl.style.setProperty('--fx', (-ox * k * W * 0.35).toFixed(1) + 'px');  // вбок — чуть-чуть, чтобы край держал линию
     ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
   } });
