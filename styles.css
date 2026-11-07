@@ -635,6 +635,12 @@ a { color: inherit; text-decoration: none; }
 .burger:focus-visible, .brand:focus-visible, .header-cta:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
 
 .brand { display: flex; align-items: center; gap: calc(16 * var(--hu)); color: inherit; }
+/* логотип «B» в шапке */
+.logo-b { --ls: max(.62, calc(1 * var(--hu) / 1px)); position: relative; display: inline-flex; flex-direction: column; align-items: center; padding-top: calc(22px * var(--ls)); }
+.logo-b__last { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: calc(26px * var(--ls)); line-height: 1; letter-spacing: .34em; padding-left: .34em; color: #E8DCC8; white-space: nowrap; }
+.logo-b__first { position: absolute; left: 50%; top: 0; transform: translateX(-50%) rotate(-6deg); font-family: "Great Vibes", cursive; font-size: calc(42px * var(--ls)); line-height: 1; color: #C9A27A; white-space: nowrap; transition: transform .8s var(--ease); }
+.brand:hover .logo-b__first { transform: translateX(-50%) rotate(-2deg); }
+.logo-b__sub { margin-top: calc(8px * var(--ls)); font-family: "Tenor Sans", sans-serif; font-size: calc(9px * var(--ls)); letter-spacing: .6em; padding-left: .6em; color: #E8DCC8; opacity: .7; white-space: nowrap; }
 .brand .mono { width: calc(58 * var(--hu)); height: calc(58 * var(--hu)); min-width: 42px; min-height: 42px; color: #C9A27A; overflow: visible; transition: transform .8s var(--ease); }
 .brand:hover .mono { transform: rotate(-8deg); }
 .brand__role { font-weight: 300; font-size: max(11px, calc(14 * var(--hu))); letter-spacing: .32em; text-transform: uppercase; opacity: .85; }
