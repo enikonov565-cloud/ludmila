@@ -423,6 +423,7 @@ document.documentElement.classList.replace('no-js', 'js');
       onComplete: function () {
         gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
         busy = false; showMeaning();
+        if (wanted !== current) go(wanted > current ? 1 : -1); /* прокрутили дальше, пока шла смена — догоняем */
       } });
     current = next;
     if (cur) cur.textContent = String(current + 1).padStart(2, '0');
@@ -441,6 +442,38 @@ document.documentElement.classList.replace('no-js', 'js');
     }, { threshold: 0.4 }).observe(root);
   }
   restart();
+
+  /* Компьютер: блок закрепляется на экране, и прокрутка колёсиком листает сцены 01→04;
+     после четвёртой страница едет дальше. Автолистание тогда не нужно — сцену задаёт прокрутка. */
+  var wanted = 0;
+  var stackedMq = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
+  if (window.ScrollTrigger && !stackedMq.matches && !reduce) {
+    clearInterval(timer);
+    restart = function () {};
+    var hint = section.querySelector('.apx__scroll');
+    ScrollTrigger.create({
+      trigger: section, start: 'top top', end: '+=' + (total - 1) * 100 + '%', pin: true, pinSpacing: true,
+      onUpdate: function (self) {
+        wanted = Math.min(total - 1, Math.floor(self.progress * total * 0.999));
+        if (hint) hint.classList.toggle('is-done', wanted === total - 1);
+        if (!busy && wanted !== current) go(wanted > current ? 1 : -1);
+      }
+    });
+    /* стрелки и «Дальше» на обороте прокручивают страницу к нужной сцене — прокрутка и сцена не расходятся */
+    var st = ScrollTrigger.getAll().filter(function (t) { return t.trigger === section; })[0];
+    var jump = function (dir) {
+      var n = Math.max(0, Math.min(total - 1, current + dir));
+      var y = st.start + (st.end - st.start) * (n + 0.5) / total;
+      if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
+    };
+    var swap = function (sel, dir) {
+      frame.querySelectorAll(sel).forEach(function (el) {
+        var clone = el.cloneNode(true); el.parentNode.replaceChild(clone, el);
+        clone.addEventListener('click', function (e) { e.stopPropagation(); jump(dir); });
+      });
+    };
+    swap('.js-next', 1); swap('.js-prev', -1); swap('.js-card-next', 1);
+  }
 })();
 
 /* Заголовок «Мой подход» из частиц — по примеру VoXelo (CodePen, p5.js), переписан на чистый canvas.

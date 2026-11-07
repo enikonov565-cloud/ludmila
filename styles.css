@@ -556,6 +556,18 @@ a { color: inherit; text-decoration: none; }
 .apx__answer-head { margin: 0; font-weight: 500; font-size: calc(56 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
 .apx__answer-sub { margin: 0; width: auto; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
 
+/* подсказка: блок листается прокруткой — «мышка» с бегущим колёсиком (только компьютер) */
+.apx__scroll {
+  position: absolute; left: calc(781 * var(--u)); top: calc(1030 * var(--u)); margin: 0; z-index: 2;
+  display: flex; align-items: center; gap: calc(14 * var(--u));
+  font-weight: 300; font-size: calc(20 * var(--u)); letter-spacing: .03em; color: var(--ink); opacity: .85;
+  transition: opacity .5s var(--ease);
+}
+.apx__scroll.is-done { opacity: 0; }
+.apx__mouse { position: relative; width: calc(22 * var(--u)); height: calc(34 * var(--u)); border: 1.5px solid currentColor; border-radius: calc(12 * var(--u)); }
+.apx__mouse span { position: absolute; left: 50%; top: calc(6 * var(--u)); width: 2px; height: calc(7 * var(--u)); margin-left: -1px; border-radius: 2px; background: currentColor; animation: mouse-wheel 1.6s var(--ease) infinite; }
+@keyframes mouse-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(calc(10 * var(--u))); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .apx__mouse span { animation: none; } }
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
 .apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(905 * var(--u)); width: calc(218 * var(--u)); height: calc(110 * var(--u)); }
 .apx__count {
@@ -584,6 +596,7 @@ a { color: inherit; text-decoration: none; }
   .approach__title { position: relative; left: auto; top: auto; transform: none; opacity: 1; white-space: normal; font-size: clamp(36px, 10vw, 64px); }
   .approach__particles { left: -20px; top: -20px; }
   .approach__bg { display: none; }
+  .apx__scroll { display: none; }
   .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
   .apx__word { font-size: clamp(40px, 12vw, 80px); top: 0; }
   .apx__num { font-size: clamp(56px, 16vw, 110px); bottom: -8px; right: 10px; }
