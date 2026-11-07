@@ -754,24 +754,26 @@ a { color: inherit; text-decoration: none; }
   font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
 .story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
 .story__ghost .ch { display: inline-block; will-change: transform, opacity; }
-.story__ghost--now { opacity: 0; visibility: hidden; color: #F6EFE5; }
-.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
-.story__now-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
-.story__now-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7, 15, 16, .78) 0%, rgba(7, 15, 16, .35) 46%, rgba(7, 15, 16, 0) 70%), linear-gradient(0deg, rgba(7, 15, 16, .6) 0%, rgba(7, 15, 16, 0) 40%); }
-.story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(900 * var(--u)); }
-.story__plates { position: absolute; z-index: 3; left: calc(60 * var(--u)); bottom: calc(60 * var(--u)); display: flex; flex-direction: column; align-items: flex-start; gap: calc(14 * var(--u)); max-width: calc(760 * var(--u)); }
-.story__glass {
-  margin: 0; padding: calc(20 * var(--u)) calc(28 * var(--u)); border-radius: calc(20 * var(--u));
-  background: rgba(237, 232, 225, .12); border: 1px solid rgba(237, 232, 225, .22);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.3; color: #F6EFE5;
-}
-.story__glass--row { display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); padding: 0; border: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.story__glass--row span { padding: calc(12 * var(--u)) calc(22 * var(--u)); border-radius: 99px; background: rgba(237, 232, 225, .12); border: 1px solid rgba(237, 232, 225, .22); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); font-size: calc(20 * var(--u)); white-space: nowrap; }
+.story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: calc(928 * var(--u)); right: auto; top: calc(862 * var(--u)); margin: 0;
+  font-weight: 400; font-size: calc(180 * var(--u)); letter-spacing: 0; color: rgba(25, 25, 25, .3); }
+.story__now-photo { position: absolute; inset: 0; background: #fff; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; }
+.story__now-frame { position: absolute; left: calc(-71 * var(--u)); right: 0; top: calc(29 * var(--u)); bottom: 0; border-radius: calc(20 * var(--u)); overflow: hidden; }
+.story__now-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; }
+.story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(163 * var(--u)); max-width: calc(1144 * var(--u)); }
+/* «сейчас» — тёмный текст на светлом фото, как в макете «п-р 21» */
+.story__now .story__title { color: #202020; line-height: 1.1; }
+.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #191919; }
+.story__note .story__mask { padding: 0 0 .04em; margin: 0; }
+.story__note .story__reveal { white-space: nowrap; } /* строки — как в макете */
+.story__note--right { left: calc(1204 * var(--u)); top: calc(180 * var(--u)); width: calc(642 * var(--u)); }
+.story__note--left { left: calc(60 * var(--u)); top: calc(530 * var(--u)); width: calc(483 * var(--u)); letter-spacing: .015em; }
+.story__tags { position: absolute; z-index: 3; margin: 0; left: calc(60 * var(--u)); top: calc(884 * var(--u)); width: calc(520 * var(--u)); display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); }
+.story__tags span { padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u)); background: rgba(255, 255, 255, .3);
+  font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #191919; white-space: nowrap; }
 
 /* без WebGL — сразу показываем «сейчас» */
 .story.no-gl .story__then { display: none; }
-.story.no-gl .story__now-photo { opacity: 1; visibility: visible; }
+.story.no-gl .story__now-photo, .story.no-gl .story__now-text, .story.no-gl .story__ghost--now { opacity: 1; visibility: visible; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .story { --u: 1px; }
@@ -779,10 +781,15 @@ a { color: inherit; text-decoration: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
   .story__num { font-size: 1.28em; }
   .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
-  .story__ghost--now { top: calc(96px + 3.36 * clamp(32px, 8.6vw, 60px) + 14px); }
-  .story__plates { left: 20px; right: 20px; bottom: 28px; max-width: none; gap: 8px; }
-  .story__glass { padding: 14px 16px; font-size: clamp(14px, 3.8vw, 18px); border-radius: 14px; }
-  .story__glass--row span { padding: 9px 14px; font-size: clamp(12px, 3.4vw, 16px); }
-  .story__now-photo img { object-position: 60% 30%; }
-  .story__now-photo::after { background: linear-gradient(180deg, rgba(7, 15, 16, .75) 0%, rgba(7, 15, 16, .1) 38%, rgba(7, 15, 16, .2) 55%, rgba(7, 15, 16, .85) 100%); }
+  .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: 96px 20px 24px; }
+  .story__now-frame { left: 0; top: 0; border-radius: 0; }
+  .story__now-frame img { object-position: 60% 30%; }
+  .story__now-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, .78) 100%); }
+  .story__now-text, .story__note, .story__tags, .story__ghost--now { position: relative; left: auto; right: auto; top: auto; width: auto; max-width: none; }
+  .story__note { font-size: clamp(15px, 4.1vw, 19px); letter-spacing: 0; }
+  .story__note .story__reveal { white-space: normal; }
+  .story__note--right { margin-top: 14px; }
+  .story__ghost--now { margin: auto 0 4px; align-self: flex-end; font-size: clamp(64px, 20vw, 120px); }
+  .story__tags { margin-top: 14px; gap: 6px 8px; }
+  .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }
 }

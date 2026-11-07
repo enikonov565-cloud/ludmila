@@ -7,7 +7,8 @@
       на экране — карточка из макета: фото с детьми и белая плашка с текстом (время на чтение);
    2. ноутбук поворачивается на 180° — спиной к зрителю — и вся сцена (стол, ваза, ноутбук, надписи)
       уходит влево, а за ней справа налево открывается полноэкранное фото «Сейчас»;
-   3. «Теперь я делаю это визуально.», в полутоне — «Сейчас»; плашки появляются по одной, с паузами на чтение. */
+   3. «Теперь я делаю это визуально.» (макет «п-р 21»): строки выезжают из-под маски, «Сейчас» — по буквам,
+      тексты справа и слева и теги появляются по очереди, с паузами на чтение. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -289,7 +290,7 @@ async function init() {
   const READ = 0.07;                                    // ~0.07 с на букву — спокойное чтение
   const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
   const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
-  const glass = qa('.story__glass');
+  const noteR = q('.story__note--right'), noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* «Тогда» и «Сейчас» — по буквам */
   qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
   const ghostThen = q('.story__ghost--then'), ghostNow = q('.story__ghost--now');
@@ -311,15 +312,18 @@ async function init() {
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.4, ease: 'power2.in' }, 'away') // …фото справа налево
     .from(q('.story__now-photo img'), { xPercent: 8, scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
     .set(canvas, { autoAlpha: 0 })
-    .to(ghostNow, { autoAlpha: 0.3, duration: 0.01 })
-    .from(ghostNow.children, charsIn(), '<')
+    .call(() => section.classList.add('is-now'))                                  // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, '<')
-    .from(qa('.story__now .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
-    .to({}, { duration: 1.6 });
-  glass.forEach(el => {
-    tl.from(el, { y: 30, autoAlpha: 0, duration: 0.8, ease: 'power3.out' })
-      .to({}, { duration: readTime(el) });              // пауза на чтение каждой плашки
-  });
+    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, '<')
+    .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, '<0.35')
+    .from(ghostNow.children, charsIn(), '<')
+    .call(() => { gsap.to(ghostNow, { y: -10, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); })
+    .to({}, { duration: 1.4 })                                                     // время прочитать заголовок
+    .from(noteR.querySelectorAll('.story__reveal'), { yPercent: 110, duration: 0.9, ease: 'power3.out', stagger: 0.14 })
+    .to({}, { duration: readTime(noteR) })
+    .from(noteL.querySelectorAll('.story__reveal'), { yPercent: 110, duration: 0.9, ease: 'power3.out', stagger: 0.14 })
+    .to({}, { duration: readTime(noteL) })
+    .from(tags, { y: 24, autoAlpha: 0, filter: 'blur(8px)', duration: 0.8, ease: 'power3.out', stagger: 0.18 });
   render();
   if (reduce) { tl.progress(1); render(); return; }
   let played = false;
