@@ -67,6 +67,16 @@ async function init() {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   const key = new THREE.DirectionalLight(0xffe7cc, 1.1); key.position.set(3, 5, 4); scene.add(key);
+  /* ноутбук стоит на столешнице фирменного тёмно-зелёного цвета; дальний край уходит в туман того же цвета */
+  scene.fog = new THREE.Fog(0x0E1B1E, 5, 14);
+  const desk = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x1A2C30, roughness: 0.55, metalness: 0.1 }));
+  desk.rotation.x = -Math.PI / 2; scene.add(desk);
+  /* мягкая тень под ноутбуком */
+  const sh = document.createElement('canvas'); sh.width = sh.height = 256;
+  const sg = sh.getContext('2d'); const rg = sg.createRadialGradient(128, 128, 10, 128, 128, 128);
+  rg.addColorStop(0, 'rgba(0,0,0,.75)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); sg.fillStyle = rg; sg.fillRect(0, 0, 256, 256);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 2.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sh), transparent: true, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = 0.002; scene.add(shadow);
 
   const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 100);
 
@@ -85,7 +95,8 @@ async function init() {
   const k = 2.2 / Math.max(size.x, size.z);
   laptop.scale.setScalar(laptop.scale.x * k);
   const box2 = new THREE.Box3().setFromObject(laptop);
-  laptop.position.sub(box2.getCenter(new THREE.Vector3()));
+  const c2 = box2.getCenter(new THREE.Vector3());
+  laptop.position.x -= c2.x; laptop.position.z -= c2.z; laptop.position.y -= box2.min.y; // низ корпуса — на столе
   const turn = new THREE.Group(); turn.add(laptop); scene.add(turn);
 
   /* крышка: открываем как в демо (состояние «open») */
@@ -123,19 +134,21 @@ async function init() {
   };
   const camFar = new THREE.Vector3(), camNear = new THREE.Vector3(), look = new THREE.Vector3();
   function render() {
-    turn.rotation.y = Math.PI - 0.42 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
-    turn.rotation.x = 0.04;
+    turn.rotation.y = Math.PI - 0.22 + state.spin * Math.PI * 2; // модель смотрит назад — разворачиваем к зрителю
+    turn.rotation.x = 0;
     /* slide: развёрнутый ноутбук уезжает влево за край кадра */
-    turn.position.set((camera.aspect < 1.2 ? 0 : 0.62) - state.slide * (camera.aspect < 1.2 ? 4.5 : 6.5), camera.aspect < 1.2 ? -0.6 : -0.28, 0); // на компьютере — правее, чтобы не закрывать заголовок
+    turn.position.set(-state.slide * (camera.aspect < 1.2 ? 4.5 : 7), 0, 0); // по центру; развёрнутый уходит влево
+    shadow.position.x = turn.position.x;
     /* смена картинки, когда ноутбук повернулся спиной */
     const showNow = state.spin > 0.5;
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
-    camFar.set(portrait ? -0.2 : 0.55, portrait ? 2 : 0.95, portrait ? 6.6 / Math.max(0.36, camera.aspect) : 4.6); // на телефоне камера дальше — ноутбук целиком
+    camFar.set(0, portrait ? 2.6 : 1.9, portrait ? 7.2 / Math.max(0.36, camera.aspect) : 6.4); // камера чуть выше стола, по центру
+    const dist = camFar.length(); scene.fog.near = dist - 0.5; scene.fog.far = dist + 9; // дальний край стола растворяется в фоне
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
-    look.set(portrait ? 0.25 : 0, 0.25, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4));
+    look.set(0, portrait ? 1.0 : 1.05, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
     camera.lookAt(look);
     renderer.render(scene, camera);
   }
@@ -148,10 +161,10 @@ async function init() {
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     onUpdate: render,
-    scrollTrigger: { trigger: section, start: 'top top', end: reduce ? '+=100%' : '+=340%', pin: true, scrub: 0.8, anticipatePin: 1 },
+    scrollTrigger: { trigger: section, start: 'top top', end: reduce ? '+=100%' : '+=340%', pin: true, scrub: 0.8, anticipatePin: 1, refreshPriority: -1 }, // блок ниже закреплённого «Моего подхода» — считаем после него
   });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 0)
-    .from(state, { zoom: -0.35, duration: 1, ease: 'power2.out' }, 0)
+    .from(state, { spin: -0.06, duration: 1, ease: 'power2.out' }, 0) // лёгкий доворот при появлении
     .to({}, { duration: 0.6 })
     .to(q('.story__then'), { autoAlpha: 0, y: -40, duration: 0.5 }, 1.5)
     .to(state, { spin: 0.5, duration: 1.8, ease: 'power2.inOut' }, 1.5)          // поворот на 180° — спиной к зрителю

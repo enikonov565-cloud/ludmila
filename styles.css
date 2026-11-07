@@ -728,19 +728,23 @@ a { color: inherit; text-decoration: none; }
 .story {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
   position: relative; overflow: hidden; overflow: clip;
-  height: 100svh; min-height: 560px; background: #070F10; color: #E8DCC8;
+  height: 100svh; min-height: 560px; color: #BDB7B1;
+  background: linear-gradient(180deg, #1A2C30 0%, #070F10 100%); /* фирменный фон, как во втором блоке */
 }
-.story__bg { position: absolute; inset: 0; background: url(img/story/interior.jpg) center / cover no-repeat; }
-.story__bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 70% at 62% 55%, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .55) 70%, rgba(7, 15, 16, .85) 100%); }
+/* интерьер — едва заметно, в тон фирменному тёмно-зелёному */
+.story__bg { position: absolute; inset: 0; background: url(img/story/interior.jpg) center / cover no-repeat; opacity: .28; mix-blend-mode: luminosity; }
+.story__bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 55% at 50% 62%, rgba(26, 44, 48, 0) 0%, rgba(7, 15, 16, .7) 100%); }
 .story__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .8s var(--ease); }
 .story.gl-ready .story__gl { opacity: 1; }
 
 /* заголовки — Inter Medium 77, подзаголовок — тонкий разреженный, как подписи сайта */
-.story__title { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.04; letter-spacing: -.02em; color: #E8DCC8; }
+/* заголовки — как «Людмила Иващенко»: Inter 500 77, #BDB7B1, рукописная заглавная */
+.story__title { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #BDB7B1; }
+.story__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
 .story__mask { display: block; overflow: hidden; padding-bottom: .06em; }
 .story__reveal { display: inline-block; will-change: transform; }
-.story__sub { margin: calc(22 * var(--u)) 0 0; font-weight: 300; font-size: calc(22 * var(--u)); letter-spacing: .32em; text-transform: uppercase; color: #C9A27A; }
-.story__accent { font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.35em; line-height: .9; letter-spacing: 0; color: #C9A27A; }
+/* подзаголовки — как «Адаптировалась под новую реальность»: курсив 30, #BDB7B1 */
+.story__sub { margin: calc(18 * var(--u)) 0 0; font-style: italic; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #BDB7B1; }
 
 .story__then { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(820 * var(--u)); pointer-events: none; }
 
@@ -768,7 +772,7 @@ a { color: inherit; text-decoration: none; }
   .story { --u: 1px; }
   .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
-  .story__sub { margin-top: 12px; font-size: 13px; }
+  .story__sub { margin-top: 10px; font-size: clamp(18px, 4.8vw, 26px); }
   .story__plates { left: 20px; right: 20px; bottom: 28px; max-width: none; gap: 8px; }
   .story__glass { padding: 14px 16px; font-size: clamp(14px, 3.8vw, 18px); border-radius: 14px; }
   .story__glass--row span { padding: 9px 14px; font-size: clamp(12px, 3.4vw, 16px); }

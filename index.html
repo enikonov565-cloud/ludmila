@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=112">
+<link rel="stylesheet" href="styles.css?v=113">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -42,9 +42,9 @@
   <ul class="site-menu__list">
     <li><a href="#top"><span>01</span>Главная</a></li>
     <li><a href="#about"><span>02</span>Обо мне</a></li>
-    <li><a href="#story"><span>03</span>Мой путь</a></li>
-    <li><a href="#works"><span>04</span>Работы</a></li>
-    <li><a href="#approach"><span>05</span>Мой подход</a></li>
+    <li><a href="#works"><span>03</span>Работы</a></li>
+    <li><a href="#approach"><span>04</span>Мой подход</a></li>
+    <li><a href="#story"><span>05</span>Мой путь</a></li>
   </ul>
   <a class="site-menu__cta" href="#">Связаться со мной</a>
 </nav>
@@ -146,29 +146,6 @@
           <li class="tag">Инфографика</li>
         </ul>
       </div>
-    </div>
-  </div>
-</section>
-<!-- Блок «Мой путь» (Figma «п-р10»): 3D-ноутбук на тёмном интерьерном фоне, сцена по прокрутке — story3d.js -->
-<section class="story" id="story" aria-labelledby="story-title">
-  <div class="story__bg" aria-hidden="true"></div>
-  <canvas class="story__gl" aria-hidden="true"></canvas>
-
-  <div class="story__then">
-    <h2 class="story__title" id="story-title"><span class="story__mask"><span class="story__reveal">30 лет я&nbsp;учила людей</span></span><span class="story__mask"><span class="story__reveal">понимать сложное.</span></span></h2>
-    <p class="story__sub"><span class="story__mask"><span class="story__reveal">Тогда</span></span></p>
-  </div>
-
-  <div class="story__now">
-    <div class="story__now-photo"><img src="img/story/now-full.jpg" width="1600" height="1600" alt="Людмила за ноутбуком — сейчас она веб-дизайнер" loading="lazy"></div>
-    <div class="story__now-text">
-      <h3 class="story__title"><span class="story__mask"><span class="story__reveal">Теперь я&nbsp;делаю это</span></span><span class="story__mask"><span class="story__reveal story__accent">визуально.</span></span></h3>
-      <p class="story__sub"><span class="story__mask"><span class="story__reveal">Сейчас</span></span></p>
-    </div>
-    <div class="story__plates">
-      <p class="story__glass">В&nbsp;дизайне — то&nbsp;же самое: клиент не&nbsp;читает, а&nbsp;смотрит на&nbsp;экран 3&nbsp;секунды и&nbsp;решает — доверяю или нет.</p>
-      <p class="story__glass">Я&nbsp;умею упаковывать смысл так, чтобы визуальный посыл считывался моментально.</p>
-      <p class="story__glass story__glass--row"><span>Системность</span><span>Эмпатия к&nbsp;аудитории</span><span>Результат без&nbsp;переделок</span></p>
     </div>
   </div>
 </section>
@@ -319,6 +296,30 @@
     </div>
   </div>
 </section>
+
+<!-- Блок «Мой путь» (Figma «п-р10»): 3D-ноутбук на тёмном интерьерном фоне, сцена по прокрутке — story3d.js -->
+<section class="story" id="story" aria-labelledby="story-title">
+  <div class="story__bg" aria-hidden="true"></div>
+  <canvas class="story__gl" aria-hidden="true"></canvas>
+
+  <div class="story__then">
+    <h2 class="story__title" id="story-title"><span class="story__mask"><span class="story__reveal">30 лет я&nbsp;учила людей</span></span><span class="story__mask"><span class="story__reveal">понимать сложное.</span></span></h2>
+    <p class="story__sub"><span class="story__mask"><span class="story__reveal">Тогда</span></span></p>
+  </div>
+
+  <div class="story__now">
+    <div class="story__now-photo"><img src="img/story/now-full.jpg" width="1600" height="1600" alt="Людмила за ноутбуком — сейчас она веб-дизайнер" loading="lazy"></div>
+    <div class="story__now-text">
+      <h3 class="story__title"><span class="story__mask"><span class="story__reveal"><span class="cap">Т</span>еперь я&nbsp;делаю это</span></span><span class="story__mask"><span class="story__reveal">визуально.</span></span></h3>
+      <p class="story__sub"><span class="story__mask"><span class="story__reveal">Сейчас</span></span></p>
+    </div>
+    <div class="story__plates">
+      <p class="story__glass">В&nbsp;дизайне — то&nbsp;же самое: клиент не&nbsp;читает, а&nbsp;смотрит на&nbsp;экран 3&nbsp;секунды и&nbsp;решает — доверяю или нет.</p>
+      <p class="story__glass">Я&nbsp;умею упаковывать смысл так, чтобы визуальный посыл считывался моментально.</p>
+      <p class="story__glass story__glass--row"><span>Системность</span><span>Эмпатия к&nbsp;аудитории</span><span>Результат без&nbsp;переделок</span></p>
+    </div>
+  </div>
+</section>
 </main>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -326,6 +327,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js?v=52"></script>
-<script type="module" src="story3d.js?v=10"></script>
+<script type="module" src="story3d.js?v=14"></script>
 </body>
 </html>
