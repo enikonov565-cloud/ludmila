@@ -16,12 +16,12 @@
   var bits = function (p) { return p.querySelectorAll('.case__list li, .case__stat, .case__divider'); };
   var shot = function (p) { return p.querySelector('.case__shot'); };
 
-  /* заход в блок: заголовок выезжает из-под строки, плашка «+20%» проявляется, первая страница собирается */
+  /* заход в блок: заголовок выезжает из-под строки, цифра «+20%» проявляется, первая страница собирается */
   var intro = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
   intro.from(sec.querySelectorAll('.case__head .story__reveal'), { yPercent: 110, duration: 1, stagger: 0.12 })
     .from(sec.querySelector('.case__kicker'), { autoAlpha: 0, y: 14, duration: 0.7 }, 0.3)
-    .from(sec.querySelector('.case__badge'), { autoAlpha: 0, scale: 0.9, duration: 0.8, ease: 'back.out(1.6)' }, 0.35)
-    .from(sec.querySelector('.case__result-note'), { autoAlpha: 0, x: 20, duration: 0.7 }, 0.5)
+    .from(sec.querySelector('.case__num'), { autoAlpha: 0, y: 30, filter: 'blur(10px)', duration: 1 }, 0.3)
+    .from(sec.querySelectorAll('.case__word, .case__niche'), { autoAlpha: 0, y: 18, duration: 0.8, stagger: 0.15 }, 0.55)
     .from(sec.querySelector('.case__nav'), { autoAlpha: 0, duration: 0.6 }, 0.8)
     .call(function () { if (hint) hint.classList.add('is-in'); }, null, 0.9);
 
