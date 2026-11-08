@@ -27,7 +27,8 @@
 
   var pageIn = function (p, delay) {
     var tl = gsap.timeline({ delay: delay || 0 });
-    var s = shot(p);
+    var s = shot(p), g = p.querySelector('.case__ghost');
+    if (g) tl.fromTo(g, { xPercent: -6, autoAlpha: 0, filter: 'blur(12px)' }, { xPercent: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 1.3, ease: 'power3.out' }, 0);
     if (s) tl.fromTo(s, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.inOut' }, 0)
              .fromTo(s.querySelector('img'), { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power2.out' }, 0);
     tl.fromTo(bits(p), { y: 24, autoAlpha: 0, filter: 'blur(6px)' },
@@ -53,6 +54,7 @@
   /* компьютер: страницы лежат друг на друге, видна одна */
   gsap.set(pages.slice(1), { autoAlpha: 0 });
   gsap.set(bits(pages[0]), { autoAlpha: 0 });
+  gsap.set(pages[0].querySelector('.case__ghost'), { autoAlpha: 0 });
   if (shot(pages[0])) gsap.set(shot(pages[0]), { clipPath: 'inset(0 0 100% 0)' });
   var started = false;
   new IntersectionObserver(function (en) {

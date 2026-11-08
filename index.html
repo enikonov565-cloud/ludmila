@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=149">
+<link rel="stylesheet" href="styles.css?v=151">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -332,7 +332,8 @@
     <p class="case__niche">реальный результат кейса</p>
   </div>
   <div class="case__pages">
-    <article class="case__page is-active" aria-label="До оформления">
+    <article class="case__page case__page--shot is-active" aria-label="До оформления">
+      <p class="case__ghost" aria-hidden="true">До</p>
       <figure class="case__shot"><img src="img/case/before.webp" width="1080" height="1350" alt="До: исходные фото чайной пары на белом фоне, без оформления" loading="lazy"></figure>
       <ul class="case__list">
         <li>Нет заголовка и&nbsp;описания</li>
@@ -340,7 +341,8 @@
         <li>Вопросы покупателя не&nbsp;закрыты</li>
       </ul>
     </article>
-    <article class="case__page" aria-label="После оформления">
+    <article class="case__page case__page--shot" aria-label="После оформления">
+      <p class="case__ghost" aria-hidden="true">После</p>
       <figure class="case__shot"><img src="img/case/after.webp" width="1080" height="1350" alt="После: оформленная карточка «Чайная пара „Грёзы“» на красном фоне и три слайда о дизайне, тепле и подарке" loading="lazy"></figure>
       <ul class="case__list">
         <li>Закрыты вопросы покупателя</li>
@@ -370,7 +372,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js?v=54"></script>
-<script src="case.js?v=3"></script>
+<script src="case.js?v=4"></script>
 <script type="module" src="story3d.js?v=41"></script>
 </body>
 </html>
