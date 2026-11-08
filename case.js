@@ -13,7 +13,7 @@
   var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var bits = function (p) { return p.querySelectorAll('.case__cell, .case__stat, .case__divider'); };
+  var bits = function (p) { return p.querySelectorAll('.case__item, .case__stat, .case__divider'); };
   var shot = function (p) { return p.querySelector('.case__shot'); };
 
   /* заход в блок: заголовок выезжает из-под строки, цифра «+20%» проявляется, первая страница собирается */
