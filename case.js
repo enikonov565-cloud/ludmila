@@ -61,6 +61,7 @@
   }
 
   /* компьютер: страницы лежат друг на друге, видна одна */
+  gsap.set(sec.querySelectorAll('.case__ghost'), { xPercent: -50, yPercent: -50 });   // слово — центром в точке
   gsap.set(pages.slice(1), { autoAlpha: 0 });
   gsap.set(bits(pages[0]), { autoAlpha: 0 });
   gsap.set(pages[0].querySelector('.case__ghost'), { autoAlpha: 0 });

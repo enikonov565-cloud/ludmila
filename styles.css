@@ -828,13 +828,13 @@ a { color: inherit; text-decoration: none; }
 .case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
 .case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 /* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
-.case__result { position: absolute; z-index: 2; left: auto; right: calc(60 * var(--u)); top: calc(808 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: column; align-items: flex-start; gap: calc(14 * var(--u)); text-align: left; color: #BDB7B1; }
-.case__result-row { display: flex; align-items: center; gap: calc(26 * var(--u)); }   /* цифра и слова — в одну строку, подпись — под ними */
+.case__result { position: absolute; z-index: 2; left: auto; right: calc(60 * var(--u)); top: calc(808 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(14 * var(--u)); text-align: center; color: #BDB7B1; }
+.case__result-row { display: flex; align-items: center; gap: calc(26 * var(--u)); text-align: left; }   /* слова — по середине высоты цифры, подпись — по центру под всей связкой */
 .case__result p { margin: 0; }
 .case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(150 * var(--u)); line-height: 1; letter-spacing: calc(-3 * var(--u)); text-box: trim-both cap alphabetic; white-space: nowrap; } /* шрифт «30+» */
 .case__num span { font-size: calc(150 * var(--u)); }
 .case__num .case__pct { font-size: calc(108 * var(--u)); }
-.case__word { font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }   /* как «Я читаю бизнес — и сразу делаю то, что нужно» */
+.case__word { margin-top: calc(14 * var(--u)) !important; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }   /* как «Я читаю бизнес — и сразу делаю то, что нужно» */
 .case__niche { font-style: italic; font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.2; }   /* шрифт «в разных нишах» */
 
 /* страницы лежат друг на друге, видна одна; фото — целиком, в своих пропорциях */
@@ -850,7 +850,7 @@ a { color: inherit; text-decoration: none; }
    размер как у «Тогда»/«Сейчас»), фото заходит на него; справа пункты лесенкой — как подписи под снимками */
 .case__page--shot { display: block; }
 /* «До» / «После» — в полутоне, в пустой ячейке сетки справа от верхнего фото (left 856, top 226, 360×360) */
-.case__ghost { position: absolute; z-index: 0; left: calc(60 * var(--u) + 2 * var(--S) + 2 * var(--g)); top: calc(120 * var(--u)); width: calc(var(--S) + var(--g)); height: calc(866 * var(--u) - var(--S)); margin: 0;
+.case__ghost { position: absolute; z-index: 0; left: calc(60 * var(--u) + 2.5 * var(--S) + 2 * var(--g)); top: calc((1087 * var(--u) - var(--S)) / 2); margin: 0; pointer-events: none; white-space: nowrap; /* центр — над нижним правым фото, посередине свободного места */
   display: flex; align-items: center; pointer-events: none; white-space: nowrap;
   font-weight: 300; font-size: calc(230 * var(--u)); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .2); }
 .case__page--shot + .case__page--shot .case__ghost { font-size: calc(var(--S) * .33); }
