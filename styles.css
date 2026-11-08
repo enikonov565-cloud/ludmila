@@ -823,19 +823,19 @@ a { color: inherit; text-decoration: none; }
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
-.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); width: calc(900 * var(--u)); }
-.case__kicker { margin: calc(26 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
-/* результат кейса — как «30+ проектов в разных нишах»: цифра шрифтом Wulkan курсивом, слово Inter, подпись курсивом */
-.case__result { position: absolute; z-index: 2; right: calc(60 * var(--u)); top: calc(118 * var(--u)); display: flex; flex-direction: column; align-items: flex-end; gap: calc(16 * var(--u)); color: #BDB7B1; }
+.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(104 * var(--u)); width: calc(900 * var(--u)); }
+.case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
+/* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
+.case__result { position: absolute; z-index: 2; left: calc(1338 * var(--u)); top: calc(800 * var(--u)); width: calc(449 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(14 * var(--u)); text-align: center; color: #BDB7B1; }
 .case__result p { margin: 0; }
-.case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(150 * var(--u)); line-height: 1.1; letter-spacing: calc(-3 * var(--u)); text-box: trim-both cap alphabetic; }
-.case__num span { font-size: calc(153 * var(--u)); }
-.case__num .case__pct { font-size: calc(110 * var(--u)); } /* знак % — меньше цифр */
-.case__word { font-weight: 500; font-size: calc(64 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }
-.case__niche { font-style: italic; font-size: calc(30 * var(--u)); line-height: 1.2; }
+.case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(96 * var(--u)); line-height: 1.1; letter-spacing: -.02em; text-box: trim-both cap alphabetic; }
+.case__num span { font-size: calc(96 * var(--u)); }
+.case__num .case__pct { font-size: calc(70 * var(--u)); }
+.case__word { font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.02em; color: #CDCBC7; }
+.case__niche { font-weight: 300; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: .02em; }
 
 /* страницы лежат друг на друге, видна одна; фото — целиком, в своих пропорциях */
-.case__pages { position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(330 * var(--u)); bottom: calc(150 * var(--u)); }
+.case__pages { position: absolute; inset: 0; }
 .case__page { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: calc(90 * var(--u)); }
 .case__page:not(.is-active) { pointer-events: none; }
 .case__shot { margin: 0; height: 100%; aspect-ratio: 1080 / 1350; border: 1px solid rgba(189, 183, 177, .35); overflow: hidden; background: #191919; }
@@ -846,22 +846,21 @@ a { color: inherit; text-decoration: none; }
 /* «До» / «После» — как в референсе, только зеркально: слева на заднем плане огромное слово (Inter Light, полутон,
    размер как у «Тогда»/«Сейчас»), фото заходит на него; справа пункты лесенкой — как подписи под снимками */
 .case__page--shot { display: block; }
-.case__ghost { position: absolute; z-index: 0; right: calc(-8 * var(--u)); top: calc(60 * var(--u)); margin: 0; pointer-events: none; white-space: nowrap;
-  font-weight: 300; font-size: calc(230 * var(--u)); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .22); }
-/* все фото блока — в одном виде: без рамок, с одинаковым мягким скруглением */
-.case__page--shot .case__shot { position: absolute; z-index: 1; right: calc(150 * var(--u)); top: calc(200 * var(--u)); height: calc(430 * var(--u)); width: auto; aspect-ratio: auto;
-  border: 0; border-radius: calc(16 * var(--u)); overflow: hidden; background: none; }
-.case__page--shot .case__shot img { width: auto; height: 100%; }
-.case__gallery { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
-.case__gallery li { position: absolute; width: calc(220 * var(--u)); display: flex; flex-direction: column; gap: calc(14 * var(--u)); }
-.case__gallery img { display: block; width: 100%; height: auto; border-radius: calc(16 * var(--u)); }
-.case__gallery span { font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.2; letter-spacing: -.01em; color: #BDB7B1; }
-.case__gallery li:nth-child(1) { left: 0; top: calc(20 * var(--u)); }
-.case__gallery li:nth-child(2) { left: calc(300 * var(--u)); top: calc(190 * var(--u)); }
-.case__gallery li:nth-child(3) { left: calc(600 * var(--u)); top: calc(60 * var(--u)); }
+.case__ghost { display: none; }   /* в макете «п-р 23» слова на заднем плане нет */
+.case__page--shot .case__shot { position: absolute; z-index: 1; left: calc(1254 * var(--u)); top: calc(157 * var(--u)); width: calc(616 * var(--u)); height: calc(616 * var(--u));
+  aspect-ratio: auto; margin: 0; border: 1px solid rgba(255, 250, 250, .55); background: none; overflow: visible; display: flex; align-items: center; justify-content: center; }
+.case__page--shot .case__shot img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; border-radius: calc(16 * var(--u)); }
+/* сетка 3×2: тексты и фото в шахматном порядке; фото целиком, вписаны в квадрат */
+.case__grid { position: absolute; left: calc(60 * var(--u)); top: calc(226 * var(--u)); width: calc(1156 * var(--u)); height: calc(774 * var(--u)); margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: calc(38 * var(--u)); }
+.case__cell { position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; }
+.case__cell img { display: block; height: 100%; width: auto; max-width: 100%; object-fit: contain; border-radius: calc(16 * var(--u)); } /* фото заполняет квадрат по высоте, целиком */
+.case__cell--text { justify-content: flex-start; align-items: flex-end; }
+.case__cell--text p { margin: 0; padding: calc(20 * var(--u)) 0 0; width: 100%; border-top: 1px solid rgba(189, 183, 177, .35);
+  font-weight: 400; font-size: calc(28 * var(--u)); line-height: 1.2; letter-spacing: -.01em; color: #BDB7B1; }
 
 /* «Итог»: три цифры с вертикальными разделителями из макета */
-.case__page--stats { gap: calc(55 * var(--u)); }
+.case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }
 .case__stat { width: calc(438 * var(--u)); display: flex; flex-direction: column; gap: calc(15 * var(--u)); }
 .case__stat p { margin: 0; }
 .case__stat-num { font-weight: 500; font-size: calc(110 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #BDB7B1; }
@@ -869,7 +868,7 @@ a { color: inherit; text-decoration: none; }
 .case__divider { width: calc(200 * var(--u)); height: auto; margin: 0 calc(-72 * var(--u)); transform: rotate(90deg); opacity: .5; }
 
 /* счётчик 01 / 03 и стрелки — как в «Моём подходе» */
-.case__nav { position: absolute; z-index: 2; left: calc(60 * var(--u)); bottom: calc(46 * var(--u)); display: flex; align-items: flex-end; gap: calc(18 * var(--u)); color: #BDB7B1; }
+.case__nav { position: absolute; z-index: 2; left: calc(60 * var(--u)); bottom: calc(10 * var(--u)); display: flex; align-items: flex-end; gap: calc(18 * var(--u)); color: #BDB7B1; }
 .case__count { order: 2; margin: 0 0 calc(4 * var(--u)); display: flex; align-items: baseline; gap: calc(12 * var(--u)); }
 .case__cur { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(54 * var(--u)); line-height: 1; letter-spacing: -.02em; }
 .case__sep { width: 1px; height: calc(24 * var(--u)); background: currentColor; opacity: .5; transform: rotate(25deg); }
@@ -882,7 +881,7 @@ a { color: inherit; text-decoration: none; }
 .case__arrow--next:hover { transform: translateX(calc(6 * var(--u))); }
 .case__arrow--prev:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
 .case__arrow:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
-.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); bottom: calc(56 * var(--u)); margin: 0; display: flex; align-items: center; gap: calc(14 * var(--u));
+.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); bottom: calc(22 * var(--u)); margin: 0; display: flex; align-items: center; gap: calc(14 * var(--u));
   font-weight: 300; font-size: calc(20 * var(--u)); letter-spacing: .03em; color: #BDB7B1; opacity: 0; transition: opacity .6s ease; }
 .case__hint.is-in { opacity: .85; }
 .case__hint.is-in.is-done { opacity: 0; }
@@ -896,7 +895,7 @@ a { color: inherit; text-decoration: none; }
   .case__head { width: auto; }
   .case__title { font-size: clamp(32px, 8.6vw, 60px); }
   .case__kicker { margin-top: 12px; font-size: 15px; }
-  .case__result { align-items: flex-start; gap: 10px; }
+  .case__result { position: static; width: auto; align-items: flex-start; text-align: left; gap: 10px; }
   .case__num { font-size: clamp(84px, 24vw, 150px); letter-spacing: -.02em; }
   .case__num span { font-size: 1.02em; }
   .case__word { font-size: clamp(30px, 8.4vw, 56px); }
@@ -904,19 +903,15 @@ a { color: inherit; text-decoration: none; }
   .case__pages { margin-top: 48px; display: flex; flex-direction: column; gap: 56px; }
   .case__page { flex-direction: column; align-items: stretch; gap: 28px; }
   .case__page--shot { display: flex; position: relative; }
-  .case__ghost { position: relative; left: auto; right: auto; top: auto; margin: 0 0 -0.42em; font-size: clamp(56px, 17vw, 110px); }
-  .case__page--shot .case__shot { position: relative; left: auto; right: auto; top: auto; height: auto; width: 100%; border-radius: 14px; }
-  .case__page--shot .case__shot img { width: 100%; height: auto; }
-  .case__gallery { position: static; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: start; }
-  .case__gallery li { position: static; width: auto; gap: 8px; }
-  .case__gallery li:nth-child(2) { margin-top: 28px; }
-  .case__gallery span { font-size: 13px; }
-  .case__gallery img { border-radius: 10px; }
-  .case__shot { height: auto; width: 100%; }
-  .case__list { width: auto; gap: 18px; }
-  .case__list li { padding-left: 24px; font-size: clamp(16px, 4.4vw, 20px); }
-  .case__list li::before { width: 8px; height: 8px; }
-  .case__page--stats { gap: 28px; }
+  .case__ghost { display: block; position: relative; left: auto; right: auto; top: auto; margin: 0 0 -0.42em; font-weight: 300; font-size: clamp(56px, 17vw, 110px); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .22); }
+  .case__page--shot .case__shot { position: relative; left: auto; top: auto; width: 100%; height: auto; border: 0; }
+  .case__page--shot .case__shot img { width: 100%; max-height: none; border-radius: 14px; }
+  .case__grid { position: static; width: auto; height: auto; grid-template-columns: 1fr 1fr; grid-template-rows: none; gap: 12px; }
+  .case__cell img { border-radius: 10px; height: auto; width: 100%; }
+  .case__cell:nth-child(1) { order: 1; } .case__cell:nth-child(2) { order: 2; } .case__cell:nth-child(3) { order: 4; }
+  .case__cell:nth-child(4) { order: 3; } .case__cell:nth-child(5) { order: 5; } .case__cell:nth-child(6) { order: 6; } /* шахматный порядок и на телефоне */
+  .case__cell--text p { padding-top: 10px; font-size: clamp(14px, 3.9vw, 17px); }
+  .case__page--stats { inset: auto; gap: 28px; }
   .case__stat { width: auto; gap: 8px; }
   .case__stat-num { font-size: clamp(48px, 14vw, 72px); }
   .case__stat-text { font-size: clamp(15px, 4.2vw, 18px); }
