@@ -821,14 +821,14 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */
 .case {
-  --u: min(calc(100vw / 1920), calc(100svh / 1080)); --ox: max(0px, calc((100vw - 1920 * var(--u)) / 2)); /* кадр макета 1920 — по центру широкого экрана */
+  --u: min(calc(100vw / 1920), calc(100svh / 1080)); --S: min(calc(480 * var(--u)), calc((100vw - 850 * var(--u)) / 3)); /* квадрат фото — как самый маленький во втором блоке (480), на узком экране меньше */
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
-.case__head { position: absolute; z-index: 2; left: calc(var(--ox) + 60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
+.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
 .case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 /* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
-.case__result { position: absolute; z-index: 2; left: calc(var(--ox) + 1380 * var(--u)); top: calc(805 * var(--u)); width: calc(449 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); text-align: center; color: #BDB7B1; }
+.case__result { position: absolute; z-index: 2; left: auto; right: calc(91 * var(--u)); top: calc(805 * var(--u)); width: calc(449 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); text-align: center; color: #BDB7B1; }
 .case__result p { margin: 0; }
 .case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(96 * var(--u)); line-height: 1.1; letter-spacing: calc(-2 * var(--u)); text-box: trim-both cap alphabetic; } /* шрифт «30+» */
 .case__num span { font-size: calc(96 * var(--u)); }
@@ -849,26 +849,26 @@ a { color: inherit; text-decoration: none; }
    размер как у «Тогда»/«Сейчас»), фото заходит на него; справа пункты лесенкой — как подписи под снимками */
 .case__page--shot { display: block; }
 /* «До» / «После» — в полутоне, в пустой ячейке сетки справа от верхнего фото (left 856, top 226, 360×360) */
-.case__ghost { position: absolute; z-index: 0; left: calc(var(--ox) + 856 * var(--u)); top: calc(226 * var(--u)); width: calc(398 * var(--u)); height: calc(360 * var(--u)); margin: 0;
+.case__ghost { position: absolute; z-index: 0; left: calc(100% - 714 * var(--u) - var(--S)); top: calc(226 * var(--u)); width: calc(var(--S) + 38 * var(--u)); height: calc(748 * var(--u) - var(--S)); margin: 0;
   display: flex; align-items: center; pointer-events: none; white-space: nowrap;
   font-weight: 300; font-size: calc(230 * var(--u)); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .2); }
 .case__page--shot + .case__page--shot .case__ghost { font-size: calc(95 * var(--u)); }
 .case__ghost .ch { display: inline-block; will-change: transform, opacity; }
 
 /* крупное фото: left 1254, top 157, 616×616 — квадрат, как фото во втором блоке (прямые углы, фото заполняет квадрат) */
-.case__page--shot .case__shot { position: absolute; z-index: 1; left: calc(var(--ox) + 1254 * var(--u)); top: calc(157 * var(--u)); width: calc(616 * var(--u)); height: calc(616 * var(--u));
+.case__page--shot .case__shot { position: absolute; z-index: 1; left: auto; right: calc(60 * var(--u)); top: calc(157 * var(--u)); width: calc(616 * var(--u)); height: calc(616 * var(--u));
   margin: 0; border: 0; border-radius: 0; overflow: hidden; background: none; }
 .case__page--shot .case__shot img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; object-position: 50% 0; border-radius: 0; }
 
 /* сетка 3×2: left 60, top 226, 1156×774, зазор 38 → квадраты 360×360; фото в ячейках 2, 4, 6 */
 .case__grid { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
-.case__item { position: absolute; width: calc(360 * var(--u)); display: block; }
-.case__item img { display: block; width: calc(360 * var(--u)); height: calc(360 * var(--u)); object-fit: cover; object-position: 50% 0; border-radius: 0; box-shadow: none; }
+.case__item { position: absolute; width: var(--S); display: block; }
+.case__item img { display: block; width: var(--S); height: var(--S); object-fit: cover; object-position: 50% 0; border-radius: 0; box-shadow: none; }
 /* подпись под фото — как текст «Вы любите своё дело…» во втором блоке */
 .case__item p { margin: calc(22 * var(--u)) 0 0; font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; color: #BDB7B1; }
-.case__item--top { left: calc(var(--ox) + 458 * var(--u)); top: calc(226 * var(--u)); }
-.case__item--left { left: calc(var(--ox) + 60 * var(--u)); top: calc(632 * var(--u)); }
-.case__item--right { left: calc(var(--ox) + 856 * var(--u)); top: calc(632 * var(--u)); }
+.case__item--top { left: calc((100% - 654 * var(--u) - var(--S)) / 2); top: calc(226 * var(--u)); }   /* посередине между левым и правым */
+.case__item--left { left: calc(60 * var(--u)); top: auto; bottom: calc(26 * var(--u)); }
+.case__item--right { left: calc(100% - 714 * var(--u) - var(--S)); top: auto; bottom: calc(26 * var(--u)); }   /* у крупного фото, зазор 38 */
 
 /* «Итог»: три цифры с вертикальными разделителями из макета */
 .case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }
@@ -880,9 +880,9 @@ a { color: inherit; text-decoration: none; }
 
 /* счётчик и стрелки — те же, что в «Моём подходе» (классы apx__*); здесь только место и цвет */
 .case { --ink: #BDB7B1; }
-.case__nav { position: absolute; z-index: 2; left: calc(var(--ox) + 529 * var(--u)); top: auto; bottom: calc(26 * var(--u)); }
+.case__nav { position: absolute; z-index: 2; left: calc((100% - 654 * var(--u) - var(--S)) / 2 + (var(--S) - 218 * var(--u)) / 2); top: auto; bottom: calc(26 * var(--u)); }
 /* «дальше» — круглая стрелка с «пульсом», как на «Тогда» */
-.case__hint { position: absolute; z-index: 2; right: calc(var(--ox) + 60 * var(--u)); left: auto; bottom: calc(26 * var(--u)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
+.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); left: auto; bottom: calc(26 * var(--u)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
   color: #BDB7B1; opacity: 0; transition: opacity .6s ease; }
 .case__hint .story__tap { width: calc(72 * var(--u)); height: calc(72 * var(--u)); }
 .case__hint .hint-arrow { width: calc(30 * var(--u)); }
@@ -890,7 +890,7 @@ a { color: inherit; text-decoration: none; }
 .case__hint.is-in.is-done { opacity: 0; pointer-events: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .case { --u: 1px; --ox: 0px; height: auto; min-height: 0; padding: 96px 20px 64px; display: flex; flex-direction: column; }
+  .case { --u: 1px; height: auto; min-height: 0; padding: 96px 20px 64px; display: flex; flex-direction: column; }
   .case__head { order: 1; }
   .case__pages { order: 2; }
   .case__result { order: 3; margin-top: 64px; }
