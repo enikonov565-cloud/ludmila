@@ -828,13 +828,13 @@ a { color: inherit; text-decoration: none; }
 .case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
 .case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 /* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
-.case__result { position: absolute; z-index: 2; left: auto; right: calc(60 * var(--u)); top: calc(808 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: row; align-items: center; gap: calc(26 * var(--u)); text-align: left; color: #BDB7B1; }
-.case__result-text { display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
+.case__result { position: absolute; z-index: 2; left: auto; right: calc(60 * var(--u)); top: calc(808 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: column; align-items: flex-start; gap: calc(14 * var(--u)); text-align: left; color: #BDB7B1; }
+.case__result-row { display: flex; align-items: center; gap: calc(26 * var(--u)); }   /* цифра и слова — в одну строку, подпись — под ними */
 .case__result p { margin: 0; }
 .case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(150 * var(--u)); line-height: 1; letter-spacing: calc(-3 * var(--u)); text-box: trim-both cap alphabetic; white-space: nowrap; } /* шрифт «30+» */
 .case__num span { font-size: calc(150 * var(--u)); }
 .case__num .case__pct { font-size: calc(108 * var(--u)); }
-.case__word { font-weight: 500; font-size: calc(36 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }   /* шрифт «проектов» */
+.case__word { font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }   /* как «Я читаю бизнес — и сразу делаю то, что нужно» */
 .case__niche { font-style: italic; font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.2; }   /* шрифт «в разных нишах» */
 
 /* страницы лежат друг на друге, видна одна; фото — целиком, в своих пропорциях */
@@ -899,11 +899,12 @@ a { color: inherit; text-decoration: none; }
   .case__head { width: auto; }
   .case__title { font-size: clamp(32px, 8.6vw, 60px); }
   .case__kicker { margin-top: 12px; font-size: 15px; }
+  .case__result-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .case__result { position: static; width: auto; flex-direction: column; align-items: flex-start; text-align: left; gap: 10px; }
   .case__num { font-size: clamp(84px, 24vw, 150px); letter-spacing: -.02em; }
   .case__num span { font-size: 1.02em; }
   .case__num .case__pct { font-size: .72em; }
-  .case__word { font-size: clamp(30px, 8.4vw, 56px); }
+  .case__word { font-size: clamp(20px, 5.4vw, 28px); }
   .case__niche { font-size: clamp(16px, 4.4vw, 24px); }
   .case__pages { margin-top: 48px; display: flex; flex-direction: column; gap: 56px; }
   .case__page { flex-direction: column; align-items: stretch; gap: 28px; }
