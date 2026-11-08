@@ -821,7 +821,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */
 .case {
-  --u: min(calc(100vw / 1920), calc(100svh / 1080)); --S: min(calc(480 * var(--u)), calc((100vw - 850 * var(--u)) / 3)); --g: calc((100% - 736 * var(--u) - 3 * var(--S)) / 3); /* квадрат 480 как во втором блоке; зазоры между фото — одинаковые */
+  --u: min(calc(100vw / 1920), calc(100svh / 1080)); --S: min(calc(480 * var(--u)), calc((100vw - 850 * var(--u)) / 3)); --g: calc((100% - 736 * var(--u) - 3 * var(--S)) / 3); /* квадрат 480 как во втором блоке; зазоры между фото — одинаковые */ --k: 1;
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
@@ -872,18 +872,22 @@ a { color: inherit; text-decoration: none; }
 .case__item--right { left: calc(60 * var(--u) + 2 * var(--S) + 2 * var(--g)); top: auto; bottom: calc(26 * var(--u)); }
 
 /* ===== страница «После» — точно по макету «п-р 22» (кадр 1920×1080) ===== */
-.case__page--after { display: block; }
+.case__page--after { display: block;
+  --T: calc(262 * var(--u));                                   /* верхняя линия всех карточек — сразу под цифрами */
+  --aw: calc(543 * var(--k) * var(--u)); --ah: calc(724 * var(--k) * var(--u));
+  --bw: calc(377 * var(--k) * var(--u)); --bh: calc(503 * var(--k) * var(--u));
+  --g2: calc((100% - 126 * var(--u) - var(--aw) - 3 * var(--bw)) / 3); }   /* зазоры между карточками — одинаковые */
 .case__card { position: absolute; z-index: 1; margin: 0; overflow: hidden; }
 /* «После» — светлым полутоном на фоне, в свободном месте над нижней средней карточкой, между двумя верхними */
-.case__ghost--after { left: calc(50% + 282 * var(--u)); top: calc(386 * var(--u)); width: auto; height: auto; font-size: calc(118 * var(--u)) !important; }
+.case__ghost--after { left: calc(54 * var(--u) + var(--aw) + 1.5 * var(--bw) + 2 * var(--g2)); top: calc(var(--T) + (var(--ah) - var(--bh)) / 2); width: auto; height: auto; font-size: calc(118 * var(--k) * var(--u)) !important; }
 .case__card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-.case__card--a { left: calc(54 * var(--u)); top: calc(276 * var(--u)); width: calc(543 * var(--u)); height: calc(724 * var(--u)); }
-.case__card--b { left: calc(25% + 157 * var(--u)); top: calc(276 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
-.case__card--c { left: calc(50% + 94 * var(--u)); top: calc(497 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
-.case__card--d { left: calc(75% + 31 * var(--u)); top: calc(276 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
+.case__card--a { left: calc(54 * var(--u)); top: var(--T); width: var(--aw); height: var(--ah); }
+.case__card--b { left: calc(54 * var(--u) + var(--aw) + var(--g2)); top: var(--T); width: var(--bw); height: var(--bh); }
+.case__card--c { left: calc(54 * var(--u) + var(--aw) + var(--bw) + 2 * var(--g2)); top: calc(var(--T) + var(--ah) - var(--bh)); width: var(--bw); height: var(--bh); }
+.case__card--d { left: calc(54 * var(--u) + var(--aw) + 2 * var(--bw) + 3 * var(--g2)); top: var(--T); width: var(--bw); height: var(--bh); }
 /* цифры итога вверху: left 41.67% + 26, top 68, ширина 1034; цифры — Inter 500 50, подписи — Inter 300 20 */
-.case__tstats { position: absolute; z-index: 2; left: calc(41.67% + 26 * var(--u)); top: calc(92 * var(--u)); /* в макете 68 — опущено на 24, чтобы не уходить под шапку сайта */ width: calc(1034 * var(--u)); height: calc(149 * var(--u));
-  display: flex; justify-content: center; align-items: flex-start; gap: calc(5 * var(--u)); }
+.case__tstats { position: absolute; z-index: 2; left: calc(41.67% + 26 * var(--u)); right: calc(60 * var(--u)); top: calc(92 * var(--u)); /* в макете 68 — опущено на 24, чтобы не уходить под шапку сайта */
+  height: calc(149 * var(--u)); display: flex; justify-content: space-between; align-items: flex-start; gap: calc(5 * var(--u)); }
 .case__tstat { width: calc(var(--w) * var(--u)); display: flex; flex-direction: column; gap: calc(15 * var(--u)); color: #BDB7B1; }
 .case__tstat p { margin: 0; }
 .case__tstat-num { font-weight: 500; font-size: calc(50 * var(--u)); line-height: 1.3; letter-spacing: -.01em; }
@@ -891,13 +895,14 @@ a { color: inherit; text-decoration: none; }
 .case__vdiv { flex: none; align-self: center; width: calc(149 * var(--u)); height: auto; margin: 0 calc(-72 * var(--u)); transform: rotate(90deg); opacity: .6; }
 /* на этой странице «+20%» — справа внизу (left 75% + 39, top 843, 381×157), счётчик — под второй карточкой (left 33.33% + 27, top 861) */
 .case__result, .case__nav { transition: left .6s ease, right .6s ease, top .6s ease, bottom .6s ease, width .6s ease; }
-.case[data-page="1"] .case__result { left: calc(75% + 39 * var(--u)); right: auto; top: calc(843 * var(--u)); width: calc(381 * var(--u)); gap: calc(8 * var(--u)); }
+.case[data-page="1"] { --T: calc(262 * var(--u)); --aw: calc(543 * var(--k) * var(--u)); --ah: calc(724 * var(--k) * var(--u)); --bw: calc(377 * var(--k) * var(--u)); --bh: calc(503 * var(--k) * var(--u)); --g2: calc((100% - 126 * var(--u) - var(--aw) - 3 * var(--bw)) / 3); }
+.case[data-page="1"] .case__result { left: calc(54 * var(--u) + var(--aw) + 2 * var(--bw) + 3 * var(--g2)); right: auto; top: calc(var(--T) + var(--bh) + 26 * var(--u)); width: var(--bw); gap: calc(8 * var(--u)); }
 .case[data-page="1"] .case__result-row { gap: calc(14 * var(--u)); }
 .case[data-page="1"] .case__num, .case[data-page="1"] .case__num span { font-size: calc(96 * var(--u)); }
 .case[data-page="1"] .case__num .case__pct { font-size: calc(70 * var(--u)); }
 .case[data-page="1"] .case__word { margin-top: calc(8 * var(--u)) !important; font-size: calc(22 * var(--u)); }
 .case[data-page="1"] .case__niche { font-size: calc(18 * var(--u)); }
-.case[data-page="1"] .case__nav { left: calc(33.33% + 64 * var(--u)); bottom: calc(80 * var(--u)); }
+.case[data-page="1"] .case__nav { left: calc(54 * var(--u) + var(--aw) + var(--g2) + (var(--bw) - 218 * var(--u)) / 2); top: calc(var(--T) + var(--bh) + 26 * var(--u)); bottom: auto; }
 
 /* «Итог»: три цифры с вертикальными разделителями из макета */
 .case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }

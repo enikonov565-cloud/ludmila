@@ -61,7 +61,14 @@
   }
 
   /* компьютер: страницы лежат друг на друге, видна одна */
-  gsap.set(sec.querySelectorAll('.case__ghost'), { xPercent: -50, yPercent: -50 });   // слово — центром в точке
+  gsap.set(sec.querySelectorAll('.case__ghost'), { xPercent: -50, yPercent: -50 });
+  /* «После»: карточки растут на широком экране — до высоты кадра (k ≤ 1.1), не дальше ширины */
+  var setK = function () {
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight, u = Math.min(vw / 1920, vh / 1080);
+    var k = Math.min(1.1, (vw - 246 * u) / (1674 * u));
+    sec.style.setProperty('--k', Math.max(0.6, k).toFixed(4));
+  };
+  setK(); window.addEventListener('resize', setK);   // слово — центром в точке
   gsap.set(pages.slice(1), { autoAlpha: 0 });
   gsap.set(bits(pages[0]), { autoAlpha: 0 });
   gsap.set(pages[0].querySelector('.case__ghost'), { autoAlpha: 0 });
