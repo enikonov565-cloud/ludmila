@@ -483,6 +483,7 @@ document.documentElement.classList.replace('no-js', 'js');
       });
     };
     swap('.js-next', 1); swap('.js-prev', -1); swap('.js-card-next', 1);
+    if (hint) hint.addEventListener('click', function () { jump(1); });
   }
 })();
 

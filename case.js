@@ -13,6 +13,10 @@
   var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* «До» / «После» — по буквам, как «Тогда» */
+  sec.querySelectorAll('.case__ghost').forEach(function (g) {
+    g.innerHTML = Array.prototype.map.call(g.textContent, function (ch) { return '<span class="ch">' + ch + '</span>'; }).join('');
+  });
   var bits = function (p) { return p.querySelectorAll('.case__item, .case__stat, .case__divider'); };
   var shot = function (p) { return p.querySelector('.case__shot'); };
 
@@ -28,7 +32,12 @@
   var pageIn = function (p, delay) {
     var tl = gsap.timeline({ delay: delay || 0 });
     var s = shot(p), g = p.querySelector('.case__ghost');
-    if (g) tl.fromTo(g, { xPercent: -6, autoAlpha: 0, filter: 'blur(12px)' }, { xPercent: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 1.3, ease: 'power3.out' }, 0);
+    if (g) {
+      tl.set(g, { autoAlpha: 1 }, 0)
+        .fromTo(g.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)' },
+          { yPercent: 0, autoAlpha: 1, rotate: 0, filter: 'blur(0px)', duration: 1.2, ease: 'power3.out', stagger: 0.09 }, 0);
+      if (!g._float) g._float = gsap.to(g, { y: -14, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 });   // слово медленно парит
+    }
     if (s) tl.fromTo(s, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.inOut' }, 0)
              .fromTo(s.querySelector('img'), { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power2.out' }, 0);
     tl.fromTo(bits(p), { y: 24, autoAlpha: 0, filter: 'blur(6px)' },
@@ -91,4 +100,5 @@
   };
   sec.querySelector('.case__arrow--prev').addEventListener('click', function () { jump(-1); });
   sec.querySelector('.case__arrow--next').addEventListener('click', function () { jump(1); });
+  if (hint) hint.addEventListener('click', function () { jump(1); });
 })();
