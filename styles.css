@@ -816,3 +816,80 @@ a { color: inherit; text-decoration: none; }
   .story__tags { margin-top: 14px; gap: 6px 8px; }
   .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }
 }
+
+/* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */
+.case {
+  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #E8DCC8;
+  background: linear-gradient(180deg, #1A2C30 0%, #070F10 100%);           /* фирменный фон, как в «Моём пути» */
+}
+.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(150 * var(--u)); width: calc(900 * var(--u)); }
+.case__kicker { margin: calc(26 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
+/* результат кейса: подпись и светлая плашка «+20%» — цифра медная, как акценты сайта */
+.case__result { position: absolute; z-index: 2; right: calc(60 * var(--u)); top: calc(150 * var(--u)); display: flex; align-items: center; gap: calc(32 * var(--u)); }
+.case__result-note { margin: 0; width: calc(420 * var(--u)); text-align: right; font-weight: 300; font-size: calc(26 * var(--u)); line-height: 1.2; color: #E8DCC8; }
+.case__badge { margin: 0; width: calc(274 * var(--u)); height: calc(123 * var(--u)); border-radius: calc(80 * var(--u)); background: #EDE8E1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(12 * var(--u)); text-align: center; }
+.case__badge-num { font-weight: 500; font-size: calc(77 * var(--u)); line-height: .8; letter-spacing: -.02em; color: #A9502C; }
+.case__badge-label { font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: 1; letter-spacing: -.02em; color: #1A2C30; }
+
+/* страницы лежат друг на друге, видна одна; фото — целиком, в своих пропорциях */
+.case__pages { position: absolute; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(330 * var(--u)); bottom: calc(150 * var(--u)); }
+.case__page { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: calc(90 * var(--u)); }
+.case__page:not(.is-active) { pointer-events: none; }
+.case__shot { margin: 0; height: 100%; aspect-ratio: 1080 / 1350; border: 1px solid rgba(189, 183, 177, .35); overflow: hidden; background: #191919; }
+.case__shot img { display: block; width: 100%; height: auto; }
+.case__list { margin: 0; padding: 0; list-style: none; width: calc(460 * var(--u)); display: flex; flex-direction: column; gap: calc(54 * var(--u)); }
+.case__list li { position: relative; padding-left: calc(36 * var(--u)); font-weight: 400; font-size: calc(28 * var(--u)); line-height: 1.15; letter-spacing: .01em; color: #E8DCC8; }
+.case__list li::before { content: ""; position: absolute; left: 0; top: .48em; width: calc(10 * var(--u)); height: calc(10 * var(--u)); border-radius: 50%; background: #C9A27A; }
+/* «Итог»: три цифры с вертикальными разделителями из макета */
+.case__page--stats { gap: calc(55 * var(--u)); }
+.case__stat { width: calc(438 * var(--u)); display: flex; flex-direction: column; gap: calc(15 * var(--u)); }
+.case__stat p { margin: 0; }
+.case__stat-num { font-weight: 500; font-size: calc(110 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #E8DCC8; }
+.case__stat-text { font-weight: 400; font-size: calc(26 * var(--u)); line-height: 1.15; letter-spacing: .01em; color: #BDB7B1; }
+.case__divider { width: calc(200 * var(--u)); height: auto; margin: 0 calc(-72 * var(--u)); transform: rotate(90deg); opacity: .5; }
+
+/* счётчик 01 / 03 и стрелки — как в «Моём подходе» */
+.case__nav { position: absolute; z-index: 2; left: calc(60 * var(--u)); bottom: calc(46 * var(--u)); display: flex; align-items: flex-end; gap: calc(18 * var(--u)); color: #E8DCC8; }
+.case__count { order: 2; margin: 0 0 calc(4 * var(--u)); display: flex; align-items: baseline; gap: calc(12 * var(--u)); }
+.case__cur { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(54 * var(--u)); line-height: 1; letter-spacing: -.02em; }
+.case__sep { width: 1px; height: calc(24 * var(--u)); background: currentColor; opacity: .5; transform: rotate(25deg); }
+.case__total { font-weight: 300; font-size: calc(24 * var(--u)); opacity: .8; }
+.case__arrow { order: 1; width: calc(100 * var(--u)); padding: calc(10 * var(--u)) 0; background: none; border: 0; color: inherit; cursor: pointer; transition: transform .35s ease, color .3s ease; }
+.case__arrow svg { width: 100%; height: auto; display: block; }
+.case__arrow--prev { transform: scaleX(-1); }
+.case__arrow--next { order: 3; }
+.case__arrow:hover { color: #C9A27A; }
+.case__arrow--next:hover { transform: translateX(calc(6 * var(--u))); }
+.case__arrow--prev:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
+.case__arrow:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
+.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); bottom: calc(56 * var(--u)); margin: 0; display: flex; align-items: center; gap: calc(14 * var(--u));
+  font-weight: 300; font-size: calc(20 * var(--u)); letter-spacing: .03em; color: #E8DCC8; opacity: 0; transition: opacity .6s ease; }
+.case__hint.is-in { opacity: .85; }
+.case__hint.is-in.is-done { opacity: 0; }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .case { --u: 1px; height: auto; min-height: 0; padding: 96px 20px 64px; }
+  .case__head, .case__result, .case__pages, .case__page { position: static; }
+  .case__head { width: auto; }
+  .case__title { font-size: clamp(32px, 8.6vw, 60px); }
+  .case__kicker { margin-top: 12px; font-size: 15px; }
+  .case__result { margin-top: 28px; justify-content: space-between; gap: 16px; }
+  .case__result-note { width: auto; text-align: left; font-size: clamp(15px, 4vw, 19px); }
+  .case__badge { flex: none; width: 150px; height: 74px; gap: 6px; }
+  .case__badge-num { font-size: 40px; }
+  .case__badge-label { font-size: 12px; }
+  .case__pages { margin-top: 48px; display: flex; flex-direction: column; gap: 56px; }
+  .case__page { flex-direction: column; align-items: stretch; gap: 28px; }
+  .case__shot { height: auto; width: 100%; }
+  .case__list { width: auto; gap: 18px; }
+  .case__list li { padding-left: 24px; font-size: clamp(16px, 4.4vw, 20px); }
+  .case__list li::before { width: 8px; height: 8px; }
+  .case__page--stats { gap: 28px; }
+  .case__stat { width: auto; gap: 8px; }
+  .case__stat-num { font-size: clamp(48px, 14vw, 72px); }
+  .case__stat-text { font-size: clamp(15px, 4.2vw, 18px); }
+  .case__divider { width: 120px; margin: 0; transform: none; }
+  .case__nav, .case__hint { display: none; }
+}

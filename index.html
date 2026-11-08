@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=146">
+<link rel="stylesheet" href="styles.css?v=148">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -45,6 +45,7 @@
     <li><a href="#works"><span>03</span>Работы</a></li>
     <li><a href="#approach"><span>04</span>Мой подход</a></li>
     <li><a href="#story"><span>05</span>Мой путь</a></li>
+    <li><a href="#case"><span>06</span>Кейс</a></li>
   </ul>
   <a class="site-menu__cta" href="#">Связаться со мной</a>
 </nav>
@@ -317,6 +318,49 @@
     <p class="story__tags"><span>Системность</span><span>Эмпатия к&nbsp;аудитории</span><span>Результат без&nbsp;переделок</span></p>
   </div>
 </section>
+
+<!-- Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах — «До», «После», «Итог»; case.js -->
+<section class="case" id="case" aria-labelledby="case-title" data-case>
+  <div class="case__head">
+    <h2 class="story__title case__title" id="case-title"><span class="story__mask"><span class="story__reveal"><span class="cap">Д</span>изайн продаёт</span></span></h2>
+    <p class="case__kicker">кейс · дизайн карточки маркетплейса</p>
+  </div>
+  <div class="case__result">
+    <p class="case__result-note">Данные по&nbsp;конверсии&nbsp;— реальный результат кейса</p>
+    <p class="case__badge"><span class="case__badge-num">+20%</span><span class="case__badge-label">конверсия в&nbsp;покупку</span></p>
+  </div>
+  <div class="case__pages">
+    <article class="case__page is-active" aria-label="До оформления">
+      <figure class="case__shot"><img src="img/case/before.webp" width="1080" height="1350" alt="До: исходные фото чайной пары на белом фоне, без оформления" loading="lazy"></figure>
+      <ul class="case__list">
+        <li>Нет заголовка и&nbsp;описания</li>
+        <li>Конкурирует только ценой</li>
+        <li>Вопросы покупателя не&nbsp;закрыты</li>
+      </ul>
+    </article>
+    <article class="case__page" aria-label="После оформления">
+      <figure class="case__shot"><img src="img/case/after.webp" width="1080" height="1350" alt="После: оформленная карточка «Чайная пара „Грёзы“» на красном фоне и три слайда о дизайне, тепле и подарке" loading="lazy"></figure>
+      <ul class="case__list">
+        <li>Закрыты вопросы покупателя</li>
+        <li>Восприятие товара поднято в&nbsp;премиум-сегмент</li>
+        <li>Добавлен подарочный сценарий</li>
+      </ul>
+    </article>
+    <article class="case__page case__page--stats" aria-label="Итог">
+      <div class="case__stat"><p class="case__stat-num">49+</p><p class="case__stat-text">Прошла тест конкурентного анализа на&nbsp;привлекательность</p></div>
+      <img class="case__divider" src="img/case/divider.svg" width="155" height="6" alt="">
+      <div class="case__stat"><p class="case__stat-num">↑&nbsp;CTR</p><p class="case__stat-text">Видимость фирменного красного фона выделяет среди конкурентов</p></div>
+      <img class="case__divider" src="img/case/divider.svg" width="155" height="6" alt="">
+      <div class="case__stat"><p class="case__stat-num">4</p><p class="case__stat-text">Слайда карточки товара решают отдельную задачу покупателя</p></div>
+    </article>
+  </div>
+  <div class="case__nav">
+    <p class="case__count"><span class="case__cur">01</span><span class="case__sep" aria-hidden="true"></span><span class="case__total">03</span></p>
+    <button class="case__arrow case__arrow--prev" type="button" aria-label="Предыдущая страница кейса"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
+    <button class="case__arrow case__arrow--next" type="button" aria-label="Следующая страница кейса"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
+  </div>
+  <p class="case__hint" aria-hidden="true">листай<span class="hint-arrow"></span></p>
+</section>
 </main>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -324,6 +368,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js?v=54"></script>
+<script src="case.js?v=2"></script>
 <script type="module" src="story3d.js?v=41"></script>
 </body>
 </html>
