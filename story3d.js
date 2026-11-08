@@ -337,9 +337,14 @@ async function init() {
     if (showNow !== state.swapped) { screenMat.map = showNow ? texNow : texPast; screenMat.needsUpdate = true; state.swapped = showNow; }
     updateScreenTarget();
     const portrait = camera.aspect < 1.2;
-    vase.position.set(portrait ? -0.95 : -1.7, 0, portrait ? -1.2 : -0.25);
-    vaseShadow.position.set(vase.position.x, 0.003, vase.position.z);
     camFar.set(0, portrait ? 2.1 : 1.35, portrait ? 4.9 / Math.max(0.42, camera.aspect) : 4.6); // камера ближе — экран крупный, текст читается
+    /* ваза стоит слева от ноутбука, в свободной части кадра; если места нет (узкий экран) — её не показываем,
+       чтобы цветы не торчали из-за ноутбука */
+    const vz = -0.25, halfW = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * (camFar.z - vz);
+    const vx = Math.max(1.62, halfW * 0.72);
+    vase.position.set(-vx, 0, vz);
+    vase.visible = vaseShadow.visible = !portrait && halfW * 0.72 - 0.42 > 1.15;
+    vaseShadow.position.set(vase.position.x, 0.003, vase.position.z);
     const dist = camFar.length(); scene.fog.near = dist + 1; scene.fog.far = dist + 16; // дальний правый край стола мягко уходит в фон
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
