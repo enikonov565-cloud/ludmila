@@ -821,20 +821,20 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */
 .case {
-  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  --u: min(calc(100vw / 1920), calc(100svh / 1080)); --ox: max(0px, calc((100vw - 1920 * var(--u)) / 2)); /* кадр макета 1920 — по центру широкого экрана */
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
-.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(104 * var(--u)); width: calc(900 * var(--u)); }
+.case__head { position: absolute; z-index: 2; left: calc(var(--ox) + 60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
 .case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 /* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
-.case__result { position: absolute; z-index: 2; right: calc(60 * var(--u)); top: auto; bottom: calc(94 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(12 * var(--u)); text-align: center; color: #BDB7B1; }
+.case__result { position: absolute; z-index: 2; left: calc(var(--ox) + 1380 * var(--u)); top: calc(805 * var(--u)); width: calc(449 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); text-align: center; color: #BDB7B1; }
 .case__result p { margin: 0; }
-.case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(120 * var(--u)); line-height: 1.1; letter-spacing: calc(-2 * var(--u)); text-box: trim-both cap alphabetic; } /* как «30+» в «Обо мне» */
-.case__num span { font-size: calc(122 * var(--u)); }
-.case__num .case__pct { font-size: calc(88 * var(--u)); }
-.case__word { font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }   /* как «проектов» */
-.case__niche { font-style: italic; font-weight: 400; font-size: calc(24 * var(--u)); line-height: 1.2; }   /* как «в разных нишах» */
+.case__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(96 * var(--u)); line-height: 1.1; letter-spacing: calc(-2 * var(--u)); text-box: trim-both cap alphabetic; } /* шрифт «30+» */
+.case__num span { font-size: calc(96 * var(--u)); }
+.case__num .case__pct { font-size: calc(70 * var(--u)); }
+.case__word { font-weight: 500; font-size: calc(30 * var(--u)); line-height: 1.1; letter-spacing: -.02em; }   /* шрифт «проектов» */
+.case__niche { font-style: italic; font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; }   /* шрифт «в разных нишах» */
 
 /* страницы лежат друг на друге, видна одна; фото — целиком, в своих пропорциях */
 .case__pages { position: absolute; inset: 0; }
@@ -848,23 +848,27 @@ a { color: inherit; text-decoration: none; }
 /* «До» / «После» — как в референсе, только зеркально: слева на заднем плане огромное слово (Inter Light, полутон,
    размер как у «Тогда»/«Сейчас»), фото заходит на него; справа пункты лесенкой — как подписи под снимками */
 .case__page--shot { display: block; }
-.case__ghost { position: absolute; z-index: 0; left: calc((100% - 654 * var(--u)) / 2 + 230 * var(--u)); top: calc(250 * var(--u)); margin: 0; pointer-events: none; white-space: nowrap;
-  font-weight: 300; font-size: calc(230 * var(--u)); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .2); }   /* в полутоне, на заднем плане — в свободной полосе над сеткой, у крупного фото */
-.case__page--shot .case__shot { position: absolute; z-index: 1; right: calc(60 * var(--u)); top: calc(157 * var(--u)); width: calc(616 * var(--u)); height: calc(616 * var(--u));
-  aspect-ratio: auto; margin: 0; border: 0; background: none; overflow: visible; display: flex; align-items: center; justify-content: center; }
-.case__page--shot .case__shot img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; border-radius: 0; } /* крупное фото — как портрет во втором блоке: без рамки и скругления */
-/* сетка 3×2: тексты и фото в шахматном порядке; фото целиком, вписаны в квадрат */
-/* три фото с подписями: нижнее левое — по левому краю заголовка, нижнее правое — у крупного фото,
-   верхнее — посередине между ними; нижние стоят на одной линии */
+/* «До» / «После» — в полутоне, в пустой ячейке сетки справа от верхнего фото (left 856, top 226, 360×360) */
+.case__ghost { position: absolute; z-index: 0; left: calc(var(--ox) + 856 * var(--u)); top: calc(226 * var(--u)); width: calc(398 * var(--u)); height: calc(360 * var(--u)); margin: 0;
+  display: flex; align-items: center; pointer-events: none; white-space: nowrap;
+  font-weight: 300; font-size: calc(230 * var(--u)); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .2); }
+.case__page--shot + .case__page--shot .case__ghost { font-size: calc(95 * var(--u)); }
+.case__ghost .ch { display: inline-block; will-change: transform, opacity; }
+
+/* крупное фото: left 1254, top 157, 616×616 — квадрат, как фото во втором блоке (прямые углы, фото заполняет квадрат) */
+.case__page--shot .case__shot { position: absolute; z-index: 1; left: calc(var(--ox) + 1254 * var(--u)); top: calc(157 * var(--u)); width: calc(616 * var(--u)); height: calc(616 * var(--u));
+  margin: 0; border: 0; border-radius: 0; overflow: hidden; background: none; }
+.case__page--shot .case__shot img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; object-position: 50% 0; border-radius: 0; }
+
+/* сетка 3×2: left 60, top 226, 1156×774, зазор 38 → квадраты 360×360; фото в ячейках 2, 4, 6 */
 .case__grid { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
-.case__item { position: absolute; width: min-content; display: flex; flex-direction: column; align-items: flex-start; gap: calc(14 * var(--u)); } /* ширина — по фото, подпись переносится по ней */
-.case__item img { display: block; width: auto; max-width: none; height: calc(320 * var(--u)); }
-.case__item p { margin: 0; font-weight: 400; font-size: calc(26 * var(--u)); line-height: 1.2; letter-spacing: -.01em; color: #BDB7B1; }
-.case__item--left { left: calc(60 * var(--u)); top: auto; bottom: calc(94 * var(--u)); }
-.case__item--right { right: calc(714 * var(--u)); top: auto; bottom: calc(94 * var(--u)); }
-.case__item--top { left: calc((100% - 654 * var(--u)) / 2 - 160 * var(--u)); top: calc(240 * var(--u)); }
-/* карточки «После» — вертикальные: высота та же, ширина по пропорции, края скруглены у самой картинки */
-.case__item img { border-radius: 0; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) calc(-18 * var(--u)) rgba(0, 0, 0, .6); }
+.case__item { position: absolute; width: calc(360 * var(--u)); display: block; }
+.case__item img { display: block; width: calc(360 * var(--u)); height: calc(360 * var(--u)); object-fit: cover; object-position: 50% 0; border-radius: 0; box-shadow: none; }
+/* подпись под фото — как текст «Вы любите своё дело…» во втором блоке */
+.case__item p { margin: calc(22 * var(--u)) 0 0; font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; color: #BDB7B1; }
+.case__item--top { left: calc(var(--ox) + 458 * var(--u)); top: calc(226 * var(--u)); }
+.case__item--left { left: calc(var(--ox) + 60 * var(--u)); top: calc(632 * var(--u)); }
+.case__item--right { left: calc(var(--ox) + 856 * var(--u)); top: calc(632 * var(--u)); }
 
 /* «Итог»: три цифры с вертикальными разделителями из макета */
 .case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }
@@ -876,9 +880,9 @@ a { color: inherit; text-decoration: none; }
 
 /* счётчик и стрелки — те же, что в «Моём подходе» (классы apx__*); здесь только место и цвет */
 .case { --ink: #BDB7B1; }
-.case__nav { position: absolute; z-index: 2; left: calc((100% - 654 * var(--u)) / 2 - 160 * var(--u) + 51 * var(--u)); top: auto; bottom: calc(94 * var(--u)); height: calc(104 * var(--u)); }
+.case__nav { position: absolute; z-index: 2; left: calc(var(--ox) + 529 * var(--u)); top: auto; bottom: calc(26 * var(--u)); }
 /* «дальше» — круглая стрелка с «пульсом», как на «Тогда» */
-.case__hint { position: absolute; z-index: 2; right: auto; left: calc((100% - 654 * var(--u)) / 2 - 160 * var(--u) + 51 * var(--u) + 250 * var(--u)); bottom: calc(80 * var(--u)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
+.case__hint { position: absolute; z-index: 2; right: calc(var(--ox) + 60 * var(--u)); left: auto; bottom: calc(26 * var(--u)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
   color: #BDB7B1; opacity: 0; transition: opacity .6s ease; }
 .case__hint .story__tap { width: calc(72 * var(--u)); height: calc(72 * var(--u)); }
 .case__hint .hint-arrow { width: calc(30 * var(--u)); }
@@ -886,7 +890,7 @@ a { color: inherit; text-decoration: none; }
 .case__hint.is-in.is-done { opacity: 0; pointer-events: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .case { --u: 1px; height: auto; min-height: 0; padding: 96px 20px 64px; display: flex; flex-direction: column; }
+  .case { --u: 1px; --ox: 0px; height: auto; min-height: 0; padding: 96px 20px 64px; display: flex; flex-direction: column; }
   .case__head { order: 1; }
   .case__pages { order: 2; }
   .case__result { order: 3; margin-top: 64px; }
@@ -903,7 +907,7 @@ a { color: inherit; text-decoration: none; }
   .case__pages { margin-top: 48px; display: flex; flex-direction: column; gap: 56px; }
   .case__page { flex-direction: column; align-items: stretch; gap: 28px; }
   .case__page--shot { display: flex; position: relative; }
-  .case__ghost { display: block; position: relative; left: auto; right: auto; top: auto; margin: 0 0 -0.42em; font-weight: 300; font-size: clamp(56px, 17vw, 110px); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .22); }
+  .case__ghost { display: block; width: auto; height: auto; position: relative; left: auto; right: auto; top: auto; margin: 0 0 -0.42em; font-weight: 300; font-size: clamp(56px, 17vw, 110px); line-height: 1; letter-spacing: -.03em; color: rgba(189, 183, 177, .22); }
   .case__page--shot .case__shot { position: relative; left: auto; right: auto; top: auto; width: 100%; height: auto; border: 0; }
   .case__page--shot .case__shot img { width: 100%; max-height: none; border-radius: 0; }
   .case__grid { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 12px; }
@@ -920,8 +924,6 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* «После» длиннее «До» — чуть меньше, чтобы не уходить под крупное фото */
-.case__page--shot + .case__page--shot .case__ghost { font-size: calc(118 * var(--u)); top: calc(310 * var(--u)); }
-.case__ghost .ch { display: inline-block; will-change: transform, opacity; }
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .case__page--shot + .case__page--shot .case__ghost { font-size: clamp(56px, 17vw, 110px); top: auto; }
 }
