@@ -13,6 +13,27 @@
   var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* «После»: карточки-комплекты сменяются сами — «Грёзы» → «Тюльпан» → «Гжель» → снова «Грёзы» (все четыре карточки комплекта).
+     Плавная смена с лёгким приближением; крутится, только пока блок на экране */
+  var setSlots = sec.querySelectorAll('.case__sets');
+  if (setSlots.length && !reduce) {
+    var si = 0, setTimer = null, setTotal = setSlots[0].querySelectorAll('img').length;
+    setSlots.forEach(function (slot) { var im = slot.querySelectorAll('img'); gsap.set(im, { autoAlpha: 0 }); gsap.set(im[0], { autoAlpha: 1 }); });
+    var nextSet = function () {
+      var prevI = si; si = (si + 1) % setTotal;
+      setSlots.forEach(function (slot, k) {          // весь комплект меняется вместе, лёгкой волной слева направо
+        var im = slot.querySelectorAll('img'), prev = im[prevI], cur = im[si];
+        gsap.set(cur, { zIndex: 2 }); gsap.set(prev, { zIndex: 1 });
+        gsap.fromTo(cur, { autoAlpha: 0, scale: 1.06 }, { autoAlpha: 1, scale: 1, duration: 1.1, delay: k * 0.12, ease: 'power2.out',
+          onComplete: function () { gsap.set(prev, { autoAlpha: 0 }); } });
+      });
+    };
+    new IntersectionObserver(function (en) {
+      if (en[0].isIntersecting) { if (!setTimer) setTimer = setInterval(nextSet, 4000); }
+      else { clearInterval(setTimer); setTimer = null; }
+    }, { threshold: 0.2 }).observe(setSlots[0]);
+  }
+
   /* «До» / «После» — по буквам, как «Тогда» */
   sec.querySelectorAll('.case__ghost').forEach(function (g) {
     g.innerHTML = Array.prototype.map.call(g.textContent, function (ch) { return '<span class="ch">' + ch + '</span>'; }).join('');
