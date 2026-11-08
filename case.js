@@ -21,11 +21,14 @@
     setSlots.forEach(function (slot) { var im = slot.querySelectorAll('img'); gsap.set(im, { autoAlpha: 0 }); gsap.set(im[0], { autoAlpha: 1 }); });
     var nextSet = function () {
       var prevI = si; si = (si + 1) % setTotal;
-      setSlots.forEach(function (slot, k) {          // весь комплект меняется вместе, лёгкой волной слева направо
+      setSlots.forEach(function (slot, k) {          // окна меняются по очереди, слева направо
         var im = slot.querySelectorAll('img'), prev = im[prevI], cur = im[si];
-        gsap.set(cur, { zIndex: 2 }); gsap.set(prev, { zIndex: 1 });
-        gsap.fromTo(cur, { autoAlpha: 0, scale: 1.06 }, { autoAlpha: 1, scale: 1, duration: 1.1, delay: k * 0.12, ease: 'power2.out',
-          onComplete: function () { gsap.set(prev, { autoAlpha: 0 }); } });
+        gsap.set(prev, { zIndex: 1 });
+        gsap.set(cur, { zIndex: 2, autoAlpha: 1 });
+        gsap.timeline({ delay: k * 0.14 })
+          .fromTo(cur, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.18 }, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.15, ease: 'power4.inOut' }, 0)
+          .to(prev, { scale: 0.94, duration: 1.15, ease: 'power4.inOut' }, 0)
+          .set(prev, { autoAlpha: 0, scale: 1 });
       });
     };
     new IntersectionObserver(function (en) {

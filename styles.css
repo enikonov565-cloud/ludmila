@@ -899,13 +899,13 @@ a { color: inherit; text-decoration: none; }
 /* на этой странице «+20%» — справа внизу (left 75% + 39, top 843, 381×157), счётчик — под второй карточкой (left 33.33% + 27, top 861) */
 .case__result, .case__nav { transition: left .6s ease, right .6s ease, top .6s ease, bottom .6s ease, width .6s ease; }
 .case[data-page="1"] { --T: calc(262 * var(--u)); --aw: calc(543 * var(--k) * var(--u)); --ah: calc(724 * var(--k) * var(--u)); --bw: calc(377 * var(--k) * var(--u)); --bh: calc(503 * var(--k) * var(--u)); --g2: calc((100% - 126 * var(--u) - var(--aw) - 3 * var(--bw)) / 3); }
-.case[data-page="1"] .case__result { left: calc(54 * var(--u) + var(--aw) + 2 * var(--bw) + 3 * var(--g2)); right: auto; top: calc(var(--T) + var(--bh) + 26 * var(--u)); width: var(--bw); gap: calc(8 * var(--u)); }
+.case[data-page="1"] .case__result { left: calc(54 * var(--u) + var(--aw) + 2 * var(--bw) + 3 * var(--g2)); right: auto; top: calc(var(--T) + var(--ah)); translate: 0 -100%; width: var(--bw); gap: calc(8 * var(--u)); }
 .case[data-page="1"] .case__result-row { gap: calc(14 * var(--u)); }
 .case[data-page="1"] .case__num, .case[data-page="1"] .case__num span { font-size: calc(96 * var(--u)); }
 .case[data-page="1"] .case__num .case__pct { font-size: calc(70 * var(--u)); }
 .case[data-page="1"] .case__word { margin-top: calc(8 * var(--u)) !important; font-size: calc(22 * var(--u)); }
 .case[data-page="1"] .case__niche { font-size: calc(18 * var(--u)); }
-.case[data-page="1"] .case__nav { left: calc(54 * var(--u) + var(--aw) + var(--g2) + (var(--bw) - 218 * var(--u)) / 2); top: calc(var(--T) + var(--bh) + 26 * var(--u)); bottom: auto; }
+.case[data-page="1"] .case__nav { left: calc(54 * var(--u) + var(--aw) + var(--g2) + (var(--bw) - 218 * var(--u)) / 2); top: calc(var(--T) + var(--ah)); translate: 0 -100%; bottom: auto; }
 
 /* «Итог»: три цифры с вертикальными разделителями из макета */
 .case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }
@@ -977,4 +977,24 @@ a { color: inherit; text-decoration: none; }
 /* «После» длиннее «До» — чуть меньше, чтобы не уходить под крупное фото */
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .case__page--shot + .case__page--shot .case__ghost { font-size: clamp(56px, 17vw, 110px); top: auto; }
+}
+
+/* «После»: светлый фон, как в блоке «Дизайн, который продаёт»; тексты — тёмно-зелёные, как там */
+.case::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease;
+  background: radial-gradient(120% 95% at 50% 45%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%); }
+.case[data-page="1"]::before { opacity: 1; }
+.case__head .story__title, .case__kicker, .case__result, .case__tstat, .case__hint, .case__ghost { transition: color .8s ease; }
+.case[data-page="1"] { --ink: #1A2C30; }
+.case[data-page="1"] .case__head .story__title, .case[data-page="1"] .case__kicker, .case[data-page="1"] .case__result,
+.case[data-page="1"] .case__tstat, .case[data-page="1"] .case__hint { color: #1A2C30; }
+.case[data-page="1"] .case__ghost--after { color: rgba(26, 44, 48, .16); }
+.case[data-page="1"] .case__vdiv { filter: brightness(0) saturate(100%); opacity: .45; }
+/* смена комплектов: новая карточка открывается шторкой снизу вверх */
+.case__sets img { will-change: clip-path, transform; }
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .case::before { display: none; }
+  .case__page--after { margin: 0 -20px; padding: 28px 20px; background: radial-gradient(120% 95% at 50% 45%, #D8CDBB 0%, #C8BDAB 45%, #9F927E 100%); color: #1A2C30; }
+  .case__page--after .case__tstat { color: #1A2C30; }
+  .case__page--after .case__ghost--after { color: rgba(26, 44, 48, .18); }
+  .case[data-page="1"] .case__result { translate: none; }
 }
