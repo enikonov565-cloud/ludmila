@@ -17,7 +17,7 @@
   sec.querySelectorAll('.case__ghost').forEach(function (g) {
     g.innerHTML = Array.prototype.map.call(g.textContent, function (ch) { return '<span class="ch">' + ch + '</span>'; }).join('');
   });
-  var bits = function (p) { return p.querySelectorAll('.case__item, .case__stat, .case__divider'); };
+  var bits = function (p) { return p.querySelectorAll('.case__item, .case__card, .case__tstat, .case__stat, .case__divider'); };
   var shot = function (p) { return p.querySelector('.case__shot'); };
 
   /* заход в блок: заголовок выезжает из-под строки, цифра «+20%» проявляется, первая страница собирается */
@@ -75,6 +75,7 @@
     if (n === cur) return;
     var dir = n > cur ? 1 : -1, from = pages[cur], to = pages[n];
     cur = n;
+    sec.setAttribute('data-page', n);   // «+20%» и счётчик встают по макету этой страницы
     curEl.textContent = (n + 1 < 10 ? '0' : '') + (n + 1);
     if (hint) hint.classList.toggle('is-done', n === total - 1);
     gsap.killTweensOf([from, to]);

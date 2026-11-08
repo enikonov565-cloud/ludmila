@@ -871,6 +871,34 @@ a { color: inherit; text-decoration: none; }
 .case__item--left { left: calc(60 * var(--u)); top: auto; bottom: calc(26 * var(--u)); }
 .case__item--right { left: calc(60 * var(--u) + 2 * var(--S) + 2 * var(--g)); top: auto; bottom: calc(26 * var(--u)); }
 
+/* ===== страница «После» — точно по макету «п-р 22» (кадр 1920×1080) ===== */
+.case__page--after { display: block; }
+.case__card { position: absolute; z-index: 1; margin: 0; overflow: hidden; }
+/* «После» — светлым полутоном на фоне, в свободном месте над нижней средней карточкой, между двумя верхними */
+.case__ghost--after { left: calc(50% + 282 * var(--u)); top: calc(386 * var(--u)); width: auto; height: auto; font-size: calc(118 * var(--u)) !important; }
+.case__card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.case__card--a { left: calc(54 * var(--u)); top: calc(276 * var(--u)); width: calc(543 * var(--u)); height: calc(724 * var(--u)); }
+.case__card--b { left: calc(25% + 157 * var(--u)); top: calc(276 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
+.case__card--c { left: calc(50% + 94 * var(--u)); top: calc(497 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
+.case__card--d { left: calc(75% + 31 * var(--u)); top: calc(276 * var(--u)); width: calc(377 * var(--u)); height: calc(503 * var(--u)); }
+/* цифры итога вверху: left 41.67% + 26, top 68, ширина 1034; цифры — Inter 500 50, подписи — Inter 300 20 */
+.case__tstats { position: absolute; z-index: 2; left: calc(41.67% + 26 * var(--u)); top: calc(92 * var(--u)); /* в макете 68 — опущено на 24, чтобы не уходить под шапку сайта */ width: calc(1034 * var(--u)); height: calc(149 * var(--u));
+  display: flex; justify-content: center; align-items: flex-start; gap: calc(5 * var(--u)); }
+.case__tstat { width: calc(var(--w) * var(--u)); display: flex; flex-direction: column; gap: calc(15 * var(--u)); color: #BDB7B1; }
+.case__tstat p { margin: 0; }
+.case__tstat-num { font-weight: 500; font-size: calc(50 * var(--u)); line-height: 1.3; letter-spacing: -.01em; }
+.case__tstat-text { font-weight: 300; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: .02em; text-transform: lowercase; }
+.case__vdiv { flex: none; align-self: center; width: calc(149 * var(--u)); height: auto; margin: 0 calc(-72 * var(--u)); transform: rotate(90deg); opacity: .6; }
+/* на этой странице «+20%» — справа внизу (left 75% + 39, top 843, 381×157), счётчик — под второй карточкой (left 33.33% + 27, top 861) */
+.case__result, .case__nav { transition: left .6s ease, right .6s ease, top .6s ease, bottom .6s ease, width .6s ease; }
+.case[data-page="1"] .case__result { left: calc(75% + 39 * var(--u)); right: auto; top: calc(843 * var(--u)); width: calc(381 * var(--u)); gap: calc(8 * var(--u)); }
+.case[data-page="1"] .case__result-row { gap: calc(14 * var(--u)); }
+.case[data-page="1"] .case__num, .case[data-page="1"] .case__num span { font-size: calc(96 * var(--u)); }
+.case[data-page="1"] .case__num .case__pct { font-size: calc(70 * var(--u)); }
+.case[data-page="1"] .case__word { margin-top: calc(8 * var(--u)) !important; font-size: calc(22 * var(--u)); }
+.case[data-page="1"] .case__niche { font-size: calc(18 * var(--u)); }
+.case[data-page="1"] .case__nav { left: calc(33.33% + 64 * var(--u)); bottom: calc(80 * var(--u)); }
+
 /* «Итог»: три цифры с вертикальными разделителями из макета */
 .case__page--stats { inset: calc(300 * var(--u)) calc(60 * var(--u)) calc(150 * var(--u)); gap: calc(55 * var(--u)); }
 .case__stat { width: calc(438 * var(--u)); display: flex; flex-direction: column; gap: calc(15 * var(--u)); }
@@ -918,6 +946,16 @@ a { color: inherit; text-decoration: none; }
   .case__item p { font-size: clamp(14px, 3.9vw, 17px); }
   .case__item--top { grid-column: 1 / -1; width: 60%; }
   .case__page--stats { inset: auto; gap: 28px; }
+  .case__page--after { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .case__card { position: static; width: auto !important; height: auto !important; }
+  .case__card img { height: auto; aspect-ratio: 3 / 4; }
+  .case__card--a { grid-column: 1 / -1; }
+  .case__ghost--after { grid-column: 1 / -1; left: auto; top: auto; font-size: clamp(56px, 17vw, 110px) !important; }
+  .case__tstats { position: static; grid-column: 1 / -1; width: auto; height: auto; margin-top: 18px; flex-direction: column; gap: 22px; }
+  .case__tstat { width: auto; gap: 6px; }
+  .case__tstat-num { font-size: clamp(36px, 10vw, 50px); }
+  .case__tstat-text { font-size: clamp(14px, 3.9vw, 18px); }
+  .case__vdiv { display: none; }
   .case__stat { width: auto; gap: 8px; }
   .case__stat-num { font-size: clamp(48px, 14vw, 72px); }
   .case__stat-text { font-size: clamp(15px, 4.2vw, 18px); }
