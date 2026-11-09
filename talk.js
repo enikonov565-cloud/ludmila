@@ -83,7 +83,7 @@
   var intro = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
   intro.from(sec.querySelector('.talk__window'), { scale: 1.12, autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, 0)
     .from(sec.querySelector('.talk__person'), { xPercent: -6, autoAlpha: 0, duration: 1.4 }, 0.2)
-    .from(sec.querySelectorAll('.talk__title .story__reveal'), { yPercent: 110, duration: 1, stagger: 0.12 }, 0.4)
+    .from(sec.querySelectorAll('.talk__title .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, stagger: 0.12 }, 0.4)
     .fromTo(sec.querySelector('.chat'), { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1 }, 0.6)
     .call(function () {          // телефон «живой»: медленно покачивается и чуть поворачивается
       gsap.to(sec.querySelector('.chat'), { y: -18, rotation: '-=2.5', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
@@ -94,10 +94,11 @@
   var TILT = stackedMq ? 4 : 9;                      // наклон: низ телефона — к центру страницы
   gsap.set(phone, { yPercent: stackedMq ? 0 : -50, rotation: TILT });
   var introDone = false;
+  var startIntro = function () { if (!introDone) { introDone = true; intro.play(); } };
+  /* заголовок проявляется, как только до него докрутили (на телефоне он выше переписки) */
+  new IntersectionObserver(function (en) { if (en[0].isIntersecting) startIntro(); }, { threshold: 0.3 }).observe(sec.querySelector('.talk__title'));
   new IntersectionObserver(function (en) {
-    if (en[0].isIntersecting) {
-      if (!introDone) { introDone = true; intro.play(); }
-      play();
-    } else reset();
+    if (en[0].isIntersecting) { startIntro(); play(); }
+    else reset();
   }, { threshold: 0.35 }).observe(phone);
 })();

@@ -388,7 +388,7 @@ async function init() {
   const hint = q('.story__scroll');
   let wantGo = false, bob = [];
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
-  tl.from(qa('.story__then .story__reveal'), { yPercent: 110, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
+  tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
     .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
@@ -409,7 +409,7 @@ async function init() {
     .set(canvas, { autoAlpha: 0 }, 'away+=1.5')
     .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
-    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
+    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, autoAlpha: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')

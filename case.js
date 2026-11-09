@@ -46,7 +46,7 @@
 
   /* заход в блок: заголовок выезжает из-под строки, цифра «+20%» проявляется, первая страница собирается */
   var intro = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
-  intro.from(sec.querySelectorAll('.case__head .story__reveal'), { yPercent: 110, duration: 1, stagger: 0.12 })
+  intro.from(sec.querySelectorAll('.case__head .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, stagger: 0.12 })
     .from(sec.querySelector('.case__kicker'), { autoAlpha: 0, y: 14, duration: 0.7 }, 0.3)
     .from(sec.querySelector('.case__num'), { autoAlpha: 0, y: 30, filter: 'blur(10px)', duration: 1 }, 0.3)
     .from(sec.querySelectorAll('.case__word, .case__niche'), { autoAlpha: 0, y: 18, duration: 0.8, stagger: 0.15 }, 0.55)
