@@ -7,6 +7,53 @@
   window.addEventListener('DOMContentLoaded', toTop);
   window.addEventListener('load', function () { toTop(); setTimeout(toTop, 0); });
   window.addEventListener('pageshow', function (e) { if (e.persisted) toTop(); });
+
+  /* Окно перешло через границу «телефон / компьютер» (открыли узким и растянули или наоборот):
+     блоки собраны под другую раскладку — страницы кейса легли бы друг на друга, закрепления не сработали бы.
+     Перезагружаем страницу и возвращаемся к тому же блоку. */
+  var KEY = 'lud-return';
+  var back = null;
+  try { back = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) {}
+  if (back) {
+    window.addEventListener('load', function () {
+      var go = function () {
+        var el = document.getElementById(back);
+        if (!el) return;
+        var st = window.ScrollTrigger && window.ScrollTrigger.getAll().filter(function (t) { return t.trigger === el && t.pin; })[0];
+        var y = st ? st.start : el.getBoundingClientRect().top + window.pageYOffset;   // закреплённый блок — с его первой страницы
+        if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y);
+      };
+      /* раскладка дозревает по мере загрузки картинок — подравниваемся, пока человек сам не начал крутить */
+      var userMoved = false, tries = 0;
+      ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { window.addEventListener(ev, function () { userMoved = true; }, { once: true, passive: true }); });
+      var loop = function () { if (userMoved || tries++ > 16) return; go(); setTimeout(loop, 250); };
+      setTimeout(loop, 150);
+    });
+  }
+  var bp = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
+  var was = bp.matches, bpTimer = null, here = '', hereTick = false;
+  /* какой блок сейчас на экране — запоминаем заранее: после растягивания окна раскладка уже другая */
+  window.addEventListener('scroll', function () {
+    if (hereTick || bp.matches !== was) return;
+    hereTick = true;
+    requestAnimationFrame(function () {
+      hereTick = false;
+      var mid = window.innerHeight / 2;
+      document.querySelectorAll('main section[id]')   /* закреплённые блоки завёрнуты в pin-spacer */.forEach(function (s) {
+        var r = s.getBoundingClientRect();
+        if (r.top <= mid && r.bottom > mid) here = s.id;
+      });
+    });
+  }, { passive: true });
+  var onBp = function () {
+    clearTimeout(bpTimer);
+    bpTimer = setTimeout(function () {
+      if (bp.matches === was) return;
+      try { if (here) sessionStorage.setItem(KEY, here); } catch (e) {}
+      location.reload();
+    }, 350);
+  };
+  if (bp.addEventListener) bp.addEventListener('change', onBp); else if (bp.addListener) bp.addListener(onBp);
 })();
 (function () {
   'use strict';

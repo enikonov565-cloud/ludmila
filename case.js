@@ -60,18 +60,19 @@
       tl.set(g, { autoAlpha: 1 }, 0)
         .fromTo(g.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)' },
           { yPercent: 0, autoAlpha: 1, rotate: 0, filter: 'blur(0px)', duration: 1.2, ease: 'power3.out', stagger: 0.09 }, 0);
-      if (!g._float) g._float = gsap.to(g, { y: -14, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 });   // слово медленно парит
+      if (!g._float && !reduce) g._float = gsap.to(g, { y: -14, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 });   // слово медленно парит
     }
     if (s) tl.fromTo(s, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.inOut' }, 0)
              .fromTo(s.querySelector('img'), { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power2.out' }, 0);
     tl.fromTo(bits(p), { y: 24, autoAlpha: 0, filter: 'blur(6px)' },
       { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.7, ease: 'power3.out', stagger: 0.12 }, s ? 0.35 : 0);
+    if (reduce) tl.progress(1);   // без анимации — сразу в конечном виде
     return tl;
   };
 
-  if (stacked || reduce) {
-    /* телефон / без анимации: все страницы видны, проявляются по мере прокрутки */
-    if (reduce) return;
+  if (stacked) {
+    /* телефон: все страницы видны, проявляются по мере прокрутки */
+    if (reduce) { intro.progress(1); return; }
     var seen = new IntersectionObserver(function (en) {
       en.forEach(function (e) {
         if (!e.isIntersecting) return;
@@ -100,7 +101,7 @@
   if (shot(pages[0])) gsap.set(shot(pages[0]), { clipPath: 'inset(0 0 100% 0)' });
   var started = false;
   new IntersectionObserver(function (en) {
-    if (en[0].isIntersecting && !started) { started = true; intro.play(); pageIn(pages[0], 0.4); }
+    if (en[0].isIntersecting && !started) { started = true; if (reduce) intro.progress(1); else intro.play(); pageIn(pages[0], 0.4); }
   }, { threshold: 0.55 }).observe(sec);
 
   var show = function (n) {
@@ -110,8 +111,10 @@
     sec.setAttribute('data-page', n);   // «+20%» и счётчик встают по макету этой страницы
     curEl.textContent = (n + 1 < 10 ? '0' : '') + (n + 1);
     if (hint) hint.classList.toggle('is-done', n === total - 1);
-    gsap.killTweensOf([from, to]);
+    gsap.killTweensOf(pages);
+    pages.forEach(function (p) { if (p !== from && p !== to) gsap.set(p, { autoAlpha: 0, x: 0 }); });   // третья страница не может остаться видимой
     from.classList.remove('is-active'); to.classList.add('is-active');
+    if (reduce) { gsap.set(from, { autoAlpha: 0, x: 0 }); gsap.set(to, { autoAlpha: 1, x: 0 }); pageIn(to); return; }
     gsap.to(from, { autoAlpha: 0, x: -40 * dir, duration: 0.3, ease: 'power2.in' });   // сначала старая страница уходит целиком…
     gsap.fromTo(to, { autoAlpha: 0, x: 40 * dir }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out', delay: 0.32 });   // …потом приходит новая — без наложения
     pageIn(to, 0.32);
