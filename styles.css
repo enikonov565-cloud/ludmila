@@ -1009,41 +1009,51 @@ a { color: inherit; text-decoration: none; }
 .talk__window { position: absolute; left: 0; top: 0; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); object-fit: cover; transform-origin: 30% 40%; }
 .talk__person { position: absolute; z-index: 1; left: calc(40 * var(--u)); top: 0; width: calc(784 * var(--u)); height: auto; }
 .talk__shade { position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: linear-gradient(90deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .1) 34%, rgba(7, 15, 16, .86) 50%, #070F10 64%),
+  background: linear-gradient(90deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .1) 28%, rgba(7, 15, 16, .88) 43%, #070F10 54%),
               linear-gradient(0deg, rgba(7, 15, 16, .55) 0%, rgba(7, 15, 16, 0) 30%); }
-/* большая цифра принципа — в полутоне за текстом */
-.talk__num { position: absolute; z-index: 2; right: calc(60 * var(--u)); bottom: calc(-40 * var(--u)); margin: 0; pointer-events: none;
-  font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(380 * var(--u)); line-height: 1; letter-spacing: -.04em; color: rgba(189, 183, 177, .08); }
-.talk__text { position: absolute; z-index: 3; left: calc(979 * var(--u)); top: 50%; translate: 0 -50%; width: calc(880 * var(--u)); }
-.talk__title { margin: 0 0 calc(56 * var(--u)); }
-.talk__list { position: relative; padding-left: calc(30 * var(--u)); }
-/* шкала прогресса: медная линия растёт с каждым принципом */
-.talk__rail { position: absolute; left: 0; top: calc(8 * var(--u)); bottom: calc(8 * var(--u)); width: 1px; background: rgba(189, 183, 177, .2); }
-.talk__fill { position: absolute; inset: 0; background: #C9A27A; transform-origin: 50% 0; transform: scaleY(.25); }
-.talk__list ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: calc(26 * var(--u)); }
-.talk__item { position: relative; display: grid; grid-template-columns: calc(44 * var(--u)) 1fr; column-gap: calc(22 * var(--u)); cursor: pointer; opacity: .42; transition: opacity .5s ease; }
-.talk__item.is-on, .talk__item:hover { opacity: 1; }
-.talk__clip { width: calc(40 * var(--u)); height: calc(40 * var(--u)); margin-top: calc(2 * var(--u)); color: #BDB7B1; transition: color .5s ease; }
-.talk__item.is-on .talk__clip { color: #C9A27A; }
-.talk__head { margin: 0; display: flex; align-items: baseline; gap: calc(16 * var(--u)); font-weight: 500; font-size: calc(40 * var(--u)); line-height: 1.15; letter-spacing: -.02em; }
-.talk__no { font-weight: 300; font-size: calc(20 * var(--u)); letter-spacing: .04em; color: #C9A27A; }
-.talk__body { grid-column: 2; overflow: hidden; }
-.talk__body p { margin: 0; padding-top: calc(12 * var(--u)); max-width: calc(640 * var(--u)); font-weight: 300; font-size: calc(28 * var(--u)); line-height: 1.3; color: #BDB7B1; }
+/* заголовок — в свободной тёмной части, телефон — справа */
+.talk__title { position: absolute; z-index: 3; left: calc(900 * var(--u)); top: 50%; translate: 0 -50%; width: calc(520 * var(--u)); margin: 0; }
+
+/* ===== iPhone с перепиской ===== */
+.chat { position: absolute; z-index: 3; right: calc(100 * var(--u)); top: calc(50% + 30 * var(--u)); translate: 0 -50%; width: calc(440 * var(--u)); height: calc(900 * var(--u));
+  padding: calc(13 * var(--u)); border-radius: calc(66 * var(--u)); background: #1c1d1f;
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) #3a3b3e, 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(0, 0, 0, .55); }
+.chat__screen { position: relative; height: 100%; border-radius: calc(54 * var(--u)); overflow: hidden; background: #F6EFE5; display: flex; flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Helvetica Neue", Arial, sans-serif; color: #1A2C30; }
+.chat__status { position: relative; flex: none; height: calc(54 * var(--u)); padding: 0 calc(30 * var(--u)); display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: calc(16 * var(--u)); }
+.chat__island { position: absolute; left: 50%; top: calc(12 * var(--u)); translate: -50% 0; width: calc(118 * var(--u)); height: calc(34 * var(--u)); border-radius: 99px; background: #0b0b0c; }
+.chat__icons { display: flex; gap: calc(5 * var(--u)); }
+.chat__icons i { display: block; width: calc(16 * var(--u)); height: calc(10 * var(--u)); border-radius: calc(3 * var(--u)); background: #1A2C30; }
+.chat__icons i:last-child { width: calc(24 * var(--u)); }
+.chat__head { flex: none; display: flex; align-items: center; gap: calc(10 * var(--u)); padding: calc(8 * var(--u)) calc(18 * var(--u)) calc(12 * var(--u));
+  border-bottom: 1px solid rgba(26, 44, 48, .1); background: rgba(246, 239, 229, .92); }
+.chat__back { font-size: calc(34 * var(--u)); line-height: .8; color: #A9502C; }
+.chat__ava { display: grid; place-items: center; width: calc(38 * var(--u)); height: calc(38 * var(--u)); border-radius: 50%; background: #C9A27A; color: #fff; font-weight: 600; font-size: calc(16 * var(--u)); }
+.chat__who { display: flex; flex-direction: column; line-height: 1.2; }
+.chat__who b { font-size: calc(18 * var(--u)); font-weight: 600; }
+.chat__who small { font-size: calc(14 * var(--u)); color: #6A5F51; }
+/* сообщения прижаты к низу: новые появляются снизу, старые уходят вверх */
+.chat__list { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: calc(8 * var(--u)); padding: calc(14 * var(--u)); }
+.chat__row { display: flex; flex: none; }
+.chat__row--me { justify-content: flex-end; }
+.chat__msg { max-width: 80%; padding: calc(11 * var(--u)) calc(15 * var(--u)); font-size: calc(19 * var(--u)); line-height: 1.35; word-break: break-word;
+  border-radius: calc(20 * var(--u)) calc(20 * var(--u)) calc(20 * var(--u)) calc(4 * var(--u)); background: #E7DED1; color: #1A2C30; transform-origin: 0 100%; }
+.chat__row--me .chat__msg { border-radius: calc(20 * var(--u)) calc(20 * var(--u)) calc(4 * var(--u)) calc(20 * var(--u)); background: #A9502C; color: #FBF4E6; transform-origin: 100% 100%; }
+.chat__typing { display: inline-flex; gap: calc(4 * var(--u)); padding: calc(13 * var(--u)) calc(16 * var(--u)); }
+.chat__typing i { display: block; width: calc(7 * var(--u)); height: calc(7 * var(--u)); border-radius: 50%; background: rgba(251, 244, 230, .85); opacity: .4; }
+.chat__input { flex: none; display: flex; align-items: center; justify-content: space-between; margin: 0 calc(14 * var(--u)) calc(30 * var(--u)); padding: calc(9 * var(--u)) calc(9 * var(--u)) calc(9 * var(--u)) calc(16 * var(--u));
+  border: 1px solid rgba(26, 44, 48, .18); border-radius: 99px; font-size: calc(17 * var(--u)); color: #9a9088; }
+.chat__input i { display: block; width: calc(26 * var(--u)); height: calc(26 * var(--u)); border-radius: 50%; background: #A9502C; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .talk { --u: 1px; height: auto; min-height: 0; padding: 0 20px 64px; }
   .talk__window { position: relative; left: -20px; width: calc(100% + 40px); height: 360px; object-position: 30% 50%; }
   .talk__person { left: 0; top: 40px; width: 210px; }
   .talk__shade { background: linear-gradient(180deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, 0) 230px, #070F10 380px); }
-  .talk__num { display: none; }
-  .talk__text { position: relative; left: auto; top: auto; translate: none; width: auto; margin-top: -24px; }
-  .talk__title { margin-bottom: 28px; font-size: clamp(30px, 8.2vw, 56px); }
-  .talk__list { padding-left: 18px; }
-  .talk__list ol { gap: 22px; }
-  .talk__item { grid-template-columns: 30px 1fr; column-gap: 12px; opacity: 1; }
-  .talk__clip { width: 28px; height: 28px; color: #C9A27A; }
-  .talk__head { font-size: clamp(20px, 5.6vw, 28px); gap: 10px; }
-  .talk__no { font-size: 14px; }
-  .talk__body p { padding-top: 6px; font-size: clamp(15px, 4.1vw, 19px); }
-  .talk__fill { transform: none; }
+  .talk__title { position: relative; left: auto; top: auto; translate: none; width: auto; margin: -24px 0 28px; font-size: clamp(30px, 8.2vw, 56px); }
+  .chat { position: relative; right: auto; top: auto; translate: none; margin: 0 auto; width: min(320px, 86vw); height: 620px; }
+  .chat__msg { font-size: 15px; }
+  .chat__who b { font-size: 16px; } .chat__who small { font-size: 12px; }
+  .chat__input { font-size: 15px; }
 }
