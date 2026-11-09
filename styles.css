@@ -1047,7 +1047,7 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid rgba(26, 44, 48, .18); border-radius: 99px; font-size: calc(17 * var(--u)); color: #9a9088; }
 
 /* отзыв — в свободной тёмной части под заголовком, левее телефона */
-.talk__review { position: absolute; z-index: 3; left: calc(800 * var(--u)); top: calc(545 * var(--u)); width: calc(520 * var(--u)); margin: 0; }
+.talk__review { position: absolute; z-index: 3; right: calc(617 * var(--u)); bottom: calc(63 * var(--u)); width: min(calc(560 * var(--u)), calc(100% - 1417 * var(--u))); margin: 0; }   /* низ и правый край — в нижнем правом углу свободного места, левее телефона */
 /* отзыв — скриншот её сообщения: так достовернее */
 .talk__quote { display: block; width: 100%; height: auto; border-radius: 0; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); }
 .talk__by { display: flex; flex-direction: column; gap: calc(4 * var(--u)); margin-top: calc(22 * var(--u)); }
@@ -1062,7 +1062,7 @@ a { color: inherit; text-decoration: none; }
   .talk__person { left: 0; top: 40px; width: 210px; }
   .talk__shade { background: linear-gradient(180deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, 0) 230px, #070F10 380px); }
   .talk__title { position: relative; left: auto; top: auto; translate: none; width: auto; white-space: normal; margin: -24px 0 28px; font-size: clamp(30px, 8.2vw, 56px); }
-  .talk__review { position: relative; left: auto; top: auto; width: auto; margin: 0 0 40px; }
+  .talk__review { position: relative; left: auto; top: auto; right: auto; bottom: auto; width: auto; margin: 0 0 40px; }
   .talk__by b { font-size: 16px; } .talk__by span { font-size: 14px; }
   .talk__cards { gap: 8px; margin-top: 22px; }
   .chat { position: relative; right: auto; top: auto; translate: none; margin: 0 auto; width: min(320px, 86vw); height: 620px; }
