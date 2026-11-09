@@ -112,9 +112,9 @@
     if (hint) hint.classList.toggle('is-done', n === total - 1);
     gsap.killTweensOf([from, to]);
     from.classList.remove('is-active'); to.classList.add('is-active');
-    gsap.to(from, { autoAlpha: 0, x: -50 * dir, duration: 0.45, ease: 'power2.in' });
-    gsap.fromTo(to, { autoAlpha: 0, x: 50 * dir }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out', delay: 0.2 });
-    pageIn(to, 0.2);
+    gsap.to(from, { autoAlpha: 0, x: -40 * dir, duration: 0.3, ease: 'power2.in' });   // сначала старая страница уходит целиком…
+    gsap.fromTo(to, { autoAlpha: 0, x: 40 * dir }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out', delay: 0.32 });   // …потом приходит новая — без наложения
+    pageIn(to, 0.32);
   };
 
   var st = null;
