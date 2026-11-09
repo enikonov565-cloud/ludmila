@@ -76,10 +76,11 @@
       en.forEach(function (e) {
         if (!e.isIntersecting) return;
         seen.unobserve(e.target);
-        if (e.target === sec) intro.play(); else pageIn(e.target);
+        if (e.target === head) intro.play(); else pageIn(e.target);
       });
     }, { threshold: 0.25 });
-    seen.observe(sec);
+    var head = sec.querySelector('.case__head');   // по заголовку, а не по всему блоку: блок на телефоне выше экрана
+    seen.observe(head);
     pages.forEach(function (p) { gsap.set(bits(p), { autoAlpha: 0 }); seen.observe(p); });
     return;
   }
