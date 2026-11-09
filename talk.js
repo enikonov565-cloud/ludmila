@@ -12,6 +12,18 @@
   var list = sec.querySelector('.chat__list');
   if (!list) return;
 
+  /* отзыв — ровно по ширине заголовка (до конца строки «я задаю правильные») */
+  var title = sec.querySelector('.talk__title');
+  var fitReview = function () {
+    if (window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) { sec.style.removeProperty('--tw'); return; }
+    var w = 0;
+    Array.prototype.forEach.call(title.querySelectorAll('.story__reveal'), function (r) { w = Math.max(w, r.offsetWidth); });
+    if (w) sec.style.setProperty('--tw', w + 'px');
+  };
+  fitReview();
+  window.addEventListener('resize', fitReview);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitReview);
+
   var DIALOG = [                                   // коротко: одна мысль — одна строка
     ['them', 'Нужен дизайн карточек. ТЗ нет.'],
     ['me', 'И не надо. Сначала — смысл: что должен почувствовать покупатель?'],
