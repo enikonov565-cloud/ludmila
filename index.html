@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=204">
+<link rel="stylesheet" href="styles.css?v=205">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -372,6 +372,16 @@
   <img class="talk__person" src="img/talk/ludmila.webp" width="784" height="1392" alt="Людмила Иващенко у окна с видом на высотку" loading="lazy">
   <div class="talk__shade" aria-hidden="true"></div>
   <h2 class="story__title talk__title" id="talk-title"><span class="story__mask"><span class="story__reveal"><span class="cap">Я</span> не&nbsp;жду ТЗ&nbsp;—</span></span><span class="story__mask"><span class="story__reveal">я&nbsp;задаю правильные</span></span><span class="story__mask"><span class="story__reveal">вопросы</span></span></h2>
+  <!-- отзыв клиентки (реальный, из её сообщения) и карточки из этого кейса -->
+  <figure class="talk__review">
+    <blockquote class="talk__quote"><p>«ТЗ у меня не было — Людмила сама задала вопросы и поняла, что нужно, с первого раза! Карточки выделяются на фоне конкурентов, а все исходники остались у меня. Карточки работают!»</p></blockquote>
+    <figcaption class="talk__by"><b>Светлана Клок</b><span>карточки товара для маркетплейсов</span></figcaption>
+    <div class="talk__cards">
+      <img src="img/case/after-main.webp" width="900" height="1200" alt="Карточка «Чайная пара Грёзы»" loading="lazy">
+      <img src="img/case/gzhel-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Морской бриз»" loading="lazy">
+      <img src="img/case/tulip-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Тюльпан»" loading="lazy">
+    </div>
+  </figure>
   <!-- iPhone с перепиской: ответы Людмилы — её принципы работы -->
   <div class="chat" role="img" aria-label="Переписка с клиенткой: Людмила начинает со смысла, считывает бренд с первого раза, пишет первой и сдаёт все исходники">
     <div class="chat__screen">
@@ -394,7 +404,7 @@
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js?v=57"></script>
 <script src="case.js?v=20"></script>
-<script src="talk.js?v=7"></script>
+<script src="talk.js?v=8"></script>
 <script type="module" src="story3d.js?v=43"></script>
 </body>
 </html>
