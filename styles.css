@@ -1013,7 +1013,7 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(90deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .1) 28%, rgba(7, 15, 16, .88) 43%, #070F10 54%),
               linear-gradient(0deg, rgba(7, 15, 16, .55) 0%, rgba(7, 15, 16, 0) 30%); }
 /* заголовок — в свободной тёмной части, телефон — справа */
-.talk__title { position: absolute; z-index: 3; left: calc(765 * var(--u)); top: calc(150 * var(--u)); width: auto; margin: 0; white-space: nowrap; }
+.talk__title { position: absolute; z-index: 3; left: calc(800 * var(--u)); top: calc(110 * var(--u)); width: auto; margin: 0; white-space: nowrap; }
 
 /* ===== iPhone с перепиской ===== */
 .chat { position: absolute; z-index: 3; right: calc(70 * var(--u)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js */ width: calc(440 * var(--u)); height: calc(880 * var(--u));
@@ -1047,7 +1047,7 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid rgba(26, 44, 48, .18); border-radius: 99px; font-size: calc(17 * var(--u)); color: #9a9088; }
 
 /* отзыв — в свободной тёмной части под заголовком, левее телефона */
-.talk__review { position: absolute; z-index: 3; left: calc(765 * var(--u)); top: calc(470 * var(--u)); width: calc(555 * var(--u)); margin: 0; }
+.talk__review { position: absolute; z-index: 3; left: calc(800 * var(--u)); top: calc(545 * var(--u)); width: calc(520 * var(--u)); margin: 0; }
 /* отзыв — скриншот её сообщения: так достовернее */
 .talk__quote { display: block; width: 100%; height: auto; border-radius: 0; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); }
 .talk__by { display: flex; flex-direction: column; gap: calc(4 * var(--u)); margin-top: calc(22 * var(--u)); }
