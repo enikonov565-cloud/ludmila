@@ -19,21 +19,27 @@
   if (setSlots.length && !reduce) {
     var si = 0, setTimer = null, setTotal = setSlots[0].querySelectorAll('img').length;
     setSlots.forEach(function (slot) { var im = slot.querySelectorAll('img'); gsap.set(im, { autoAlpha: 0 }); gsap.set(im[0], { autoAlpha: 1 }); });
+    /* все четыре окна меняются одновременно — одной общей анимацией */
+    var setTl = null;
     var nextSet = function () {
       var prevI = si; si = (si + 1) % setTotal;
-      setSlots.forEach(function (slot, k) {          // окна меняются по очереди, слева направо
+      if (setTl) setTl.progress(1).kill();             // прошлая смена не успела — доводим её до конца, чтобы окна не разошлись
+      setTl = gsap.timeline();
+      setSlots.forEach(function (slot) {
         var im = slot.querySelectorAll('img'), prev = im[prevI], cur = im[si];
-        gsap.set(prev, { zIndex: 1 });
+        Array.prototype.forEach.call(im, function (x) { if (x !== prev && x !== cur) gsap.set(x, { autoAlpha: 0, zIndex: 0, scale: 1 }); });
+        gsap.set(prev, { zIndex: 1, autoAlpha: 1 });
         gsap.set(cur, { zIndex: 2, autoAlpha: 1 });
-        gsap.timeline({ delay: k * 0.14 })
-          .fromTo(cur, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.18 }, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.15, ease: 'power4.inOut' }, 0)
+        setTl.fromTo(cur, { clipPath: 'inset(100% 0% 0% 0%)', scale: 1.18 }, { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, duration: 1.15, ease: 'power4.inOut' }, 0)
           .to(prev, { scale: 0.94, duration: 1.15, ease: 'power4.inOut' }, 0)
-          .set(prev, { autoAlpha: 0, scale: 1 });
+          .set(prev, { autoAlpha: 0, scale: 1 }, 1.15);
       });
     };
+    /* таймер — на часах GSAP: пока вкладка скрыта, он стоит, и смены не копятся */
+    var loop = function () { nextSet(); setTimer = gsap.delayedCall(4, loop); };
     new IntersectionObserver(function (en) {
-      if (en[0].isIntersecting) { if (!setTimer) setTimer = setInterval(nextSet, 4000); }
-      else { clearInterval(setTimer); setTimer = null; }
+      if (en[0].isIntersecting) { if (!setTimer) setTimer = gsap.delayedCall(4, loop); }
+      else if (setTimer) { setTimer.kill(); setTimer = null; }
     }, { threshold: 0.2 }).observe(setSlots[0]);
   }
 
