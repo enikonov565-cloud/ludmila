@@ -1049,8 +1049,8 @@ a { color: inherit; text-decoration: none; }
 
 /* отзыв — в свободной тёмной части под заголовком, левее телефона */
 /* отзыв — строго под заголовком, той же ширины; по высоте — посередине между заголовком и линией 982u */
-.talk__review { position: absolute; z-index: 3; left: var(--tl); top: calc(433 * var(--u)); bottom: calc(98 * var(--u)); width: var(--tw, calc(764 * var(--u))); margin: 0;
-  display: grid; grid-template-columns: minmax(0, 1fr) calc(500 * var(--u)); align-content: center; column-gap: calc(24 * var(--u)); row-gap: calc(24 * var(--u)); }
+.talk__review { position: absolute; z-index: 3; left: var(--tl); top: calc(466 * var(--u)); width: var(--tw, calc(764 * var(--u))); margin: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) calc(500 * var(--u)); align-content: start; column-gap: calc(24 * var(--u)); row-gap: calc(24 * var(--u)); }
 .talk__review .talk__quote { grid-column: 1 / -1; }
 .talk__review .talk__by { grid-column: 1; grid-row: 2; align-self: end; margin: 0; }
 .talk__review .talk__cards { grid-column: 2; grid-row: 2; margin: 0; }
