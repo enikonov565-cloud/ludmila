@@ -1006,6 +1006,7 @@ a { color: inherit; text-decoration: none; }
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1; background: #070F10;
 }
 /* окно с видом на высотку и Людмила — как в макете; справа фон уходит в фирменный тёмно-зелёный */
+.talk__pic { display: contents; }
 .talk__window { position: absolute; left: 0; top: 0; width: calc(1920 * var(--u)); height: calc(1080 * var(--u)); object-fit: cover; transform-origin: 30% 40%; }
 .talk__person { position: absolute; z-index: 1; left: calc(40 * var(--u)); top: 0; width: calc(784 * var(--u)); height: auto; }
 .talk__shade { position: absolute; inset: 0; z-index: 2; pointer-events: none;
@@ -1047,7 +1048,7 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .talk { --u: 1px; height: auto; min-height: 0; padding: 0 20px 64px; }
-  .talk__window { position: relative; left: -20px; width: calc(100% + 40px); height: 360px; object-position: 30% 50%; }
+  .talk__window { position: relative; left: -20px; width: calc(100% + 40px); height: 360px; object-position: 30% 12%; }   /* на телефоне — обрезанное фото без правой части (window-m.webp), шпиль высотки виден */
   .talk__person { left: 0; top: 40px; width: 210px; }
   .talk__shade { background: linear-gradient(180deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, 0) 230px, #070F10 380px); }
   .talk__title { position: relative; left: auto; top: auto; translate: none; width: auto; white-space: normal; margin: -24px 0 28px; font-size: clamp(30px, 8.2vw, 56px); }
