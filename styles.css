@@ -1047,7 +1047,7 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid rgba(26, 44, 48, .18); border-radius: 99px; font-size: calc(17 * var(--u)); color: #9a9088; }
 
 /* отзыв — в свободной тёмной части под заголовком, левее телефона */
-.talk__review { position: absolute; z-index: 3; right: calc(617 * var(--u)); bottom: calc(63 * var(--u)); width: min(calc(560 * var(--u)), calc(100% - 1417 * var(--u))); margin: 0; }   /* низ и правый край — в нижнем правом углу свободного места, левее телефона */
+.talk__review { position: absolute; z-index: 3; left: calc((100% + 214 * var(--u)) / 2 - 270 * var(--u)); bottom: calc(63 * var(--u)); width: calc(540 * var(--u)); margin: 0; }   /* по центру между краем фото (783u) и телефоном — поля слева и справа равные */
 /* отзыв — скриншот её сообщения: так достовернее */
 .talk__quote { display: block; width: 100%; height: auto; border-radius: 0; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); }
 .talk__by { display: flex; flex-direction: column; gap: calc(4 * var(--u)); margin-top: calc(22 * var(--u)); }
