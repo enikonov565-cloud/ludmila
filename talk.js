@@ -12,16 +12,16 @@
   var list = sec.querySelector('.chat__list');
   if (!list) return;
 
-  var DIALOG = [
-    ['them', 'Здравствуйте! Нужен дизайн карточек для маркетплейса. ТЗ пока нет 🙈'],
-    ['me', 'Здравствуйте! ТЗ и не нужно — начнём с главного: что должен почувствовать покупатель и что он должен сделать? Дизайн — последним.'],
-    ['them', 'Хочу, чтобы видели: это ручная работа, а не ширпотреб.'],
-    ['me', 'Поняла с первого раза — тёплый премиум, без глянца. Объяснять характер продукта ещё пять раз не придётся 🙂'],
-    ['them', 'А как я узнаю, что работа идёт?'],
-    ['me', 'Пишу первой, не пропадаю и предупреждаю заранее — вы всегда в курсе.'],
-    ['them', 'А файлы потом останутся у меня?'],
-    ['me', 'Конечно. Figma, PSD, PNG — всё ваше. Никакой зависимости от меня.'],
-    ['them', 'Отлично, начинаем! 🙌']
+  var DIALOG = [                                   // коротко: одна мысль — одна строка
+    ['them', 'Нужен дизайн карточек. ТЗ нет 🙈'],
+    ['me', 'И не надо. Сначала — смысл: что должен почувствовать покупатель?'],
+    ['them', 'Что это ручная работа.'],
+    ['me', 'Поняла с первого раза ✨'],
+    ['them', 'А как узнать, что работа идёт?'],
+    ['me', 'Пишу первой. Всегда на связи.'],
+    ['them', 'Файлы останутся у меня?'],
+    ['me', 'Все: Figma, PSD, PNG.'],
+    ['them', 'Начинаем! 🙌']
   ];
   var SPRING = 'back.out(1.6)';   // упругий въезд, как spring из образца
 
@@ -84,9 +84,15 @@
   intro.from(sec.querySelector('.talk__window'), { scale: 1.12, autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, 0)
     .from(sec.querySelector('.talk__person'), { xPercent: -6, autoAlpha: 0, duration: 1.4 }, 0.2)
     .from(sec.querySelectorAll('.talk__title .story__reveal'), { yPercent: 110, duration: 1, stagger: 0.12 }, 0.4)
-    .fromTo(sec.querySelector('.chat'), { y: 60, autoAlpha: 0, rotate: 4 }, { y: 0, autoAlpha: 1, rotate: 0, duration: 1.1, clearProps: 'transform' }, 0.6);
+    .fromTo(sec.querySelector('.chat'), { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1 }, 0.6)
+    .call(function () {          // телефон «живой»: медленно покачивается и чуть поворачивается
+      gsap.to(sec.querySelector('.chat'), { y: -18, rotation: '-=2.5', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+    });
 
   var phone = sec.querySelector('.chat');
+  var stackedMq = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
+  var TILT = stackedMq ? 4 : 9;                      // наклон: низ телефона — к центру страницы
+  gsap.set(phone, { yPercent: stackedMq ? 0 : -50, rotation: TILT });
   var introDone = false;
   new IntersectionObserver(function (en) {
     if (en[0].isIntersecting) {
