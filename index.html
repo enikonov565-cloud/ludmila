@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=218">
+<link rel="stylesheet" href="styles.css?v=219">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -47,6 +47,7 @@
     <li><a href="#story"><span>05</span>Мой путь</a></li>
     <li><a href="#case"><span>06</span>Кейс</a></li>
     <li><a href="#talk"><span>07</span>Как я работаю</a></li>
+    <li><a href="#show"><span>08</span>Что умею</a></li>
   </ul>
   <a class="site-menu__cta" href="#">Связаться со мной</a>
 </nav>
@@ -396,6 +397,66 @@
     </div>
   </div>
 </section>
+
+<!-- Блок 8 «Что умею: баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)»): работы сменяют друг друга по одной; show.js -->
+<section class="show" id="show" aria-labelledby="show-title" data-show>
+  <div class="show__glow" aria-hidden="true"><img src="img/works8/music-glow.webp" width="64" height="96" alt=""><img src="img/works8/burger-glow.webp" width="64" height="96" alt=""><img src="img/works8/goose-glow.webp" width="64" height="96" alt=""><img src="img/works8/porcelain-glow.webp" width="64" height="85" alt=""></div>
+  <div class="show__head">
+    <h2 class="story__title show__title" id="show-title"><span class="story__mask"><span class="story__reveal"><span class="cap">Ч</span>то умею: баннеры, наружка, соцсети.</span></span></h2>
+    <p class="show__kicker">кейс · дизайн баннера и&nbsp;афиши</p>
+  </div>
+  <div class="show__works">
+    <article class="show__work is-active" aria-label="«Вечера живой музыки»">
+      <figure class="show__poster"><img src="img/works8/music.webp" width="533" height="800" alt="Афиша «Вечера живой музыки» на остановке транспорта" loading="lazy"></figure>
+      <div class="show__info">
+        <p class="show__ghost" aria-hidden="true">Остановка</p>
+        <h3 class="show__name"><span class="story__mask"><span class="story__reveal">«Вечера живой музыки»</span></span></h3>
+        <p class="show__type">афиша на&nbsp;билборде остановки транспорта</p>
+        <ul class="show__list"><li>посыл считывается в&nbsp;миг</li><li>CTR уверенно даёт рост</li></ul>
+      </div>
+    </article>
+    <article class="show__work" aria-label="Кафе «Бургер-восторг»">
+      <figure class="show__poster"><img src="img/works8/burger.webp" width="533" height="800" alt="Баннер кафе «Бургер-восторг» на фасаде над летней верандой" loading="lazy"></figure>
+      <div class="show__info">
+        <p class="show__ghost" aria-hidden="true">Кафе</p>
+        <h3 class="show__name"><span class="story__mask"><span class="story__reveal">Кафе «Бургер-восторг»</span></span></h3>
+        <p class="show__type">рекламный баннер на&nbsp;билборде кафе</p>
+        <ul class="show__list"><li>настроение желания и&nbsp;голода вызвано типографикой и&nbsp;цветом</li></ul>
+      </div>
+    </article>
+    <article class="show__work" aria-label="«Гуси-лебеди»">
+      <figure class="show__poster"><img src="img/works8/goose.webp" width="533" height="800" alt="Афиша спектакля «Гуси-лебеди» театра кукол на ночной улице" loading="lazy"></figure>
+      <div class="show__info">
+        <p class="show__ghost" aria-hidden="true">Театр</p>
+        <h3 class="show__name"><span class="story__mask"><span class="story__reveal">«Гуси-лебеди»</span></span></h3>
+        <p class="show__type">афиша театра кукол</p>
+        <ul class="show__list"><li>образ считывается за&nbsp;1&nbsp;секунду</li><li>CTR уверенно идёт вверх</li></ul>
+      </div>
+    </article>
+    <article class="show__work" aria-label="«Авторский фарфор»">
+      <figure class="show__poster"><img src="img/works8/porcelain.webp" width="1100" height="1469" alt="Билборд «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес» — над вечерним проспектом" loading="lazy"></figure>
+      <div class="show__info">
+        <p class="show__ghost" aria-hidden="true">Билборд</p>
+        <h3 class="show__name"><span class="story__mask"><span class="story__reveal">«Авторский фарфор»</span></span></h3>
+        <p class="show__type">рекламный баннер на&nbsp;билборде</p>
+        <ul class="show__list"><li>форма, шрифт и&nbsp;предметы усиливают внимание к&nbsp;продукту</li></ul>
+      </div>
+    </article>
+  </div>
+  <!-- лента всех работ: активная подсвечена, по клику — к ней -->
+  <ul class="show__thumbs" aria-label="Все работы">
+    <li><button class="show__thumb is-on" type="button" aria-current="true" aria-label="Показать: «Вечера живой музыки»"><img src="img/works8/music.webp" width="533" height="800" alt="" loading="lazy"></button></li>
+    <li><button class="show__thumb" type="button" aria-current="false" aria-label="Показать: Кафе «Бургер-восторг»"><img src="img/works8/burger.webp" width="533" height="800" alt="" loading="lazy"></button></li>
+    <li><button class="show__thumb" type="button" aria-current="false" aria-label="Показать: «Гуси-лебеди»"><img src="img/works8/goose.webp" width="533" height="800" alt="" loading="lazy"></button></li>
+    <li><button class="show__thumb" type="button" aria-current="false" aria-label="Показать: «Авторский фарфор»"><img src="img/works8/porcelain.webp" width="1100" height="1469" alt="" loading="lazy"></button></li>
+  </ul>
+  <div class="apx__nav show__nav">
+    <p class="apx__count"><span class="apx__cur show__cur">01</span><span class="apx__sep" aria-hidden="true"></span><span class="apx__total">04</span></p>
+    <button class="apx__arrow apx__arrow--prev show__arrow--prev" type="button" aria-label="Предыдущая работа"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
+    <button class="apx__arrow js-next show__arrow--next" type="button" aria-label="Следующая работа"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
+  </div>
+  <button class="case__hint show__hint" type="button" aria-label="Следующая работа"><span class="story__tap" aria-hidden="true"><span class="hint-arrow"></span></span></button>
+</section>
 </main>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -405,6 +466,7 @@
 <script src="main.js?v=57"></script>
 <script src="case.js?v=21"></script>
 <script src="talk.js?v=10"></script>
+<script src="show.js?v=1"></script>
 <script type="module" src="story3d.js?v=43"></script>
 </body>
 </html>
