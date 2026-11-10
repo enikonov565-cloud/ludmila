@@ -110,20 +110,30 @@
     if (en[0].isIntersecting && !started) { started = true; if (reduce) intro.progress(1); else intro.play(); pageIn(pages[0], 0.4); }
   }, { threshold: 0.55 }).observe(sec);
 
+  /* смена страницы — плавная: старая страница, «+20%» и счётчик мягко гаснут; пока они невидимы, блок перестраивается
+     под новую страницу (фон, место «+20%»), затем новая страница и подписи так же мягко проявляются — без рывков и скачков */
+  var moving = sec.querySelectorAll('.case__result, .case__nav');
+  var swapCall = null;
   var show = function (n) {
     if (n === cur) return;
-    var dir = n > cur ? 1 : -1, from = pages[cur], to = pages[n];
+    var from = pages[cur], to = pages[n];
     cur = n;
-    sec.setAttribute('data-page', n);   // «+20%» и счётчик встают по макету этой страницы
-    curEl.textContent = (n + 1 < 10 ? '0' : '') + (n + 1);
     if (hint) hint.classList.toggle('is-done', n === total - 1);
-    gsap.killTweensOf(pages);
-    pages.forEach(function (p) { if (p !== from && p !== to) gsap.set(p, { autoAlpha: 0, x: 0 }); });   // третья страница не может остаться видимой
+    gsap.killTweensOf(pages); gsap.killTweensOf(moving);
+    if (swapCall) swapCall.kill();
+    pages.forEach(function (p) { if (p !== from && p !== to) gsap.set(p, { autoAlpha: 0, x: 0, y: 0 }); });   // третья страница не может остаться видимой
     from.classList.remove('is-active'); to.classList.add('is-active');
-    if (reduce) { gsap.set(from, { autoAlpha: 0, x: 0 }); gsap.set(to, { autoAlpha: 1, x: 0 }); pageIn(to); return; }
-    gsap.to(from, { autoAlpha: 0, x: -40 * dir, duration: 0.3, ease: 'power2.in' });   // сначала старая страница уходит целиком…
-    gsap.fromTo(to, { autoAlpha: 0, x: 40 * dir }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out', delay: 0.32 });   // …потом приходит новая — без наложения
-    pageIn(to, 0.32);
+    var apply = function () {
+      sec.setAttribute('data-page', n);   // фон, «+20%» и счётчик встают по макету этой страницы
+      curEl.textContent = (n + 1 < 10 ? '0' : '') + (n + 1);
+    };
+    if (reduce) { apply(); gsap.set(from, { autoAlpha: 0 }); gsap.set(to, { autoAlpha: 1, x: 0, y: 0 }); gsap.set(moving, { autoAlpha: 1 }); pageIn(to); return; }
+    gsap.to(from, { autoAlpha: 0, duration: 0.55, ease: 'power1.inOut' });
+    gsap.to(moving, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' });
+    swapCall = gsap.delayedCall(0.42, apply);
+    gsap.fromTo(to, { autoAlpha: 0, x: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.45 });
+    gsap.to(moving, { autoAlpha: 1, duration: 0.8, ease: 'power2.out', delay: 0.85 });
+    pageIn(to, 0.45);
   };
 
   var st = null;
