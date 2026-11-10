@@ -140,8 +140,17 @@
   gsap.set(photos.slice(1), { autoAlpha: 0 });
   gsap.set(descs.slice(1), { autoAlpha: 0 });
   var timer = null, started = false;
-  var next = function () {
-    var from = cur; cur = (cur + 1) % total;
+  /* точки внизу: сколько работ и какая сейчас; по клику — к нужной */
+  var dots = Array.prototype.slice.call(sec.querySelectorAll('.show__dot'));
+  var mark = function () { dots.forEach(function (b, i) { b.classList.toggle('is-on', i === cur); b.setAttribute('aria-current', i === cur ? 'true' : 'false'); }); };
+  var busy = false;
+  var next = function (to) {
+    if (busy) return;
+    var from = cur; cur = typeof to === 'number' ? to : (cur + 1) % total;
+    if (cur === from) return;
+    busy = true; gsap.delayedCall(reduce ? 0 : 2.5, function () { busy = false; });
+    if (timer) timer.kill();
+    mark();
     descOut(descs[from]);
     gsap.delayedCall(reduce ? 0 : 0.3, function () { photoOut(photos[from]); });
     gsap.delayedCall(reduce ? 0 : 1.1, function () { photoIn(photos[cur]); });   // когда прежнее почти ушло
@@ -149,13 +158,15 @@
       descs.forEach(function (d) { if (d !== descs[cur]) { gsap.killTweensOf(d._chars); gsap.set(d, { autoAlpha: 0 }); } });
       descIn(descs[cur]);
     });
-    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 2.5), next);
+    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 2.5), function () { next(); });
   };
+  dots.forEach(function (b, i) { b.addEventListener('click', function () { if (started) next(i); }); });
   var begin = function () {
     started = true;
     photoIn(photos[0]);
     descIn(descs[0], reduce ? 0 : 1.9);
-    timer = gsap.delayedCall(HOLD + 2.3, next);
+    timer = gsap.delayedCall(HOLD + 2.3, function () { next(); });
+    mark();
   };
   window.addEventListener('resize', sizeDust);
 

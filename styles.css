@@ -1082,7 +1082,7 @@ a { color: inherit; text-decoration: none; }
 /* ===== Блок 8 «Баннеры, наружка, соцсети» — по макету Figma «Slide 4:3 - 1» (1029:275), кадр 1920×1080 ===== */
 .show {
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
-  --lx: calc(1116 * var(--u));   /* линия: 699 + 377 + 40 */
+  --lx: calc(50% - 50 * var(--u));   /* линия: связка «описание — линия — фото» стоит по центру экрана */
   --gt: calc(282 * var(--u));    /* верх группы «описание — линия — фото» (макет 258 + 24: шапка сайта закрывает верх) */
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #E8DCC8;   /* все тексты блока — цветом шапки */
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* фон — как во втором блоке «Обо мне» */
@@ -1123,6 +1123,13 @@ a { color: inherit; text-decoration: none; }
 .show__right { position: absolute; z-index: 2; left: var(--lx); right: 0; top: var(--gt); height: calc(746 * var(--u)); overflow: hidden; }
 .show__photo { position: absolute; left: calc(40 * var(--u)); top: calc(2 * var(--u)); height: calc(742 * var(--u)); margin: 0; will-change: transform; }
 .show__photo img { display: block; height: 100%; width: auto; }
+/* точки внизу по центру: сколько работ, текущая — вытянута */
+.show__dots { position: absolute; z-index: 5; left: 50%; translate: -50% 0; top: calc(var(--gt) + 768 * var(--u)); display: flex; align-items: center; gap: calc(12 * var(--u)); }
+.show__dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); padding: 0; border: 1px solid rgba(232, 220, 200, .7); border-radius: 99px; background: transparent; cursor: pointer;
+  transition: width .5s ease, background-color .5s ease, border-color .5s ease; }
+.show__dot:hover { border-color: #E8DCC8; }
+.show__dot.is-on { width: calc(30 * var(--u)); background: #E8DCC8; border-color: #E8DCC8; }
+.show__dot:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
 .show__dust { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
@@ -1141,6 +1148,9 @@ a { color: inherit; text-decoration: none; }
   .show__right { position: absolute; left: var(--lx); right: 0; bottom: 56px; height: 330px; }
   .show__line { left: var(--lx); bottom: 58px; height: 326px; }
   .show__left { clip-path: inset(0 calc(100% - var(--lx)) 0 0); }
+  .show__dots { top: auto; bottom: 22px; gap: 10px; }
+  .show__dot { width: 9px; height: 9px; }
+  .show__dot.is-on { width: 24px; }
   /* описание на телефоне: аккуратная колонка по центру высоты, ровные отступы */
   .show__desc { left: 20px; right: auto; width: calc(var(--lx) - 40px); min-width: 0; gap: 14px; }
   .show__type { height: auto; display: block; white-space: normal; line-height: 1.25; }
