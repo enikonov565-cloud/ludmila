@@ -18,9 +18,13 @@
   /* описание — по буквам (слова не рвутся): при смене буквы рассыпаются пылью */
   descs.forEach(function (d) {
     d.querySelectorAll('.show__t1, .show__t2, .show__name, .show__list li').forEach(function (el) {
-      el.innerHTML = el.textContent.split(' ').map(function (w) {
-        return '<span class="dw">' + Array.prototype.map.call(w, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('') + '</span>';
-      }).join(' ');
+      var tmp = document.createElement('span');
+      el.innerHTML = el.innerHTML.split(/<br\s*\/?>/i).map(function (part) {   // перенос <br> сохраняем: нижние строки — в две строки
+        tmp.innerHTML = part;
+        return tmp.textContent.split(' ').map(function (w) {
+          return '<span class="dw">' + Array.prototype.map.call(w, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('') + '</span>';
+        }).join(' ');
+      }).join('<br>');
     });
     d._chars = Array.prototype.slice.call(d.querySelectorAll('.dc'));
     d._rows = Array.prototype.slice.call(d.querySelectorAll('.show__type, .show__name, .show__list li'));
