@@ -87,11 +87,13 @@
   items.forEach(function (it) { put(it, 0); });
 
   /* ---------- движение ленты ---------- */
+  var narrow = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
+  var REVEAL = narrow ? -0.5 : 0.08, DUST = narrow ? 0.04 : 0.13;   // на телефоне описание выплывает раньше и держится дольше
   var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, W = 0;
   var measure = function () {
     u = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
     if (window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) u = 0.62;
-    base = reduce ? 0 : -110 * Math.max(u, 0.5);              // px в секунду, справа налево
+    base = reduce ? 0 : (narrow ? -52 : -110 * Math.max(u, 0.5));   // на телефоне медленнее — описание успевают прочитать              // px в секунду, справа налево
     setW = items[total].offsetLeft - items[0].offsetLeft;      // ширина одного набора из четырёх работ
     W = stream.clientWidth; scanX = W / 2;
     sparks.width = W; sparks.height = stream.clientHeight;
@@ -119,8 +121,8 @@
       it._ht.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
       if (s > 0 && s < pw) crossing = true;
       if (left > scanX + 2) { if (it._st !== 0) put(it, 0); continue; }            // вернули назад — снова ждёт
-      if (it._st === 0 && left + pw * 0.08 < scanX) reveal(it);                     // афиша входит в луч — слева от неё выплывает описание
-      if (it._st === 1 && dl + it._desc.offsetWidth * 0.5 < W * 0.13) dust(it);   // у левого края — пыль
+      if (it._st === 0 && left + pw * REVEAL < scanX) reveal(it);                     // афиша входит в луч — слева от неё выплывает описание
+      if (it._st === 1 && dl + it._desc.offsetWidth * 0.5 < W * DUST) dust(it);   // у левого края — пыль
     }
     scan.classList.toggle('is-hot', crossing);
   };
