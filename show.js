@@ -169,4 +169,69 @@
       } else if (timer) timer.resume();
     } else if (timer) timer.pause();
   }, { threshold: 0.3 }).observe(sec);
+
+  /* ---------- лучи от линии влево (по мотивам «Star Burst», Originkit) ----------
+     из точки на линии во все стороны расходятся тонкие лучи; по каждому бегут короткие светлые штрихи
+     и тихо мерцают. Видна только левая половина — справа фото. Очень слабо: текст читается свободно, без подложек. */
+  (function () {
+    var cv = sec.querySelector('.show__burst'), line = sec.querySelector('.show__line');
+    if (!cv || !line) return;
+    var bx = cv.getContext('2d');
+    var SPEED = 0.9, SIZE = 1.2, OPACITY = 0.13, TWINKLE = 0.2, SPOKES = 100, PER = 15;
+    var seed = 0xbadf00d >>> 0;
+    var rng = function () { seed = (seed + 0x6d2b79f5) >>> 0; var t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    var cosA = new Float32Array(SPOKES), sinA = new Float32Array(SPOKES);
+    for (var i = 0; i < SPOKES; i++) { var a = (i / SPOKES) * Math.PI * 2 + (rng() - 0.5) * 0.02; cosA[i] = Math.cos(a); sinA[i] = Math.sin(a); }
+    var N = SPOKES * PER, pS = new Uint16Array(N), pT = new Float32Array(N), pV = new Float32Array(N), pZ = new Float32Array(N), pP = new Float32Array(N);
+    for (i = 0; i < N; i++) { pS[i] = i % SPOKES; pT[i] = -0.05 + rng() * 1.1; pV[i] = (0.5 + rng()) * 0.25; pZ[i] = 0.7 + rng() * 0.8; pP[i] = rng() * Math.PI * 2; }
+    /* штрих: от прозрачного хвоста к светлой голове — запекаем один раз */
+    var spr = document.createElement('canvas'); spr.width = 64; spr.height = 2;
+    var sg = spr.getContext('2d'), g = sg.createLinearGradient(0, 0, 64, 0);
+    g.addColorStop(0, 'rgba(255,250,250,0)'); g.addColorStop(0.7, 'rgba(255,250,250,.6)'); g.addColorStop(1, 'rgba(255,250,250,1)');
+    sg.fillStyle = g; sg.fillRect(0, 0, 64, 2);
+    var w = 0, h = 0, dpr = 1, cx = 0, cy = 0, R = 0;
+    var size = function () {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = cv.clientWidth; h = cv.clientHeight;
+      cv.width = Math.max(1, Math.round(w * dpr)); cv.height = Math.max(1, Math.round(h * dpr));
+      var cr = cv.getBoundingClientRect(), lr = line.getBoundingClientRect();
+      cx = lr.left - cr.left; cy = lr.top + lr.height / 2 - cr.top;           // центр — середина линии
+      R = Math.sqrt(Math.max(cx, w - cx) * Math.max(cx, w - cx) + Math.max(cy, h - cy) * Math.max(cy, h - cy));
+    };
+    var time = 0;
+    var draw = function (dt) {
+      time += dt;
+      bx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bx.globalCompositeOperation = 'source-over'; bx.globalAlpha = 1;
+      bx.clearRect(0, 0, w, h);
+      bx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < N; i++) {
+        pT[i] += pV[i] * SPEED * dt;
+        if (pT[i] > 1.1) { pT[i] = -0.05 - rng() * 0.05; pZ[i] = 0.7 + rng() * 0.8; pP[i] = rng() * Math.PI * 2; }
+        var t = pT[i];
+        if (t < 0 || t >= 1) continue;
+        var s = pS[i];
+        if (cosA[s] > 0.05) continue;                                              // вправо — там фото, не рисуем
+        var tw = 0.7 + 0.3 * Math.sin(time * TWINKLE * 6 + pP[i]);
+        var fade = t < 0.06 ? t / 0.06 : t < 0.85 ? 1 : 1 - (t - 0.85) / 0.15;
+        var al = Math.min(1, tw * fade * (1 + 0.5 * t) * OPACITY);
+        if (al < 0.005) continue;
+        var d = t * R, px = cx + cosA[s] * d, py = cy + sinA[s] * d;
+        var len = (8 + 12 * (pV[i] / 0.25)) * (0.7 + 0.6 * pZ[i] * SIZE);
+        bx.setTransform(dpr * cosA[s], dpr * sinA[s], -dpr * sinA[s], dpr * cosA[s], dpr * px, dpr * py);
+        bx.globalAlpha = al;
+        bx.drawImage(spr, -len, -0.5, len, 1);
+      }
+      bx.setTransform(dpr, 0, 0, dpr, 0, 0); bx.globalAlpha = 1; bx.globalCompositeOperation = 'source-over';
+    };
+    var raf = 0, last = 0, on = false;
+    var loop = function (t) { raf = requestAnimationFrame(loop); var dt = Math.min(0.05, Math.max(0.001, (t - (last || t)) / 1000)); last = t; draw(dt); };
+    size(); for (var k = 0; k < 60; k++) draw(1 / 60);                         // сразу «в полёте», а не из центра
+    window.addEventListener('resize', function () { size(); if (!on) draw(0); });
+    if (reduce) return;
+    new IntersectionObserver(function (en) {
+      if (en[0].isIntersecting && !on) { on = true; last = 0; raf = requestAnimationFrame(loop); }
+      else if (!en[0].isIntersecting && on) { on = false; cancelAnimationFrame(raf); }
+    }, { threshold: 0 }).observe(sec);
+  })();
 })();
