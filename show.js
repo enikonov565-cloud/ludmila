@@ -2,7 +2,7 @@
    Оформление — по мотивам «сканера карточек» (codepen blacklead-studio/xbwaqxE, по мотивам evervault.com):
    работы плывут лентой справа налево. Пока работа не дошла до медного луча — она в полутонах (приглушена);
    луч проявляет её в полную силу. Как только афиша прошла луч, из-за неё выплывает соседняя карточка
-   с описанием этой работы, а у левого края описание рассыпается в мелкие буквы — пыль. От луча летят искры.
+   с описанием этой работы (слева от афиши), а у левого края описание рассыпается в мелкие буквы — пыль. От луча летят искры.
    Ленту можно тянуть мышью или пальцем. */
 (function () {
   'use strict';
@@ -57,7 +57,7 @@
     kill(it); it._st = st;
     if (!gsap) { it._desc.style.visibility = st === 1 ? 'visible' : 'hidden'; return; }
     gsap.set(it._chars, { clearProps: 'all' });
-    if (st === 0) gsap.set(it._desc, { autoAlpha: 1, clipPath: 'inset(0% 100% 0% 0%)' });
+    if (st === 0) gsap.set(it._desc, { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 100%)' });
     if (st === 1) gsap.set(it._desc, { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)' });
     if (st === 2) gsap.set(it._desc, { autoAlpha: 0 });
     gsap.set(it._desc, { '--dbg': 1 });
@@ -68,8 +68,8 @@
     if (!gsap || reduce) { put(it, 1); return; }
     gsap.set(it._chars, { clearProps: 'all' });
     gsap.set(it._desc, { autoAlpha: 1 });
-    gsap.fromTo(it._desc, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' });
-    gsap.fromTo(it._wrap, { x: '-35%' }, { x: '0%', duration: 1.1, ease: 'power3.out' });
+    gsap.fromTo(it._desc, { clipPath: 'inset(0% 0% 0% 100%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' });
+    gsap.fromTo(it._wrap, { x: '35%' }, { x: '0%', duration: 1.1, ease: 'power3.out' });
   };
   var dust = function (it) {             // рассыпается в мелкие буквы
     kill(it); it._st = 2;
@@ -112,15 +112,15 @@
     track.style.transform = 'translate3d(' + x.toFixed(2) + 'px,0,0)';
     crossing = false;
     for (var i = 0; i < items.length; i++) {
-      var it = items[i], left = x + it.offsetLeft, pw = it._poster.offsetWidth;
-      if (left > W + 50 || left + it.offsetWidth < -50) continue;
+      var it = items[i], left = x + it._poster.offsetLeft, pw = it._poster.offsetWidth, dl = x + it._desc.offsetLeft;
+      if (dl > W + 50 || left + pw < -50) continue;
       /* полутона (вуаль) справа от луча, слева — работа в полную силу */
       var s = Math.max(0, Math.min(pw, scanX - left));
       it._ht.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
       if (s > 0 && s < pw) crossing = true;
       if (left > scanX + 2) { if (it._st !== 0) put(it, 0); continue; }            // вернули назад — снова ждёт
-      if (it._st === 0 && left + pw * 0.55 < scanX) reveal(it);                     // афиша прошла луч — выплывает описание
-      if (it._st === 1 && left + pw + it._desc.offsetWidth * 0.5 < W * 0.24) dust(it);   // у левого края — пыль
+      if (it._st === 0 && left + pw * 0.08 < scanX) reveal(it);                     // афиша входит в луч — слева от неё выплывает описание
+      if (it._st === 1 && dl + it._desc.offsetWidth * 0.5 < W * 0.13) dust(it);   // у левого края — пыль
     }
     scan.classList.toggle('is-hot', crossing);
   };
