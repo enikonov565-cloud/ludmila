@@ -1,9 +1,9 @@
 /* Блок 8 «Баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)»).
    По мотивам «сканера карточек» (codepen blacklead-studio/xbwaqxE, по мотивам evervault.com):
-   работы плывут лентой справа налево. Подходя к медной полосе, фото становится ярким; полоса «сканирует» его —
-   справа от полосы видна сама работа, слева та же карточка уже показывает её описание тонким текстом.
-   Уходя влево, описание постепенно сходит на нет и растворяется плавной пылью. От полосы летят искры.
-   Ленту можно тянуть мышью или пальцем. */
+   работы плывут справа налево к медной полосе — фото видно целиком (вдали в полутонах, у полосы в полную силу).
+   Фото уходит под полосу, а по другую сторону полосы из неё проявляется описание именно этой работы.
+   Пока фото не ушло целиком — описание читается; затем оно растворяется плавной пылью,
+   и к подходу следующей работы слева от полосы уже пусто. Ленту можно тянуть мышью или пальцем. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-show]');
@@ -15,82 +15,91 @@
   var track = sec.querySelector('.show__track');
   var sparks = sec.querySelector('.show__sparks');
   var scan = sec.querySelector('.show__scan');
+  var caps = Array.prototype.slice.call(sec.querySelectorAll('.show__cap'));
   var tpl = Array.prototype.slice.call(track.children);   // четыре работы из разметки
   var total = tpl.length;
 
-  /* описание — по буквам: каждая буква сама превращается в пылинку */
-  tpl.forEach(function (n) {
-    var d = n.querySelector('.show__desc');
-    d.setAttribute('aria-label', d.textContent.replace(/\s+/g, ' ').trim());   // для экранного диктора — целым текстом
-    d.querySelector('.show__dwrap').setAttribute('aria-hidden', 'true');
-    d.querySelectorAll('.show__d-type, .show__d-name, .show__d-list li').forEach(function (el) {
-      el.innerHTML = Array.prototype.map.call(el.textContent, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('');
+  /* описания — по буквам: буквы проявляются из полосы и потом рассыпаются пылью */
+  caps.forEach(function (cp) {
+    cp.querySelectorAll('.show__c-type, .show__c-name, .show__c-list li').forEach(function (el) {
+      el.innerHTML = el.textContent.split(' ').map(function (w) {   // слова не рвутся при переносе
+        return '<span class="dw">' + Array.prototype.map.call(w, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('') + '</span>';
+      }).join(' ');
     });
+    cp._chars = Array.prototype.slice.call(cp.querySelectorAll('.dc'));
+    cp._chars.forEach(function (ch) { ch._dx = -(14 + Math.random() * 70); ch._dy = -(8 + Math.random() * 46); ch._r = Math.random(); ch._puff = false; ch._k = ''; });
   });
 
   /* лента повторяется, чтобы шла без конца */
   for (var c = 1; c < 3; c++) tpl.forEach(function (n) {
     var k = n.cloneNode(true); k.setAttribute('aria-hidden', 'true');
     k.querySelectorAll('img').forEach(function (im) { im.alt = ''; });
-    k.querySelector('.show__desc').removeAttribute('aria-label');
     track.appendChild(k);
   });
   var cards = Array.prototype.slice.call(track.querySelectorAll('.show__card'));
-  cards.forEach(function (cd) {
-    cd._photo = cd.querySelector('.show__photo');
-    cd._veil = cd.querySelector('.show__veil');
-    cd._desc = cd.querySelector('.show__desc');
-    cd._chars = Array.prototype.slice.call(cd.querySelectorAll('.dc'));
-    cd._chars.forEach(function (ch) {                 // у каждой буквы — своя пылинка и своя очередь
-      ch._dx = -(10 + Math.random() * 60); ch._dy = -(6 + Math.random() * 40); ch._j = Math.random(); ch._p = -1; ch._puff = false;
-    });
-  });
+  cards.forEach(function (cd) { cd._photo = cd.querySelector('.show__photo'); cd._veil = cd.querySelector('.show__veil'); });
 
   /* ---------- размеры ---------- */
-  var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, W = 0, DS = 0, DE = 0, trackTop = 0;
+  var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, W = 0, gap = 0, capTop = 0;
   var measure = function () {
     u = narrow ? 0.62 : Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-    base = reduce ? 0 : (narrow ? -45 : -100 * Math.max(u, 0.5));   // px в секунду, справа налево
+    base = reduce ? 0 : (narrow ? -42 : -95 * Math.max(u, 0.5));   // px в секунду, справа налево
     setW = cards[total].offsetLeft - cards[0].offsetLeft;            // ширина одного набора из четырёх работ
-    W = stream.clientWidth; scanX = W / 2;
-    var cw = cards[0].offsetWidth;
-    DS = narrow ? W * 0.32 : Math.max(W * 0.18, scanX - cw * 1.15);   // отсюда описание начинает таять…
-    DE = W * 0.03;                                                     // …и к краю экрана растворяется совсем
-    trackTop = track.offsetTop;
+    gap = cards[1].offsetLeft - cards[0].offsetLeft - cards[0].offsetWidth;
+    W = stream.clientWidth; scanX = scan.offsetLeft + scan.offsetWidth / 2;
     sparks.width = W; sparks.height = stream.clientHeight;
-    cards.forEach(function (cd) {                    // где каждая буква стоит в ленте (без сдвигов анимации)
-      cd._chars.forEach(function (ch) {
+    caps.forEach(function (cp) {                     // где каждая буква стоит в своём описании
+      cp._right = cp.offsetLeft + cp.offsetWidth;
+      cp._chars.forEach(function (ch) {
         var ox = 0, oy = 0, el = ch;
-        while (el && el !== track) { ox += el.offsetLeft; oy += el.offsetTop; el = el.offsetParent; }
-        ch._x = ox + ch.offsetWidth / 2; ch._y = oy + ch.offsetHeight / 2;
+        while (el && el !== cp) { ox += el.offsetLeft; oy += el.offsetTop; el = el.offsetParent; }
+        ch._x = cp.offsetLeft + ox + ch.offsetWidth / 2;            // в координатах ленты-окна
+        ch._y = cp.offsetTop + oy + ch.offsetHeight / 2;
+        ch._d = scanX - ch._x;                                       // расстояние от полосы
       });
+      cp._span = Math.max.apply(null, cp._chars.map(function (ch) { return ch._d; })) || 1;
     });
   };
   var wrap = function () { if (!setW) return; while (x <= -setW) x += setW; while (x > 0) x -= setW; };
 
-  /* ---------- пыль ---------- */
+  /* ---------- пылинки ---------- */
   var sctx = sparks.getContext('2d'), parts = [];
-  var puff = function (px, py) {                     // буква рассыпалась — от неё несколько тонких пылинок
-    for (var k = 0; k < 3; k++) parts.push({ x: px + (Math.random() - 0.5) * 6, y: py + (Math.random() - 0.5) * 6,
-      vx: -(8 + Math.random() * 30), vy: -(4 + Math.random() * 18), life: 0, max: 1.2 + Math.random() * 1.4, r: 0.4 + Math.random() * 0.9, hot: true, dust: true });
+  var puff = function (px, py) {
+    for (var k = 0; k < 4; k++) parts.push({ x: px + (Math.random() - 0.5) * 8, y: py + (Math.random() - 0.5) * 8,
+      vx: -(10 + Math.random() * 40), vy: -(4 + Math.random() * 22), life: 0, max: 1.4 + Math.random() * 1.6, r: 0.4 + Math.random() * 0.9, dust: true });
   };
-  var dustChars = function (cd, cardLeft) {
-    var span = DS - DE, k = narrow ? 0.6 : Math.max(0.5, u);
-    for (var n = 0; n < cd._chars.length; n++) {
-      var ch = cd._chars[n], sx = x + ch._x;
-      if (sx > scanX) { if (ch._p !== 0) { ch._p = 0; ch.style.opacity = ''; ch.style.transform = ''; ch.style.filter = ''; ch._puff = false; } continue; }
-      var p = (DS - sx) / span;                       // 0 — буква целая, 1 — растворилась у края
-      p = p * 1.3 - ch._j * 0.3;                      // буквы тают вразнобой
+
+  /* описание работы, которая сейчас уходит под полосу: q — от 0 (фото коснулось полосы) до 1 (подходит следующее) */
+  var setChar = function (ch, o, tx, ty, bl) {
+    var key = o.toFixed(2) + tx.toFixed(0) + ty.toFixed(0) + bl.toFixed(1);
+    if (key === ch._k) return; ch._k = key;
+    ch.style.opacity = o.toFixed(3);
+    ch.style.transform = (tx || ty) ? 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px)' : '';
+    ch.style.filter = bl > 0.05 ? 'blur(' + bl.toFixed(2) + 'px)' : '';
+  };
+  var drawCap = function (cp, q) {
+    var k = narrow ? 0.6 : Math.max(0.5, u), band = 70 * k;
+    var rev = Math.min(1, q / 0.2) * (cp._span + band);             // докуда описание уже вышло из полосы
+    for (var n = 0; n < cp._chars.length; n++) {
+      var ch = cp._chars[n];
+      var a = Math.max(0, Math.min(1, (rev - ch._d) / band));       // проявление — от полосы влево
+      var p = (q - 0.7) / 0.26;                                       // растворение: последняя четверть пути
+      p = p * 1.5 - (ch._r * 0.6 + (ch._d / cp._span) * 0.4) * 0.5;  // дальние от полосы и случайные — раньше
       p = p < 0 ? 0 : p > 1 ? 1 : p;
-      if (Math.abs(p - ch._p) < 0.006) continue;
-      ch._p = p;
-      if (p === 0) { ch.style.opacity = ''; ch.style.transform = ''; ch.style.filter = ''; ch._puff = false; continue; }
-      var e = p * p;
-      ch.style.opacity = Math.max(0, 1 - p * 1.15).toFixed(3);
-      ch.style.transform = 'translate(' + (ch._dx * k * e).toFixed(1) + 'px,' + (ch._dy * k * e).toFixed(1) + 'px)';
-      ch.style.filter = 'blur(' + (p * 2.2 * k).toFixed(2) + 'px)';
-      if (!ch._puff && p > 0.45 && !reduce) { ch._puff = true; puff(sx - cardLeft + cardLeft, trackTop + ch._y); }
+      if (reduce) { setChar(ch, q < 0.85 ? 1 : 0, 0, 0, 0); continue; }
+      var e = p * p, o = a * (1 - p);
+      setChar(ch, o, (1 - a) * 18 * k + ch._dx * k * e, ch._dy * k * e, (1 - a) * 3 + p * 2.6 * k);
+      if (p > 0.35 && !ch._puff) { ch._puff = true; puff(ch._x, ch._y); }
+      if (p === 0) ch._puff = false;
     }
+  };
+  var active = -1;
+  var showCap = function (i, q) {
+    if (i !== active) {
+      caps.forEach(function (cp, k) { cp.classList.toggle('is-on', k === i); });
+      active = i;
+    }
+    if (i > -1) drawCap(caps[i], q);
   };
 
   /* ---------- раскладка кадра ---------- */
@@ -98,27 +107,25 @@
   var layout = function () {
     track.style.transform = 'translate3d(' + x.toFixed(2) + 'px,0,0)';
     crossing = false;
+    var capI = -1, capQ = 0;
     for (var i = 0; i < cards.length; i++) {
       var cd = cards[i], left = x + cd.offsetLeft, w = cd.offsetWidth;
-      if (left > W + 50 || left + w < -50) continue;
-      var s = Math.max(0, Math.min(w, scanX - left));          // сколько карточки уже прошло полосу
-      cd._photo.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';    // справа от полосы — фото
-      cd._desc.style.clipPath = 'inset(0 ' + (w - s).toFixed(1) + 'px 0 0)'; // слева — описание
-      /* фото в полутонах вдали и ярче по мере приближения к полосе */
-      var d = (left - scanX) / Math.max(1, w);                   // 0 — карточка у полосы
-      cd._veil.style.opacity = (0.6 * Math.max(0, Math.min(1, (d - 0.15) / 0.9))).toFixed(3);   // вуаль не плотнее 60 %
-      /* подложка описания тоже сходит на нет к краю экрана */
-      var m = 'linear-gradient(90deg, transparent ' + (DE - left).toFixed(1) + 'px, #000 ' + (DS - left).toFixed(1) + 'px)';
-      cd._desc.style.webkitMaskImage = m; cd._desc.style.maskImage = m;
+      if (left > W + 50 || left + w + gap < 0) continue;
+      var s = Math.max(0, Math.min(w, scanX - left));               // сколько фото уже ушло под полосу
+      cd._photo.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
+      var d = (left - scanX) / Math.max(1, w);                       // вдали — полутона, у полосы — в полную силу
+      cd._veil.style.opacity = (0.6 * Math.max(0, Math.min(1, (d - 0.15) / 0.9))).toFixed(3);
       if (s > 0 && s < w) crossing = true;
-      if (s > 0) dustChars(cd, left);
+      var q = (scanX - left) / (w + gap);
+      if (q > 0 && q < 1) { capI = i % total; capQ = q; }
     }
+    showCap(capI, capQ);
     scan.classList.toggle('is-hot', crossing);
   };
 
   /* ---------- искры у полосы ---------- */
   var spawn = function (dt) {
-    var rate = crossing ? 80 : 16, n = rate * dt + Math.random() * 0.5;   // на пересечении — гуще
+    var rate = crossing ? 80 : 16, n = rate * dt + Math.random() * 0.5;   // когда фото уходит под полосу — гуще
     var h = sparks.height;
     for (var k = 0; k < n; k++) {
       parts.push({ x: scanX + (Math.random() - 0.5) * 4, y: h * 0.06 + Math.random() * h * 0.88,
@@ -132,9 +139,10 @@
     for (var i = parts.length - 1; i >= 0; i--) {
       var p = parts[i]; p.life += dt;
       if (p.life >= p.max) { parts.splice(i, 1); continue; }
-      p.x += (p.vx + (p.dust ? vel * 0.2 : 0)) * dt; p.y += p.vy * dt; p.vx *= 0.985;
+      p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.985;
       var a = 1 - p.life / p.max;
-      sctx.fillStyle = p.hot ? 'rgba(232, 220, 200, ' + (a * (p.dust ? 0.6 : 0.9)).toFixed(3) + ')' : 'rgba(201, 162, 122, ' + (a * 0.8).toFixed(3) + ')';
+      sctx.fillStyle = p.dust ? 'rgba(232, 220, 200, ' + (a * 0.55).toFixed(3) + ')'
+        : p.hot ? 'rgba(232, 220, 200, ' + (a * 0.9).toFixed(3) + ')' : 'rgba(201, 162, 122, ' + (a * 0.8).toFixed(3) + ')';
       sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, 6.2832); sctx.fill();
     }
     sctx.globalCompositeOperation = 'source-over';
@@ -175,7 +183,7 @@
 
   /* ---------- запуск: первая работа подходит к полосе ---------- */
   var place = function () { measure(); wrap(); layout(); };
-  measure(); x = -setW + scanX - cards[0].offsetWidth * 0.3;
+  measure(); x = -setW + scanX - cards[0].offsetWidth * 0.15;
   wrap(); layout();
   window.addEventListener('resize', place);
   window.addEventListener('load', place);
