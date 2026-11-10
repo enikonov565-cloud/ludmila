@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=249">
+<link rel="stylesheet" href="styles.css?v=250">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -450,62 +450,18 @@
   <div class="show__dots" aria-label="Работы"><button class="show__dot is-on" type="button" aria-label="«Гуси-лебеди»" aria-current="true"></button><button class="show__dot" type="button" aria-label="«Авторский фарфор»" aria-current="false"></button><button class="show__dot" type="button" aria-label="«Вечера живой музыки»" aria-current="false"></button><button class="show__dot" type="button" aria-label="Кафе «Бургер-восторг»" aria-current="false"></button></div>
 </section>
 
-<!-- Блок 9 «Галерея» — продолжение блока 8: оригиналы макетов крупным планом; gallery.js -->
+<!-- Блок 9 «Галерея» — продолжение блока 8: поле макетов «вздувается» под курсором (Image Grid, three.js); gallery.js -->
 <section class="gal" id="gallery" aria-labelledby="gal-title" data-gallery>
   <div class="gal__head">
     <p class="gal__sub">Вблизи:</p>
     <h2 class="story__title gal__title" id="gal-title"><span class="story__mask"><span class="story__reveal"><span class="cap">М</span>акеты крупным планом.</span></span></h2>
     <p class="gal__kicker">афиши, баннеры, карточки товара и&nbsp;сторис</p>
   </div>
-  <div class="gal__chips" role="group" aria-label="Какие работы показать">
-    <button class="gal__chip is-on" type="button" data-filter="all" aria-pressed="true">Все</button>
-    <button class="gal__chip" type="button" data-filter="poster" aria-pressed="false">Афиши и&nbsp;баннеры</button>
-    <button class="gal__chip" type="button" data-filter="card" aria-pressed="false">Карточки товара</button>
-    <button class="gal__chip" type="button" data-filter="story" aria-pressed="false">Сторис</button>
-  </div>
-  <ul class="gal__strip">
-    <li class="gal__item" data-kind="poster" style="--ar:901 / 1201">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: «Гуси-лебеди»"><img src="img/gallery/goose.webp" width="901" height="1201" alt="Афиша «Гуси-лебеди»: Баба-яга в сказочном лесу, даты и время спектаклей" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">«Гуси-лебеди»</span><span class="gal__kind">афиша театра кукол</span></p>
-    </li>
-    <li class="gal__item" data-kind="card" style="--ar:900 / 1200">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Сервиз чайный"><img src="img/gallery/service-blue.webp" width="900" height="1200" alt="Карточка товара «Сервиз чайный»: чай льётся из полосатого чайника в чашку" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Сервиз чайный</span><span class="gal__kind">карточка товара</span></p>
-    </li>
-    <li class="gal__item" data-kind="poster" style="--ar:1600 / 900">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: «Авторский фарфор»"><img src="img/gallery/porcelain.webp" width="1600" height="900" alt="Баннер «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес»" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">«Авторский фарфор»</span><span class="gal__kind">баннер</span></p>
-    </li>
-    <li class="gal__item" data-kind="story" style="--ar:900 / 1600">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Дома под ключ"><img src="img/gallery/houses.webp" width="900" height="1600" alt="Сторис «Дома — строим под ключ»: деревянный дом с панорамными окнами" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Дома под ключ</span><span class="gal__kind">сторис</span></p>
-    </li>
-    <li class="gal__item" data-kind="card" style="--ar:900 / 1200">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Ваза. Фарфор"><img src="img/gallery/vase.webp" width="900" height="1200" alt="Карточка товара «Ваза. Фарфор»: ваза с хризантемами на подставке с лентой" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Ваза. Фарфор</span><span class="gal__kind">карточка товара</span></p>
-    </li>
-    <li class="gal__item" data-kind="poster" style="--ar:1600 / 900">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Кафе «Бургер-восторг»"><img src="img/gallery/burger.webp" width="1600" height="900" alt="Баннер «Бургер-восторг»: бургер крупным планом и состав по слоям" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Кафе «Бургер-восторг»</span><span class="gal__kind">баннер</span></p>
-    </li>
-    <li class="gal__item" data-kind="card" style="--ar:900 / 1200">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Фарфоровый сервиз"><img src="img/gallery/service-peach.webp" width="900" height="1200" alt="Карточка товара «Фарфоровый сервиз чайный»: девушка с чашкой за столом" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Фарфоровый сервиз</span><span class="gal__kind">карточка товара</span></p>
-    </li>
-    <li class="gal__item" data-kind="poster" style="--ar:900 / 1200">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: «Вечера живой музыки»"><img src="img/gallery/music.webp" width="900" height="1200" alt="Афиша «Вечера живой музыки»: крупный шрифт и яркая иллюстрация с микрофоном" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">«Вечера живой музыки»</span><span class="gal__kind">афиша</span></p>
-    </li>
-    <li class="gal__item" data-kind="card" style="--ar:900 / 1200">
-      <button class="gal__open" type="button" aria-label="Открыть целиком: Набор кружек"><img src="img/gallery/mugs.webp" width="900" height="1200" alt="Карточка товара «Набор кружек, ручная роспись» на синем фоне" loading="lazy" draggable="false"></button>
-      <p class="gal__cap"><span class="gal__name">Набор кружек</span><span class="gal__kind">карточка товара</span></p>
-    </li>
-  </ul>
-  <div class="gal__nav">
-    <button class="gal__arrow gal__prev" type="button" aria-label="Предыдущие работы"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
-    <button class="gal__arrow gal__next" type="button" aria-label="Следующие работы"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
-    <span class="gal__hint">листайте или&nbsp;нажмите на&nbsp;работу</span>
-  </div>
+  <div class="gal__grid" role="img" aria-label="Поле из макетов: под курсором работы приближаются, по нажатию открываются целиком"></div>
+  <p class="gal__hint">наведите — работа приблизится, нажмите — откроется целиком</p>
+  <!-- список работ для поля и просмотра -->
+  <script type="application/json" class="gal__data">[{"thumb":"img/gallery/goose-t.webp","full":"img/gallery/goose.webp","name":"«Гуси-лебеди»","kind":"афиша театра кукол","alt":"Афиша «Гуси-лебеди»: Баба-яга в сказочном лесу, даты и время спектаклей"},{"thumb":"img/gallery/service-blue-t.webp","full":"img/gallery/service-blue.webp","name":"Сервиз чайный","kind":"карточка товара","alt":"Карточка товара «Сервиз чайный»: чай льётся из полосатого чайника в чашку"},{"thumb":"img/gallery/porcelain-t.webp","full":"img/gallery/porcelain.webp","name":"«Авторский фарфор»","kind":"баннер","alt":"Баннер «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес»"},{"thumb":"img/gallery/houses-t.webp","full":"img/gallery/houses.webp","name":"Дома под ключ","kind":"сторис","alt":"Сторис «Дома — строим под ключ»: деревянный дом с панорамными окнами"},{"thumb":"img/gallery/vase-t.webp","full":"img/gallery/vase.webp","name":"Ваза. Фарфор","kind":"карточка товара","alt":"Карточка товара «Ваза. Фарфор»: ваза с хризантемами на подставке с лентой"},{"thumb":"img/gallery/burger-t.webp","full":"img/gallery/burger.webp","name":"Кафе «Бургер-восторг»","kind":"баннер","alt":"Баннер «Бургер-восторг»: бургер крупным планом и состав по слоям"},{"thumb":"img/gallery/service-peach-t.webp","full":"img/gallery/service-peach.webp","name":"Фарфоровый сервиз","kind":"карточка товара","alt":"Карточка товара «Фарфоровый сервиз чайный»: девушка с чашкой за столом"},{"thumb":"img/gallery/music-t.webp","full":"img/gallery/music.webp","name":"«Вечера живой музыки»","kind":"афиша","alt":"Афиша «Вечера живой музыки»: крупный шрифт и яркая иллюстрация с микрофоном"},{"thumb":"img/gallery/mugs-t.webp","full":"img/gallery/mugs.webp","name":"Набор кружек","kind":"карточка товара","alt":"Карточка товара «Набор кружек, ручная роспись» на синем фоне"}]</script>
+  <ul class="gal__list"><li>«Гуси-лебеди» — афиша театра кукол</li><li>Сервиз чайный — карточка товара</li><li>«Авторский фарфор» — баннер</li><li>Дома под ключ — сторис</li><li>Ваза. Фарфор — карточка товара</li><li>Кафе «Бургер-восторг» — баннер</li><li>Фарфоровый сервиз — карточка товара</li><li>«Вечера живой музыки» — афиша</li><li>Набор кружек — карточка товара</li></ul>
 </section>
 </main>
 <!-- работа из галереи — целиком на весь экран -->
@@ -526,7 +482,7 @@
 <script src="case.js?v=22"></script>
 <script src="talk.js?v=10"></script>
 <script src="show.js?v=24"></script>
-<script src="gallery.js?v=1"></script>
+<script type="module" src="gallery.js?v=3"></script>
 <script type="module" src="story3d.js?v=44"></script>
 </body>
 </html>

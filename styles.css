@@ -1139,38 +1139,12 @@ a { color: inherit; text-decoration: none; }
 .gal__title .cap { font-size: 1em; line-height: 1.1; }
 .gal__kicker { margin: calc(18 * var(--u)) 0 0; font-weight: 300; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #E8DCC8; }
 /* плашки-фильтры — того же вида, что во втором блоке; выбранная — светлая */
-.gal__chips { position: absolute; z-index: 2; right: calc(60 * var(--u)); top: calc(110 * var(--u)); width: calc(520 * var(--u)); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); }
-.gal__chip { padding: calc(9 * var(--u)) calc(18 * var(--u)); border: 0; border-radius: calc(27.89 * var(--u)); background: rgba(200, 189, 171, .1); color: #BDB7B1; cursor: pointer;
-  font: inherit; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap; transition: background-color .4s ease, color .4s ease; }
-.gal__chip:hover { background: rgba(200, 189, 171, .2); color: #E8DCC8; }
-.gal__chip.is-on { background: #E8DCC8; color: #1A2C30; }
-.gal__chip:focus-visible { outline: 2px solid #A9502C; outline-offset: 3px; }
-/* лента работ: все одной высоты, в своих пропорциях; по краям тает в фон */
-.gal__strip { position: absolute; z-index: 1; left: 0; right: 0; top: calc(330 * var(--u)); margin: 0; padding: 0 calc(60 * var(--u)); list-style: none;
-  display: flex; align-items: flex-start; gap: calc(40 * var(--u)); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; cursor: grab; touch-action: pan-x pan-y;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 120 * var(--u)), transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 calc(40 * var(--u)), #000 calc(100% - 120 * var(--u)), transparent 100%); }
-.gal__strip::-webkit-scrollbar { display: none; }
-.gal__strip.is-drag { cursor: grabbing; }
-.gal__item { flex: none; margin: 0; }
-.gal__item[hidden] { display: none; }
-.gal__open { display: block; height: calc(560 * var(--u)); aspect-ratio: var(--ar); padding: 0; border: 0; background: #0B181B; cursor: inherit; overflow: hidden;
-  box-shadow: 0 calc(24 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, .45); }
-.gal__open img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .9s cubic-bezier(.2, .7, .2, 1); -webkit-user-drag: none; }
-.gal__open:hover img { transform: scale(1.04); }
-.gal__open:focus-visible { outline: 2px solid #E8DCC8; outline-offset: 4px; }
-.gal__cap { margin: calc(18 * var(--u)) 0 0; display: flex; flex-direction: column; gap: calc(4 * var(--u)); }
-.gal__name { font-weight: 300; font-size: calc(22 * var(--u)); line-height: 1.2; color: #E8DCC8; }
-.gal__kind { font-weight: 300; font-size: calc(16 * var(--u)); line-height: 1.2; color: rgba(232, 220, 200, .6); }
-/* стрелки — как в «Моём подходе» */
-.gal__nav { position: absolute; z-index: 2; left: calc(60 * var(--u)); bottom: calc(50 * var(--u)); display: flex; align-items: center; gap: calc(16 * var(--u)); }
-.gal__arrow { width: calc(101 * var(--u)); height: calc(30 * var(--u)); padding: 0; border: 0; background: none; color: #E8DCC8; cursor: pointer; display: flex; align-items: center; transition: color .35s, transform .5s ease, opacity .35s; }
-.gal__arrow svg { width: 100%; height: auto; display: block; }
-.gal__prev { transform: scaleX(-1); }
-.gal__arrow:hover { color: #C9A27A; }
-.gal__arrow:disabled { opacity: .3; cursor: default; }
-.gal__arrow:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
-.gal__hint { margin-left: calc(24 * var(--u)); font-weight: 300; font-size: calc(18 * var(--u)); color: rgba(232, 220, 200, .55); }
+/* поле макетов — во всю ширину под заголовком */
+.gal__grid { position: absolute; z-index: 1; left: 0; right: 0; top: calc(320 * var(--u)); bottom: calc(80 * var(--u)); }
+.gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+.gal__hint { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(32 * var(--u)); margin: 0; text-align: center; font-weight: 300; font-size: calc(18 * var(--u)); color: rgba(232, 220, 200, .55); }
+/* список работ — для экранного диктора, глазами не виден */
+.gal__list { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; padding: 0; }
 
 /* работа целиком — поверх всего */
 .gal-open, .gal-open body { overflow: hidden; }
@@ -1193,23 +1167,13 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .gal { --u: 1px; height: auto; min-height: 0; padding: 96px 0 48px; }
-  .gal__head, .gal__chips, .gal__strip, .gal__nav { position: relative; left: auto; right: auto; top: auto; bottom: auto; }
+  .gal__head, .gal__grid, .gal__hint { position: relative; left: auto; right: auto; top: auto; bottom: auto; }
   .gal__head { padding: 0 20px; }
   .gal__sub { font-size: 18px; }
   .gal__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .gal__kicker { margin-top: 12px; font-size: 15px; }
-  .gal__chips { width: auto; margin-top: 22px; padding: 0 20px; justify-content: flex-start; gap: 8px; }
-  .gal__chip { padding: 7px 14px; border-radius: 20px; font-size: 14px; }
-  .gal__strip { margin-top: 28px; padding: 0 20px; gap: 16px; scroll-snap-type: x mandatory;
-    -webkit-mask-image: none; mask-image: none; }
-  .gal__item { scroll-snap-align: start; scroll-margin-left: 20px; }
-  .gal__open { height: 340px; }
-  .gal__cap { margin-top: 10px; }
-  .gal__name { font-size: 16px; }
-  .gal__kind { font-size: 13px; }
-  .gal__nav { margin-top: 20px; padding: 0 20px; }
-  .gal__arrow { width: 64px; height: 24px; }
-  .gal__hint { font-size: 13px; margin-left: 8px; }
+  .gal__grid { height: min(120vw, 560px); margin-top: 24px; }
+  .gal__hint { margin-top: 14px; padding: 0 20px; font-size: 13px; }
   .gal-box { padding: 56px 12px 20px; }
   .gal-box__arrow { top: auto; bottom: 18px; margin: 0; width: 56px; }
   .gal-box__prev { left: 16px; }
