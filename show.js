@@ -1,7 +1,7 @@
 /* Блок 8 «Что умею: баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)»).
    Оформление — по мотивам «сканера карточек» (codepen blacklead-studio/xbwaqxE, по мотивам evervault.com):
-   работы плывут лентой справа налево и проходят сквозь медный луч. До луча работа — «код»: она нарисована
-   символами по яркости самой картинки (шрифт сайта); за лучом проявляется готовый дизайн. От луча летят искры.
+   работы плывут лентой справа налево и проходят сквозь медный луч. До луча видна сама работа,
+   за лучом она превращается в карточку с описанием: название, формат, результат. От луча летят искры.
    Работа, которая сейчас проходит луч, подписана под лентой. Ленту можно тянуть мышью или пальцем. */
 (function () {
   'use strict';
@@ -17,60 +17,11 @@
   var tpl = Array.prototype.slice.call(track.children);   // четыре работы из разметки
   var total = tpl.length;
 
-  /* лента повторяется, чтобы шла без конца: копий столько, чтобы хватало на две ширины экрана */
+  /* лента повторяется, чтобы шла без конца */
   var copies = 3;
   for (var c = 1; c < copies; c++) tpl.forEach(function (n) { var k = n.cloneNode(true); k.setAttribute('aria-hidden', 'true'); k.querySelector('img').alt = ''; track.appendChild(k); });
   var cards = Array.prototype.slice.call(track.querySelectorAll('.show__card'));
-
-  /* ---------- «код»: картинка, переписанная символами ---------- */
-  var RAMP = ' .·:;-=+<>/\\{}[]01#%@';
-  var COLS = 36;
-  var grids = {};   // по адресу картинки: яркость каждой ячейки
-  var buildGrid = function (img) {
-    var src = img.currentSrc || img.src;
-    if (grids[src]) return grids[src];
-    var ratio = img.naturalHeight / img.naturalWidth;
-    var rows = Math.round(COLS * ratio / 1.25);   // ячейка выше, чем шире
-    var cv = document.createElement('canvas'); cv.width = COLS; cv.height = rows;
-    var cx = cv.getContext('2d', { willReadFrequently: true });
-    cx.drawImage(img, 0, 0, COLS, rows);
-    var d = cx.getImageData(0, 0, COLS, rows).data, lum = new Float32Array(COLS * rows);
-    for (var i = 0; i < COLS * rows; i++) lum[i] = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) / 255;
-    var lo = 1, hi = 0;   // растягиваем яркость: тёмные ночные фото тоже дают читаемый «код»
-    for (i = 0; i < lum.length; i++) { if (lum[i] < lo) lo = lum[i]; if (lum[i] > hi) hi = lum[i]; }
-    for (i = 0; i < lum.length; i++) lum[i] = Math.pow((lum[i] - lo) / Math.max(0.05, hi - lo), 0.75);
-    return (grids[src] = { cols: COLS, rows: rows, lum: lum });
-  };
-  var drawCode = function (card, all) {
-    var cv = card._code, g = card._grid;
-    if (!cv || !g) return;
-    var ctx = card._ctx, w = cv.width, h = cv.height, cw = w / g.cols, ch = h / g.rows;
-    if (all) { ctx.fillStyle = '#081214'; ctx.fillRect(0, 0, w, h); }
-    ctx.font = '500 ' + Math.round(ch * 0.82) + 'px Inter, sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    var n = g.cols * g.rows, count = all ? n : Math.round(n * 0.07);
-    for (var k = 0; k < count; k++) {
-      var i = all ? k : (Math.random() * n) | 0;
-      var x = i % g.cols, y = (i / g.cols) | 0, l = g.lum[i];
-      var ri = Math.max(0, Math.min(RAMP.length - 1, Math.round(l * (RAMP.length - 1) + (Math.random() - 0.5) * 4)));
-      if (!all) { ctx.fillStyle = '#081214'; ctx.fillRect(x * cw, y * ch, cw, ch); }
-      ctx.fillStyle = 'rgba(201, 162, 122, ' + (0.22 + 0.78 * l).toFixed(3) + ')';
-      ctx.fillText(RAMP.charAt(ri), x * cw + cw / 2, y * ch + ch / 2);
-    }
-  };
-  var sizeCode = function (card) {
-    var cv = card._code, dpr = Math.min(2, window.devicePixelRatio || 1);
-    cv.width = Math.max(1, Math.round(card.offsetWidth * dpr));
-    cv.height = Math.max(1, Math.round(card.offsetHeight * dpr));
-    drawCode(card, true);
-  };
-  cards.forEach(function (card) {
-    card._code = card.querySelector('.show__code');
-    card._ctx = card._code.getContext('2d');
-    card._img = card.querySelector('.show__img');
-    var ready = function () { card._grid = buildGrid(card._img); sizeCode(card); };
-    if (card._img.complete && card._img.naturalWidth) ready(); else card._img.addEventListener('load', ready, { once: true });
-  });
+  cards.forEach(function (card) { card._img = card.querySelector('.show__img'); card._desc = card.querySelector('.show__desc'); });
 
   /* ---------- движение ленты ---------- */
   var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, active = -1;
@@ -81,7 +32,6 @@
     setW = cards[total].offsetLeft - cards[0].offsetLeft;      // ширина одного набора из четырёх работ
     scanX = stream.clientWidth / 2;
     sparks.width = stream.clientWidth; sparks.height = stream.clientHeight;
-    cards.forEach(function (card) { if (card._grid) sizeCode(card); });
   };
   var wrap = function () { if (!setW) return; while (x <= -setW) x += setW; while (x > 0) x -= setW; };
 
@@ -92,12 +42,12 @@
     caps.forEach(function (c, k) { c.classList.toggle('is-on', k === i); c.setAttribute('aria-hidden', k === i ? 'false' : 'true'); });
     if (!gsap || reduce) return;
     if (prev) gsap.to(prev.children, { y: -16, autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.03, overwrite: true });
+    gsap.set(next.children, { y: 0, autoAlpha: 1 });
     gsap.fromTo(next.querySelectorAll('.show__name .story__reveal'), { yPercent: 110, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out', delay: 0.15, overwrite: true });
     gsap.fromTo(next.querySelectorAll('.show__type, .show__list li'), { y: 18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out', stagger: 0.08, delay: 0.3, overwrite: true });
-    gsap.set(next.children, { y: 0, autoAlpha: 1 });
   };
 
-  /* какая часть карточки уже прошла луч: слева от луча — дизайн, справа — код */
+  /* какая часть карточки уже прошла луч: справа от луча — работа, слева — её описание */
   var crossing = false;
   var layout = function () {
     track.style.transform = 'translate3d(' + x.toFixed(2) + 'px,0,0)';
@@ -106,8 +56,8 @@
       var card = cards[i], left = x + card.offsetLeft, w = card.offsetWidth;
       if (left > stream.clientWidth + 50 || left + w < -50) continue;
       var s = Math.max(0, Math.min(w, scanX - left));
-      card._img.style.clipPath = 'inset(0 ' + (w - s).toFixed(1) + 'px 0 0)';
-      card._code.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
+      card._img.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
+      card._desc.style.clipPath = 'inset(0 ' + (w - s).toFixed(1) + 'px 0 0)';
       if (s > 0 && s < w) crossing = true;
       var d = Math.abs(left + w / 2 - scanX);
       if (d < bestD) { bestD = d; best = i % total; }
@@ -142,37 +92,29 @@
   };
 
   /* ---------- кадр ---------- */
-  var last = 0, glitch = 0, raf = 0;
+  var last = 0, raf = 0;
   var frame = function (t) {
     raf = requestAnimationFrame(frame);
     var dt = Math.min(0.05, (t - (last || t)) / 1000); last = t;
     if (!dragging) { vel += (base - vel) * Math.min(1, dt * 2.2); x += vel * dt; }   // после броска плавно возвращаемся к своей скорости
     wrap(); layout();
     if (!reduce) { spawn(dt); drawSparks(dt); }
-    glitch += dt;
-    if (glitch > 0.09 && !reduce) {   // символы «кода» тихо перебираются
-      glitch = 0;
-      for (var i = 0; i < cards.length; i++) {
-        var left = x + cards[i].offsetLeft;
-        if (left + cards[i].offsetWidth > scanX && left < stream.clientWidth) drawCode(cards[i], false);
-      }
-    }
   };
   var start = function () { if (running) return; running = true; last = 0; raf = requestAnimationFrame(frame); };
   var stop = function () { running = false; cancelAnimationFrame(raf); };
 
   /* ---------- тянуть ленту ---------- */
-  var px = 0, pt = 0, moved = 0;
+  var px = 0, pt = 0;
   stream.addEventListener('pointerdown', function (e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    dragging = true; moved = 0; px = e.clientX; pt = performance.now(); vel = 0;
+    dragging = true; px = e.clientX; pt = performance.now(); vel = 0;
     stream.classList.add('is-drag');
     stream.setPointerCapture(e.pointerId);
   });
   stream.addEventListener('pointermove', function (e) {
     if (!dragging) return;
     var now = performance.now(), dx = e.clientX - px;
-    x += dx; moved += Math.abs(dx);
+    x += dx;
     vel = dx / Math.max(0.008, (now - pt) / 1000);
     px = e.clientX; pt = now;
     if (!running) { wrap(); layout(); }
@@ -186,7 +128,6 @@
   measure(); x = -setW + scanX - cards[0].offsetWidth * 0.5;   // первая работа — уже наполовину прошла луч
   wrap(); layout();
   window.addEventListener('resize', function () { measure(); wrap(); layout(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { cards.forEach(function (card) { drawCode(card, true); }); });
   window.addEventListener('load', function () { measure(); wrap(); layout(); });
 
   /* заголовок проявляется при заходе; лента крутится, только пока блок на экране */
