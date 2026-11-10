@@ -1128,8 +1128,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== Блок 9 «Галерея» — «Atmospheric Depth Gallery» (codrops): баннеры вглубь, живой фон, без текстов, кроме подписи ===== */
-.gal { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; color: #E8DCC8;
-  background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%); }   /* фирменный фон — как в блоках «Обо мне» и 8 */
+/* продолжение блока 8 — одна страница с ним: фон тот же #070F10, на стыке нет шва; к низу едва светлеет в фирменный бирюзовый */
+.gal { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 100svh; min-height: 560px; margin-top: -1px; overflow: hidden; overflow: clip; color: #E8DCC8;
+  background: radial-gradient(70% 55% at 50% 100%, rgba(26, 44, 48, .55), transparent 70%), #070F10; }
 .gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .6s ease; }
 
 /* подпись — как цветовая метка в оригинале: мелко, заглавными, с разрядкой; слева название и цветная точка, справа описание */
