@@ -1145,13 +1145,14 @@ a { color: inherit; text-decoration: none; }
   .show__right { position: absolute; left: var(--lx); right: 0; bottom: 56px; height: 330px; }
   .show__line { left: var(--lx); bottom: 58px; height: 326px; }
   .show__left { clip-path: inset(0 calc(100% - var(--lx)) 0 0); }
-  .show__desc { left: 20px; right: auto; width: calc(var(--lx) - 36px); min-width: 0; gap: 12px; }
+  /* описание на телефоне: аккуратная колонка по центру высоты, ровные отступы */
+  .show__desc { left: 20px; right: auto; width: calc(var(--lx) - 40px); min-width: 0; gap: 14px; }
+  .show__type { height: auto; display: block; white-space: normal; line-height: 1.25; }
+  .show__t1 { font-size: 17px; }
+  .show__t2 { font-size: 13px; color: rgba(235, 240, 234, .8); }
+  .show__name { font-size: 15px; line-height: 1.25; white-space: normal; }
+  .show__list { height: auto; padding-left: 14px; gap: 5px; font-size: 12px; line-height: 1.35; }
   .show__list li { white-space: normal; }
-  .show__type { height: auto; flex-wrap: wrap; white-space: normal; gap: 4px; }
-  .show__t1 { font-size: 18px; }
-  .show__t2 { font-size: 13px; }
-  .show__name { font-size: 16px; white-space: normal; }
-  .show__list { height: auto; padding-left: 16px; gap: 4px; font-size: 12px; }
   .show__desc .dw { white-space: nowrap; }
   /* фото на телефоне — целиком, без обрезки: по ширине правой части, по центру высоты */
   .show__photo { left: 14px; top: 50%; height: auto; translate: 0 -50%; }

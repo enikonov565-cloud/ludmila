@@ -70,14 +70,14 @@
     gsap.to(d._chars, {
       x: function () { return -(20 + Math.random() * 90) * k; },
       y: function () { return -(8 + Math.random() * 50) * k; },
-      autoAlpha: 0, filter: 'blur(2.5px)', duration: 1.3, ease: 'power2.in',
-      stagger: { each: 0.006, from: 'start' },
+      autoAlpha: 0, filter: 'blur(2.5px)', duration: 0.9, ease: 'power2.in',
+      stagger: { each: 0.004, from: 'start' },
       onStart: function () {},
       onUpdate: function () {}
     });
     /* пылинки — по мере того как буквы тают, слева направо */
-    d._chars.forEach(function (ch, i) { gsap.delayedCall(0.25 + i * 0.006, function () { puff(ch._px, ch._py); }); });
-    gsap.delayedCall(1.6 + d._chars.length * 0.006, function () { if (descs[cur] !== d) gsap.set(d, { autoAlpha: 0 }); });
+    d._chars.forEach(function (ch, i) { gsap.delayedCall(0.2 + i * 0.004, function () { puff(ch._px, ch._py); }); });
+    gsap.delayedCall(1 + d._chars.length * 0.004, function () { if (descs[cur] !== d) gsap.set(d, { autoAlpha: 0 }); });
   };
 
   /* ---------- фото: подъезжает к линии / уходит под линию ---------- */
@@ -105,8 +105,11 @@
     descOut(descs[from]);
     gsap.delayedCall(reduce ? 0 : 0.35, function () { photoOut(photos[from]); });
     gsap.delayedCall(reduce ? 0 : 0.5, function () { photoIn(photos[cur]); });
-    gsap.delayedCall(reduce ? 0 : 1.55, function () { descIn(descs[cur]); });   // фото у линии — описание выходит из-под неё
-    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 1.6), next);
+    gsap.delayedCall(reduce ? 0 : 1.75, function () {   // фото у линии — описание выходит из-под неё; прежнее к этому времени уже рассыпалось
+      descs.forEach(function (d) { if (d !== descs[cur]) { gsap.killTweensOf(d._chars); gsap.set(d, { autoAlpha: 0 }); } });
+      descIn(descs[cur]);
+    });
+    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 1.8), next);
   };
   var begin = function () {
     started = true;
