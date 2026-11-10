@@ -554,7 +554,7 @@ a { color: inherit; text-decoration: none; }
 }
 .apx__line { display: block; }
 .apx__answer-head { margin: 0; font-weight: 500; font-size: calc(56 * var(--u)); line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }
-.apx__answer-sub { margin: 0; width: auto; font-weight: 700; font-size: calc(28 * var(--u)); line-height: normal; }
+.apx__answer-sub { margin: 0; width: auto; font-weight: 300; font-size: calc(28 * var(--u)); line-height: normal; }
 
 /* подсказка: блок листается прокруткой — «мышка» с бегущим колёсиком (только компьютер) */
 /* подсказка «листай»: тонкая стрелка бежит вправо (как стрелки навигации сайта) */

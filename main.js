@@ -407,7 +407,7 @@ document.documentElement.classList.replace('no-js', 'js');
   /* у каждой сцены своя пара цветов: фон блока и текст + цвет квадрата и его текста */
   var THEMES = [
     { bg: '#A1998F', ink: '#182C31', sq: '#182C31', sqInk: '#EDE8E1' },
-    { bg: '#C8BDAB', ink: '#182C31', sq: '#A9502C', sqInk: '#F6EFE5' },
+    { bg: '#C8BDAB', ink: '#182C31', sq: '#A9502C', sqInk: '#E8DCC8' },   // текст на медной плашке — слегка приглушённый, не чисто-белый
     { bg: '#6F7B74', ink: '#F1ECE4', sq: '#EDE8E1', sqInk: '#1C3238' },
     { bg: '#1A2C30', ink: '#E8DCC8', sq: '#C8BDAB', sqInk: '#1A2C30' }
   ];
