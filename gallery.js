@@ -1,8 +1,8 @@
 /* Блок 9 «Галерея» — «Atmospheric Depth Gallery» (codrops, Houmahani Kane, github.com/houmahani/codrops-depth-gallery),
-   перенесено на три.js сайта без сборщика. Камера летит в глубину сквозь ряд баннеров: прокрутка двигает камеру,
+   перенесено на три.js сайта без сборщика. Камера летит в глубину сквозь ряд баннеров — сама, по таймеру,
    ближайший баннер проявляется, следующий ждёт; фон — живой шейдер из двух мягких пятен, цвета которого берутся
    у каждого баннера и плавно перетекают; скорость прокрутки «дышит» в наклоне и масштабе; за камерой тянется
-   светящийся след с искрами. Блок закреплён на экране, пока прокрутка проводит камеру от первого баннера до последнего.
+   светящийся след с искрами. Баннеры сменяются сами: каждый стоит несколько секунд, затем камера летит к следующему.
    Подпись — только название и минимальное описание текущего баннера (вместо цветовых спецификаций оригинала). */
 import * as THREE from 'three';
 
@@ -138,7 +138,7 @@ function init() {
 
   /* ===================== Scroll: камера от прокрутки страницы ===================== */
   const scroll = {
-    target: 0, current: 0, smoothing: 0.08, toWorld: 0.01, prev: 0,
+    target: 0, current: 0, smoothing: 0.035, toWorld: 0.01, prev: 0,
     rawVelocity: 0, velocity: 0, velocityDamping: 0.12, velocityMax: 1.5,
     firstOffset: 5, lastOffset: 5, maxZ: 5, minZ: 5, startZ: 5,
   };
@@ -272,7 +272,7 @@ function init() {
   const frame = () => {
     raf = requestAnimationFrame(frame);
     const now = performance.now(), dt = Math.min(0.1, (now - (lastT || now)) / 1000); lastT = now;
-    updateBounds(); updateScroll();
+    updateBounds(); autoStep(dt); updateScroll();
     updateTrail(dt);
     updatePlaneVisibility(camera.position.z);
     updatePlaneMotion(scroll);
@@ -289,7 +289,8 @@ function init() {
     renderer.clearDepth();
     renderer.render(scene, camera);
   };
-  const start = () => { if (running || !ready) return; running = true; lastT = 0; raf = requestAnimationFrame(frame); };
+  let visible = false;
+  const start = () => { if (running || !ready || !visible) return; running = true; lastT = 0; raf = requestAnimationFrame(frame); };
   const stop = () => { running = false; cancelAnimationFrame(raf); };
 
   const build = (textures) => {
@@ -312,21 +313,35 @@ function init() {
     ready = true;
   };
 
-  /* закрепление: блок держится на экране, прокрутка страницы ведёт камеру от первого баннера к последнему */
-  const pin = () => {
-    if (!window.ScrollTrigger) return;
-    st = window.ScrollTrigger.create({
-      trigger: sec, start: 'top top', end: () => '+=' + Math.round(window.innerHeight * 0.8 * (DATA.length - 1)), pin: true, pinSpacing: true, refreshPriority: -10,   // последний закреплённый блок — считается после всех выше
-      onUpdate: (self) => { scroll.target = self.progress * maxScroll(); },
-    });
-    window.ScrollTrigger.sort();
-    window.ScrollTrigger.refresh();
+  /* автосмена: каждый баннер стоит HOLD секунд, затем камера сама плавно летит к следующему;
+     после последнего — короткое затемнение и снова с первого */
+  const HOLD = 3.2, STEP = () => G.planeGap / scroll.toWorld;
+  const auto = { idx: 0, t: 0, resetting: false };
+  const restart = () => {
+    auto.idx = 0; auto.t = 0;
+    scroll.target = scroll.current = scroll.prev = 0; scroll.velocity = 0;
+    camera.position.z = scroll.startZ;
+    G.planes.forEach((p, i) => { p.material.opacity = i === 0 ? 1 : 0; });
+    trail.reset(); trailState.prevProgress = null; trailState.prevDir = 0; trailState.moved = false;
+    const s0 = headAt(camera.position.z, 0).clone();
+    for (let k = 10; k >= 0; k--) { const p = s0.clone(); p.z -= k * 0.12; trail.addPoint(p); }
   };
+  function autoStep(dt) {
+    if (auto.resetting) return;
+    auto.t += dt;
+    const travel = Math.abs(scroll.target - scroll.current) > 2;      // ещё летим — время стоянки не считаем
+    if (travel) { auto.t = 0; return; }
+    if (auto.t < HOLD) return;
+    auto.t = 0;
+    if (auto.idx < G.planes.length - 1) { auto.idx++; scroll.target = auto.idx * STEP(); return; }
+    auto.resetting = true;
+    sec.classList.add('is-reset');                                   // затемнение
+    setTimeout(() => { restart(); sec.classList.remove('is-reset'); auto.resetting = false; }, 650);
+  }
 
   resize();
   window.addEventListener('resize', resize);
   updateBounds();
-  pin();
   /* фото грузятся заранее, когда до блока остаётся экран прокрутки */
   let loading = false;
   new IntersectionObserver((en) => {
@@ -336,5 +351,5 @@ function init() {
         .then((tex) => { build(tex); resize(); start(); });
     }
   }, { rootMargin: '100% 0px' }).observe(sec);
-  new IntersectionObserver((en) => { if (en[0].isIntersecting) start(); else stop(); }, { threshold: 0 }).observe(sec);
+  new IntersectionObserver((en) => { visible = en[0].isIntersecting; if (visible) start(); else stop(); }, { threshold: 0 }).observe(sec);
 }

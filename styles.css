@@ -1128,10 +1128,12 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== Блок 9 «Галерея» — «Atmospheric Depth Gallery» (codrops): баннеры вглубь, живой фон, без текстов, кроме подписи ===== */
-.gal { position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; background: #1A2C30; color: #E8DCC8; }
-.gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.gal { position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; background: #070F10; color: #E8DCC8; }
+.gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .6s ease; }
+/* после последнего баннера — короткое затемнение и снова с первого */
+.gal.is-reset .gal__canvas, .gal.is-reset .gal__label { opacity: 0; }
 /* подпись — как цветовая метка в оригинале: мелко, заглавными, с разрядкой; слева название и цветная точка, справа описание */
-.gal__label { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #E8DCC8; transition: color .26s ease;
+.gal__label { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #E8DCC8; transition: color .26s ease, opacity .6s ease;
   font-weight: 400; text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; }
 .gal--dark-text .gal__label { color: #1A2C30; }
 .gal__left { position: absolute; left: clamp(2.5rem, 8vw, 12rem); top: 50%; display: grid; gap: .75rem; justify-items: start; }
