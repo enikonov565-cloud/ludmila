@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=250">
+<link rel="stylesheet" href="styles.css?v=251">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -450,39 +450,29 @@
   <div class="show__dots" aria-label="Работы"><button class="show__dot is-on" type="button" aria-label="«Гуси-лебеди»" aria-current="true"></button><button class="show__dot" type="button" aria-label="«Авторский фарфор»" aria-current="false"></button><button class="show__dot" type="button" aria-label="«Вечера живой музыки»" aria-current="false"></button><button class="show__dot" type="button" aria-label="Кафе «Бургер-восторг»" aria-current="false"></button></div>
 </section>
 
-<!-- Блок 9 «Галерея» — продолжение блока 8: поле макетов «вздувается» под курсором (Image Grid, three.js); gallery.js -->
-<section class="gal" id="gallery" aria-labelledby="gal-title" data-gallery>
-  <div class="gal__head">
-    <p class="gal__sub">Вблизи:</p>
-    <h2 class="story__title gal__title" id="gal-title"><span class="story__mask"><span class="story__reveal"><span class="cap">М</span>акеты крупным планом.</span></span></h2>
-    <p class="gal__kicker">афиши, баннеры, карточки товара и&nbsp;сторис</p>
+<!-- Блок 9 «Галерея» — «Atmospheric Depth Gallery» (codrops, Houmahani Kane): камера летит в глубину сквозь баннеры,
+     фон перетекает цветами каждого баннера; подпись — название и минимальное описание; gallery.js -->
+<section class="gal" id="gallery" aria-label="Галерея работ" data-gallery>
+  <canvas class="gal__canvas" aria-hidden="true"></canvas>
+  <div class="gal__label" aria-live="polite">
+    <div class="gal__left"><p class="gal__name">«Гуси-лебеди»</p><span class="gal__chip" style="background:#8c9a5b"></span></div>
+    <p class="gal__desc">афиша спектакля театра кукол</p>
   </div>
-  <div class="gal__grid" role="img" aria-label="Поле из макетов: под курсором работы приближаются, по нажатию открываются целиком"></div>
-  <p class="gal__hint">наведите — работа приблизится, нажмите — откроется целиком</p>
-  <!-- список работ для поля и просмотра -->
-  <script type="application/json" class="gal__data">[{"thumb":"img/gallery/goose-t.webp","full":"img/gallery/goose.webp","name":"«Гуси-лебеди»","kind":"афиша театра кукол","alt":"Афиша «Гуси-лебеди»: Баба-яга в сказочном лесу, даты и время спектаклей"},{"thumb":"img/gallery/service-blue-t.webp","full":"img/gallery/service-blue.webp","name":"Сервиз чайный","kind":"карточка товара","alt":"Карточка товара «Сервиз чайный»: чай льётся из полосатого чайника в чашку"},{"thumb":"img/gallery/porcelain-t.webp","full":"img/gallery/porcelain.webp","name":"«Авторский фарфор»","kind":"баннер","alt":"Баннер «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес»"},{"thumb":"img/gallery/houses-t.webp","full":"img/gallery/houses.webp","name":"Дома под ключ","kind":"сторис","alt":"Сторис «Дома — строим под ключ»: деревянный дом с панорамными окнами"},{"thumb":"img/gallery/vase-t.webp","full":"img/gallery/vase.webp","name":"Ваза. Фарфор","kind":"карточка товара","alt":"Карточка товара «Ваза. Фарфор»: ваза с хризантемами на подставке с лентой"},{"thumb":"img/gallery/burger-t.webp","full":"img/gallery/burger.webp","name":"Кафе «Бургер-восторг»","kind":"баннер","alt":"Баннер «Бургер-восторг»: бургер крупным планом и состав по слоям"},{"thumb":"img/gallery/service-peach-t.webp","full":"img/gallery/service-peach.webp","name":"Фарфоровый сервиз","kind":"карточка товара","alt":"Карточка товара «Фарфоровый сервиз чайный»: девушка с чашкой за столом"},{"thumb":"img/gallery/music-t.webp","full":"img/gallery/music.webp","name":"«Вечера живой музыки»","kind":"афиша","alt":"Афиша «Вечера живой музыки»: крупный шрифт и яркая иллюстрация с микрофоном"},{"thumb":"img/gallery/mugs-t.webp","full":"img/gallery/mugs.webp","name":"Набор кружек","kind":"карточка товара","alt":"Карточка товара «Набор кружек, ручная роспись» на синем фоне"}]</script>
-  <ul class="gal__list"><li>«Гуси-лебеди» — афиша театра кукол</li><li>Сервиз чайный — карточка товара</li><li>«Авторский фарфор» — баннер</li><li>Дома под ключ — сторис</li><li>Ваза. Фарфор — карточка товара</li><li>Кафе «Бургер-восторг» — баннер</li><li>Фарфоровый сервиз — карточка товара</li><li>«Вечера живой музыки» — афиша</li><li>Набор кружек — карточка товара</li></ul>
+  <script type="application/json" class="gal__data">[{"src":"img/gallery/goose.webp","name":"«Гуси-лебеди»","desc":"афиша спектакля театра кукол","position":{"x":-0.9,"y":0},"backgroundColor":"#5f6549","blob1Color":"#a7ae7f","blob2Color":"#3d4a33","accentColor":"#8c9a5b","darkText":false},{"src":"img/gallery/service-blue.webp","name":"Сервиз чайный","desc":"карточка товара · костяной фарфор","position":{"x":0.8,"y":0},"backgroundColor":"#24425a","blob1Color":"#5f87a8","blob2Color":"#c9b79a","accentColor":"#3f6f97","darkText":false},{"src":"img/gallery/porcelain.webp","name":"«Авторский фарфор»","desc":"баннер · чаепитие в стиле «Алисы»","position":{"x":-0.7,"y":0},"backgroundColor":"#1d1b1a","blob1Color":"#c94a3a","blob2Color":"#e3c33e","accentColor":"#c94a3a","darkText":false},{"src":"img/gallery/houses.webp","name":"Дома под ключ","desc":"сторис · дом и участок","position":{"x":1,"y":0},"backgroundColor":"#34402f","blob1Color":"#e3a35a","blob2Color":"#6f8a6a","accentColor":"#e3a35a","darkText":false},{"src":"img/gallery/vase.webp","name":"Ваза. Фарфор","desc":"карточка товара · подглазурная живопись","position":{"x":-0.7,"y":0},"backgroundColor":"#c9b48d","blob1Color":"#f1d9a8","blob2Color":"#e99a86","accentColor":"#b8955a","darkText":true},{"src":"img/gallery/burger.webp","name":"Кафе «Бургер-восторг»","desc":"рекламный баннер","position":{"x":0.9,"y":0},"backgroundColor":"#241911","blob1Color":"#c46f34","blob2Color":"#6f8a3a","accentColor":"#c46f34","darkText":false},{"src":"img/gallery/service-peach.webp","name":"Фарфоровый сервиз","desc":"карточка товара · сервиз «Волна»","position":{"x":-0.8,"y":0},"backgroundColor":"#f4e4d4","blob1Color":"#f8cfae","blob2Color":"#dcbcbc","accentColor":"#b99383","darkText":true},{"src":"img/gallery/music.webp","name":"«Вечера живой музыки»","desc":"афиша · фуд-корт ТРЦ «Рио»","position":{"x":0.7,"y":0},"backgroundColor":"#1a1819","blob1Color":"#e2457e","blob2Color":"#2fc9b5","accentColor":"#e2457e","darkText":false},{"src":"img/gallery/mugs.webp","name":"Набор кружек","desc":"карточка товара · ручная роспись","position":{"x":-0.9,"y":0},"backgroundColor":"#2a5683","blob1Color":"#6fa3d4","blob2Color":"#d9483b","accentColor":"#3d7cb4","darkText":false}]</script>
+  <ul class="gal__list"><li>«Гуси-лебеди» — афиша спектакля театра кукол</li><li>Сервиз чайный — карточка товара · костяной фарфор</li><li>«Авторский фарфор» — баннер · чаепитие в стиле «Алисы»</li><li>Дома под ключ — сторис · дом и участок</li><li>Ваза. Фарфор — карточка товара · подглазурная живопись</li><li>Кафе «Бургер-восторг» — рекламный баннер</li><li>Фарфоровый сервиз — карточка товара · сервиз «Волна»</li><li>«Вечера живой музыки» — афиша · фуд-корт ТРЦ «Рио»</li><li>Набор кружек — карточка товара · ручная роспись</li></ul>
 </section>
 </main>
-<!-- работа из галереи — целиком на весь экран -->
-<div class="gal-box" role="dialog" aria-modal="true" aria-label="Работа целиком" hidden>
-  <div class="gal-box__stage"><img class="gal-box__img" src="" alt=""></div>
-  <p class="gal-box__cap"><span class="gal-box__name"></span><span class="gal-box__kind"></span></p>
-  <button class="gal-box__close" type="button" aria-label="Закрыть"><span></span><span></span></button>
-  <button class="gal-box__arrow gal-box__prev" type="button" aria-label="Предыдущая работа"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
-  <button class="gal-box__arrow gal-box__next" type="button" aria-label="Следующая работа"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
-</div>
 
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=59"></script>
+<script src="main.js?v=60"></script>
 <script src="case.js?v=22"></script>
 <script src="talk.js?v=10"></script>
 <script src="show.js?v=24"></script>
-<script type="module" src="gallery.js?v=3"></script>
+<script type="module" src="gallery.js?v=7"></script>
 <script type="module" src="story3d.js?v=44"></script>
 </body>
 </html>

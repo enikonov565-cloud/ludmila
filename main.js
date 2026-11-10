@@ -874,6 +874,7 @@ document.documentElement.classList.replace('no-js', 'js');
       else if (under.classList.contains('approach')) light = !isLight(getComputedStyle(under).color);
       else if (under.classList.contains('story')) light = under.classList.contains('is-now'); // «Сейчас» — светлое фото
       else if (under.classList.contains('case')) light = under.getAttribute('data-page') === '1'; // «После» — светлый фон
+      else if (under.classList.contains('gal')) light = under.getAttribute('data-light') === '1'; // галерея: светлый фон у светлых баннеров
     }
     var key = light ? 'L' : 'D';
     if (key === last) return;

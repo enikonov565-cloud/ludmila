@@ -1127,57 +1127,23 @@ a { color: inherit; text-decoration: none; }
   .show__photo img { width: calc(46vw - 24px); height: auto; max-height: 330px; object-fit: contain; }
 }
 
-/* ===== Блок 9 «Галерея» — продолжение блока 8: оригиналы макетов крупным планом ===== */
-.gal {
-  --u: min(calc(100vw / 1920), calc(100svh / 1080));
-  position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #E8DCC8;
-  background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как в блоках «Обо мне» и 8 */
-}
-.gal__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(110 * var(--u)); }
-.gal__sub { margin: 0; font-style: italic; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #E8DCC8; }   /* как «Что умею:» */
-.gal__title { white-space: nowrap; }
-.gal__title .cap { font-size: 1em; line-height: 1.1; }
-.gal__kicker { margin: calc(18 * var(--u)) 0 0; font-weight: 300; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #E8DCC8; }
-/* плашки-фильтры — того же вида, что во втором блоке; выбранная — светлая */
-/* поле макетов — во всю ширину под заголовком */
-.gal__grid { position: absolute; z-index: 1; left: 0; right: 0; top: calc(320 * var(--u)); bottom: calc(80 * var(--u)); }
-.gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
-.gal__hint { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(32 * var(--u)); margin: 0; text-align: center; font-weight: 300; font-size: calc(18 * var(--u)); color: rgba(232, 220, 200, .55); }
-/* список работ — для экранного диктора, глазами не виден */
+/* ===== Блок 9 «Галерея» — «Atmospheric Depth Gallery» (codrops): баннеры вглубь, живой фон, без текстов, кроме подписи ===== */
+.gal { position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; background: #1A2C30; color: #E8DCC8; }
+.gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* подпись — как цветовая метка в оригинале: мелко, заглавными, с разрядкой; слева название и цветная точка, справа описание */
+.gal__label { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #E8DCC8; transition: color .26s ease;
+  font-weight: 400; text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; }
+.gal--dark-text .gal__label { color: #1A2C30; }
+.gal__left { position: absolute; left: clamp(2.5rem, 8vw, 12rem); top: 50%; display: grid; gap: .75rem; justify-items: start; }
+.gal__name { margin: 0; font-size: clamp(11px, .78vw, 15px); white-space: nowrap; }
+.gal__chip { display: inline-block; width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); transition: background-color .26s ease; }
+.gal__desc { position: absolute; right: clamp(2.5rem, 7vw, 10rem); top: 50%; margin: 0; width: min(28vw, 360px); font-size: clamp(10px, .72vw, 14px); }
+/* список работ — для экранного диктора */
 .gal__list { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; padding: 0; }
-
-/* работа целиком — поверх всего */
-.gal-open, .gal-open body { overflow: hidden; }
-.gal-box { position: fixed; inset: 0; z-index: 1000; background: rgba(7, 15, 16, .95); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 120px 28px; box-sizing: border-box; }
-.gal-box[hidden] { display: none; }
-.gal-box__stage { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
-.gal-box__img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: 0 30px 80px rgba(0, 0, 0, .5); }
-.gal-box__cap { margin: 18px 0 0; display: flex; gap: 14px; align-items: baseline; color: #E8DCC8; font-weight: 300; }
-.gal-box__name { font-size: 22px; }
-.gal-box__kind { font-size: 15px; color: rgba(232, 220, 200, .6); }
-.gal-box__close { position: absolute; top: 22px; right: 26px; width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; color: #E8DCC8; }
-.gal-box__close span { position: absolute; left: 8px; right: 8px; top: 50%; height: 1px; background: currentColor; transform: rotate(45deg); }
-.gal-box__close span + span { transform: rotate(-45deg); }
-.gal-box__arrow { position: absolute; top: 50%; width: 70px; height: 30px; margin-top: -15px; padding: 0; border: 0; background: none; color: #E8DCC8; cursor: pointer; }
-.gal-box__arrow svg { width: 100%; height: auto; display: block; }
-.gal-box__prev { left: 28px; transform: scaleX(-1); }
-.gal-box__next { right: 28px; }
-.gal-box__arrow:hover, .gal-box__close:hover { color: #C9A27A; }
-.gal-box button:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
-
-@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .gal { --u: 1px; height: auto; min-height: 0; padding: 96px 0 48px; }
-  .gal__head, .gal__grid, .gal__hint { position: relative; left: auto; right: auto; top: auto; bottom: auto; }
-  .gal__head { padding: 0 20px; }
-  .gal__sub { font-size: 18px; }
-  .gal__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
-  .gal__kicker { margin-top: 12px; font-size: 15px; }
-  .gal__grid { height: min(120vw, 560px); margin-top: 24px; }
-  .gal__hint { margin-top: 14px; padding: 0 20px; font-size: 13px; }
-  .gal-box { padding: 56px 12px 20px; }
-  .gal-box__arrow { top: auto; bottom: 18px; margin: 0; width: 56px; }
-  .gal-box__prev { left: 16px; }
-  .gal-box__next { right: 16px; }
-  .gal-box__cap { flex-direction: column; align-items: center; gap: 4px; margin-bottom: 36px; }
-  .gal-box__name { font-size: 17px; }
+@media (max-width: 768px) {
+  .gal__label { inset: auto 0 max(6.25rem, env(safe-area-inset-bottom)) 0; display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: start; column-gap: 1.5rem; padding: 0 1rem; }
+  .gal__left, .gal__desc { position: static; }
+  .gal__left { gap: .5rem; }
+  .gal__name { font-size: 11px; }
+  .gal__desc { width: auto; max-width: min(58vw, 270px); font-size: 10px; text-align: right; }
 }
