@@ -148,7 +148,7 @@
   var jump = function (d) {
     var n = Math.max(0, Math.min(total - 1, cur + d));
     if (!st) { show(n); return; }
-    var y = st.start + (st.end - st.start) * (n + 0.5) / total;
+    var y = st.start + (st.end - st.start) * n / Math.max(1, total - 1);   // ровно на начало страницы — там же, куда доводит прокрутка
     if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
   };
   sec.querySelector('.case__arrow--prev').addEventListener('click', function () { jump(-1); });

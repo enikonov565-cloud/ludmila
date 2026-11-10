@@ -517,7 +517,7 @@ document.documentElement.classList.replace('no-js', 'js');
     var st = ScrollTrigger.getAll().filter(function (t) { return t.trigger === section; })[0];
     var jump = function (dir) {
       var n = Math.max(0, Math.min(total - 1, current + dir));
-      var y = st.start + (st.end - st.start) * (n + 0.5) / total;
+      var y = st.start + (st.end - st.start) * n / Math.max(1, total - 1);   // ровно на начало страницы — там же, куда доводит прокрутка
       if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
     };
     var swap = function (sel, dir) {
@@ -889,3 +889,62 @@ document.documentElement.classList.replace('no-js', 'js');
 })();
 
 /* Блок «Мой путь» — 3D-сцена, см. story3d.js */
+
+/* Доводка: если прокрутка остановилась и блок открыт не полностью — страница мягко подтягивается к ближайшему
+   «правильному» положению: верх блока ровно по верху экрана, а в закреплённых блоках — к началу каждой их страницы
+   («Мой подход» — сцены, «Дизайн продаёт» — «До» / «После»). Только на компьютере: на телефоне блоки длиннее экрана. */
+(function () {
+  'use strict';
+  var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var snapping = false, timer = null, lastInput = 0;
+  /* сколько «страниц» у закреплённого блока */
+  var pagesOf = function (sec) {
+    if (sec.classList.contains('approach')) return sec.querySelectorAll('.apx__slide').length || 1;
+    if (sec.classList.contains('case')) return sec.querySelectorAll('.case__page').length || 1;
+    return 1;
+  };
+  var points = function () {
+    var list = [];
+    var pins = window.ScrollTrigger ? window.ScrollTrigger.getAll().filter(function (t) { return t.pin; }) : [];
+    document.querySelectorAll('main section[id]').forEach(function (sec) {
+      var st = pins.filter(function (t) { return t.trigger === sec; })[0];
+      if (st) {
+        var n = pagesOf(sec);
+        if (n > 1) for (var i = 0; i < n; i++) list.push(st.start + (st.end - st.start) * i / (n - 1));   // начало каждой страницы
+        else { list.push(st.start); list.push(st.end); }
+      } else {
+        list.push(sec.getBoundingClientRect().top + window.pageYOffset);
+      }
+    });
+    return list;
+  };
+  var settle = function () {
+    timer = null;
+    if (snapping || stacked.matches || !window.lenis) return;
+    if (document.querySelector('.site-menu.is-open')) return;   // меню открыто — не трогаем
+    if (performance.now() - lastInput < 120) { timer = setTimeout(settle, 140); return; }   // колесо ещё крутится
+    /* по направлению прокрутки: стоило сдвинуться вперёд чуть больше, чем на шестую часть экрана, — доводим вперёд; иначе возвращаем */
+    var y = window.pageYOffset, vh = window.innerHeight, dir = window.lenis.direction || 1;
+    var pts = points().sort(function (p, q) { return p - q; }), behind = null, ahead = null;
+    pts.forEach(function (p) { if (p <= y + 1) behind = p; else if (ahead === null) ahead = p; });
+    if (behind === null || ahead === null) return;
+    if (Math.abs(y - behind) < 2) return;                    // уже на месте
+    if (ahead - behind > vh * 1.6) return;                   // длинный участок — не дёргаем
+    var f = (y - behind) / (ahead - behind);
+    var best = dir > 0 ? (f > 0.16 ? ahead : behind) : (f < 0.84 ? behind : ahead);
+    var max = document.documentElement.scrollHeight - vh;
+    best = Math.max(0, Math.min(max, best));
+    snapping = true;
+    window.lenis.scrollTo(best, { duration: reduce ? 0.01 : 0.75, easing: function (t) { return 1 - Math.pow(1 - t, 3); },
+      onComplete: function () { snapping = false; } });
+    setTimeout(function () { snapping = false; }, 1200);       // на всякий случай — не застрять в режиме доводки
+  };
+  var arm = function () {
+    if (snapping) return;
+    clearTimeout(timer); timer = setTimeout(settle, 220);       // доводим, когда прокрутка затихла
+  };
+  ['wheel', 'keydown', 'pointerdown'].forEach(function (ev) { window.addEventListener(ev, function () { lastInput = performance.now(); if (snapping && window.lenis) { snapping = false; } }, { passive: true }); });
+  var hook = function () { if (window.lenis && window.lenis.on) window.lenis.on('scroll', arm); else window.addEventListener('scroll', arm, { passive: true }); };
+  if (document.readyState === 'complete') hook(); else window.addEventListener('load', hook);
+})();
