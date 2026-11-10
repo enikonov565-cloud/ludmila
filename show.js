@@ -37,7 +37,7 @@
     var now = (performance.now() - t0) / 1000;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, sec.clientWidth, sec.clientHeight);
-    ctx.fillStyle = '#FFFAFA';
+    ctx.fillStyle = '#E8DCC8';   // цвет текстов — как в шапке
     var alive = 0;
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i], q = (now - p.delay) / p.dur;
@@ -87,7 +87,7 @@
       var xn = (p[0] - minX) / dw;                                       // левые частицы срываются первыми
       parts.push({ x0: ox + p[0], y0: oy + p[1], a: Math.min(1, p[2]) * 0.95, sz: step * (0.7 + Math.random() * 0.6),
         tx: Math.random() * zoneR * 0.95 - 20 * k, ty: oy + p[1] + (Math.random() - 0.5) * spanY,
-        delay: xn * 0.55 + Math.random() * 0.35, dur: 1.4 + Math.random() * 1.1, ph: Math.random() * 6.28, sw: (10 + Math.random() * 40) * k });
+        delay: xn * 0.4 + Math.random() * 0.25, dur: 1.05 + Math.random() * 0.8, ph: Math.random() * 6.28, sw: (10 + Math.random() * 40) * k });
     });
   };
 
@@ -100,7 +100,7 @@
     if (reduce) return;
     var edge = left.getBoundingClientRect().right;                    // правый край левой части — линия
     gsap.fromTo(d._rows, { x: function (i, el) { return edge - el.getBoundingClientRect().left + 2; }, autoAlpha: 1 },   // строки выходят из-под линии влево
-      { x: 0, autoAlpha: 1, duration: 1.2, ease: 'power3.out', stagger: 0.12, delay: delay || 0 });
+      { x: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out', stagger: 0.1, delay: delay || 0 });
   };
   var descOut = function (d) {
     if (reduce) { gsap.set(d, { autoAlpha: 0 }); return; }
@@ -121,14 +121,14 @@
     gsap.set(p, { zIndex: 2 });
     if (reduce) { gsap.set(p, { x: 0, autoAlpha: 1, filter: 'brightness(1)' }); return; }
     gsap.fromTo(p, { x: farX(), autoAlpha: 0, filter: 'brightness(.35)' },
-      { x: 0, autoAlpha: 1, filter: 'brightness(1)', duration: 3.2, ease: 'power2.out' });
+      { x: 0, autoAlpha: 1, filter: 'brightness(1)', duration: 2.3, ease: 'power2.out' });
   };
   /* прежнее фото спокойно уходит влево под линию — раньше, чем подъедет следующее: без толкотни */
   var photoOut = function (p) {
     gsap.killTweensOf(p);
     gsap.set(p, { zIndex: 1 });
     if (reduce) { gsap.set(p, { autoAlpha: 0 }); return; }
-    gsap.to(p, { x: function () { return -(p.offsetLeft + p.offsetWidth + 10); }, duration: 1.6, ease: 'sine.inOut',
+    gsap.to(p, { x: function () { return -(p.offsetLeft + p.offsetWidth + 10); }, duration: 1.2, ease: 'sine.inOut',
       onComplete: function () { gsap.set(p, { autoAlpha: 0, x: 0 }); } });
   };
 
@@ -140,18 +140,18 @@
     var from = cur; cur = (cur + 1) % total;
     descOut(descs[from]);
     gsap.delayedCall(reduce ? 0 : 0.3, function () { photoOut(photos[from]); });
-    gsap.delayedCall(reduce ? 0 : 1.5, function () { photoIn(photos[cur]); });   // когда прежнее почти ушло
-    gsap.delayedCall(reduce ? 0 : 3.3, function () {   // фото почти у линии — описание выходит из-под неё; прежнее к этому времени уже рассыпалось
+    gsap.delayedCall(reduce ? 0 : 1.1, function () { photoIn(photos[cur]); });   // когда прежнее почти ушло
+    gsap.delayedCall(reduce ? 0 : 2.45, function () {   // фото почти у линии — описание выходит из-под неё; прежнее к этому времени уже рассыпалось
       descs.forEach(function (d) { if (d !== descs[cur]) { gsap.killTweensOf(d._chars); gsap.set(d, { autoAlpha: 0 }); } });
       descIn(descs[cur]);
     });
-    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 3.4), next);
+    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 2.5), next);
   };
   var begin = function () {
     started = true;
     photoIn(photos[0]);
-    descIn(descs[0], reduce ? 0 : 2.6);
-    timer = gsap.delayedCall(HOLD + 3, next);
+    descIn(descs[0], reduce ? 0 : 1.9);
+    timer = gsap.delayedCall(HOLD + 2.3, next);
   };
   window.addEventListener('resize', sizeDust);
 
