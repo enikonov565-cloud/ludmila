@@ -1079,33 +1079,41 @@ a { color: inherit; text-decoration: none; }
   .chat__input { font-size: 15px; }
 }
 
-/* ===== Блок 8 «Что умею: баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)») =====
+/* ===== Блок 8 «Баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)») =====
    по мотивам «сканера карточек»: работы плывут лентой сквозь медный луч; фон — самый тёмный фирменный */
 .show {
   --u: min(calc(100vw / 1920), calc(100svh / 1080)); --ch: calc(560 * var(--u));
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1; background: #070F10;
 }
-.show__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(80 * var(--u)); }
+.show__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); }
+/* «что умею» — подзаголовок над крупным заголовком */
+.show__sub { margin: 0 0 calc(14 * var(--u)); font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; letter-spacing: .01em; color: #C9A27A; }
 .show__title { white-space: nowrap; }
-.show__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
+.show__kicker { margin: calc(10 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 
 /* лента: по краям тает в фон */
-.show__stream { position: absolute; z-index: 2; left: 0; right: 0; top: calc(240 * var(--u)); height: calc(var(--ch) + 120 * var(--u)); cursor: grab; touch-action: pan-y; user-select: none;
+.show__stream { position: absolute; z-index: 2; left: 0; right: 0; top: calc(350 * var(--u)); height: calc(var(--ch) + 120 * var(--u)); cursor: grab; touch-action: pan-y; user-select: none;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); }
 .show__stream.is-drag { cursor: grabbing; }
 .show__track { position: absolute; left: 0; top: calc(60 * var(--u)); height: var(--ch); display: flex; gap: calc(120 * var(--u)); will-change: transform; }
-/* карточка: прямые углы; дизайн и «код» лежат друг на друге, луч делит их */
-.show__card { position: relative; flex: none; height: 100%; aspect-ratio: var(--ar); margin: 0; background: #081214; border: 1px solid rgba(189, 183, 177, .18); }
-.show__img, .show__desc { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.show__img { object-fit: cover; -webkit-user-drag: none; }
-/* за лучом работа становится карточкой-описанием: формат, название, результат */
-.show__desc { box-sizing: border-box; display: flex; flex-direction: column; padding: calc(40 * var(--u)) calc(36 * var(--u)); overflow: hidden;
+/* работа и её описание — одна пара, вплотную */
+.show__item { flex: none; height: 100%; margin: 0; display: flex; gap: calc(14 * var(--u)); }
+.show__card { position: relative; flex: none; height: 100%; aspect-ratio: var(--ar); background: #081214; border: 1px solid rgba(189, 183, 177, .18); }
+.show__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; -webkit-user-drag: none; }
+/* следующая работа — в полутонах; луч проявляет цвет */
+.show__img--ht { filter: grayscale(1) brightness(.55) contrast(1.05); }
+/* описание: выплывает из-за афиши, у левого края рассыпается буквами */
+.show__desc { position: relative; flex: none; width: calc(380 * var(--u)); height: 100%; margin: 0; --dbg: 1; }
+.show__desc::before { content: ""; position: absolute; inset: 0; opacity: var(--dbg); border: 1px solid rgba(201, 162, 122, .28);
   background: radial-gradient(120% 70% at 0% 100%, rgba(169, 80, 44, .22), transparent 70%), #0B181B; }
+.show__dwrap { position: absolute; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: calc(40 * var(--u)) calc(36 * var(--u)); }
 .show__d-type { margin: 0; font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.25; color: #C9A27A; }
-.show__d-name { margin: auto 0 0; padding-bottom: calc(26 * var(--u)); border-bottom: 1px solid rgba(201, 162, 122, .35); font-weight: 500; font-size: calc(42 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }
+.show__d-name { margin: auto 0 0; padding-bottom: calc(26 * var(--u)); border-bottom: 1px solid rgba(201, 162, 122, calc(.35 * var(--dbg))); font-weight: 500; font-size: calc(42 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }
 .show__d-list { margin: calc(26 * var(--u)) 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
 .show__d-list li { position: relative; padding-left: calc(24 * var(--u)); font-weight: 400; font-size: calc(21 * var(--u)); line-height: 1.25; color: #BDB7B1; }
-.show__d-list li::before { content: ""; position: absolute; left: 0; top: .5em; width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: #C9A27A; }
+.show__d-list li::before { content: ""; position: absolute; left: 0; top: .5em; width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: #C9A27A; opacity: var(--dbg); }
+.show__desc .dw { display: inline-block; white-space: nowrap; }
+.show__desc .dc { display: inline-block; white-space: pre; will-change: transform, opacity; }
 .show__sparks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* луч: тонкая светлая линия с медным свечением; когда сквозь него идёт работа — разгорается */
 .show__scan { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; translate: -50% 0; pointer-events: none;
@@ -1116,35 +1124,20 @@ a { color: inherit; text-decoration: none; }
   background: radial-gradient(50% 50% at 50% 50%, rgba(201, 162, 122, .28), transparent 100%); filter: blur(calc(8 * var(--u))); }
 .show__scan.is-hot { opacity: 1; }
 
-/* подпись: название и формат слева, результат — справа от луча */
-.show__caps { position: absolute; z-index: 3; left: calc(60 * var(--u)); right: calc(60 * var(--u)); top: calc(240 * var(--u) + var(--ch) + 110 * var(--u)); }
-.show__cap { position: absolute; left: 0; right: 0; top: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(120 * var(--u)); opacity: 0; transition: opacity .35s ease; }
-.show__cap.is-on { opacity: 1; }
-.show__name { margin: 0; text-align: right; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }
-.show__type { margin: calc(10 * var(--u)) 0 0; text-align: right; font-weight: 400; font-size: calc(24 * var(--u)); line-height: 1.2; color: #C9A27A; }
-.show__list { margin: calc(6 * var(--u)) 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: calc(12 * var(--u)); max-width: calc(560 * var(--u)); }
-.show__list li { position: relative; padding-left: calc(30 * var(--u)); font-weight: 400; font-size: calc(24 * var(--u)); line-height: 1.25; color: #BDB7B1; }
-.show__list li::before { content: ""; position: absolute; left: 0; top: .5em; width: calc(9 * var(--u)); height: calc(9 * var(--u)); border-radius: 50%; background: #C9A27A; }
-
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .show { --u: 1px; --ch: 400px; height: auto; min-height: 0; padding: 96px 20px 64px; display: flex; flex-direction: column; }
-  .show__head, .show__stream, .show__caps { position: relative; left: auto; right: auto; top: auto; }
+  .show { --u: 1px; --ch: 400px; height: auto; min-height: 0; padding: 96px 20px 56px; display: flex; flex-direction: column; }
+  .show__head, .show__stream { position: relative; left: auto; right: auto; top: auto; }
+  .show__sub { margin-bottom: 8px; font-size: 18px; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { margin-top: 12px; font-size: 15px; }
-  .show__stream { margin: 36px -20px 0; height: calc(var(--ch) + 60px); }
+  .show__stream { margin: 32px -20px 0; height: calc(var(--ch) + 60px); }
   .show__track { top: 30px; gap: 64px; }
-  .show__desc { padding: 24px 20px; }
+  .show__item { gap: 10px; }
+  .show__desc { width: 250px; }
+  .show__dwrap { padding: 24px 20px; }
   .show__d-type { font-size: 14px; }
   .show__d-name { padding-bottom: 16px; font-size: 24px; }
   .show__d-list { margin-top: 16px; gap: 6px; }
   .show__d-list li { padding-left: 16px; font-size: 13.5px; }
   .show__d-list li::before { width: 6px; height: 6px; }
-  .show__caps { margin-top: 28px; min-height: 230px; }
-  .show__cap { grid-template-columns: 1fr; row-gap: 16px; }
-  .show__name, .show__type { text-align: left; }
-  .show__name { font-size: clamp(26px, 7vw, 40px); }
-  .show__type { margin-top: 8px; font-size: clamp(16px, 4.4vw, 22px); }
-  .show__list { margin-top: 0; gap: 8px; }
-  .show__list li { padding-left: 22px; font-size: clamp(15px, 4.1vw, 19px); }
-  .show__list li::before { width: 8px; height: 8px; }
 }
