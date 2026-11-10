@@ -1,7 +1,7 @@
 /* Блок 8 «Баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)»).
    Оформление — по мотивам «сканера карточек» (codepen blacklead-studio/xbwaqxE, по мотивам evervault.com):
-   работы плывут лентой справа налево. Пока работа не дошла до медного луча — она в полутонах;
-   луч проявляет её в цвете. Как только афиша прошла луч, из-за неё выплывает соседняя карточка
+   работы плывут лентой справа налево. Пока работа не дошла до медного луча — она в полутонах (приглушена);
+   луч проявляет её в полную силу. Как только афиша прошла луч, из-за неё выплывает соседняя карточка
    с описанием этой работы, а у левого края описание рассыпается в мелкие буквы — пыль. От луча летят искры.
    Ленту можно тянуть мышью или пальцем. */
 (function () {
@@ -44,7 +44,7 @@
   var items = Array.prototype.slice.call(track.querySelectorAll('.show__item'));
   items.forEach(function (it) {
     it._poster = it.querySelector('.show__card');
-    it._ht = it.querySelector('.show__img--ht');
+    it._ht = it.querySelector('.show__veil');
     it._desc = it.querySelector('.show__desc');
     it._wrap = it.querySelector('.show__dwrap');
     it._chars = it.querySelectorAll('.dc');
@@ -114,7 +114,7 @@
     for (var i = 0; i < items.length; i++) {
       var it = items[i], left = x + it.offsetLeft, pw = it._poster.offsetWidth;
       if (left > W + 50 || left + it.offsetWidth < -50) continue;
-      /* полутона справа от луча, цвет — слева */
+      /* полутона (вуаль) справа от луча, слева — работа в полную силу */
       var s = Math.max(0, Math.min(pw, scanX - left));
       it._ht.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
       if (s > 0 && s < pw) crossing = true;
