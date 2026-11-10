@@ -62,6 +62,7 @@ function init() {
         color += uVelocityIntensity * 0.10;
         color += (random(vUv * vec2(1387.13, 947.91)) - 0.5) * uNoiseStrength;
         gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+        #include <colorspace_fragment>
       }`,
   });
   bgScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMaterial));
@@ -314,7 +315,7 @@ function init() {
   };
 
   /* автосмена: каждый баннер стоит HOLD секунд, затем камера сама плавно летит к следующему;
-     после последнего — короткое затемнение и снова с первого */
+     после последнего показ останавливается — без повторов */
   const HOLD = 3.2, STEP = () => G.planeGap / scroll.toWorld;
   const auto = { idx: 0, t: 0, resetting: false };
   const restart = () => {
@@ -327,16 +328,14 @@ function init() {
     for (let k = 10; k >= 0; k--) { const p = s0.clone(); p.z -= k * 0.12; trail.addPoint(p); }
   };
   function autoStep(dt) {
-    if (auto.resetting) return;
+    if (auto.resetting || auto.done) return;
     auto.t += dt;
     const travel = Math.abs(scroll.target - scroll.current) > 2;      // ещё летим — время стоянки не считаем
     if (travel) { auto.t = 0; return; }
     if (auto.t < HOLD) return;
     auto.t = 0;
     if (auto.idx < G.planes.length - 1) { auto.idx++; scroll.target = auto.idx * STEP(); return; }
-    auto.resetting = true;
-    sec.classList.add('is-reset');                                   // затемнение
-    setTimeout(() => { restart(); sec.classList.remove('is-reset'); auto.resetting = false; }, 650);
+    auto.done = true;                                                 // без повторов: остаёмся на последнем баннере
   }
 
   resize();
@@ -351,5 +350,11 @@ function init() {
         .then((tex) => { build(tex); resize(); start(); });
     }
   }, { rootMargin: '100% 0px' }).observe(sec);
-  new IntersectionObserver((en) => { visible = en[0].isIntersecting; if (visible) start(); else stop(); }, { threshold: 0 }).observe(sec);
+  new IntersectionObserver((en) => {
+    visible = en[0].isIntersecting;
+    if (visible) {
+      if (auto.done && ready) { auto.done = false; restart(); }      // показ уже прошёл до конца — при новом заходе в блок с первого
+      start();
+    } else stop();
+  }, { threshold: 0 }).observe(sec);
 }
