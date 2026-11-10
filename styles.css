@@ -1088,7 +1088,7 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* фон — как во втором блоке «Обо мне» */
 }
 .show__sub { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); margin: 0;
-  font-weight: 300; font-size: calc(32 * var(--u)); line-height: 1.05; letter-spacing: -.01em; text-transform: uppercase; color: #FFFAFA; }
+  font-weight: 400; font-style: italic; font-size: calc(30 * var(--u)); line-height: 1.2; color: #BDB7B1; }   /* как «Адаптировалась под новую реальность» во втором блоке */
 .show__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(150 * var(--u)); display: flex; flex-direction: column; gap: calc(26 * var(--u)); }
 .show__title { margin: 0; white-space: nowrap; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #FFFAFA; }
 .show__title .cap { font-size: 1em; line-height: 1.1; }
