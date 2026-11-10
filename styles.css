@@ -1084,7 +1084,8 @@ a { color: inherit; text-decoration: none; }
   --u: min(calc(100vw / 1920), calc(100svh / 1080));
   --lx: calc(1116 * var(--u));   /* линия: 699 + 377 + 40 */
   --gt: calc(282 * var(--u));    /* верх группы «описание — линия — фото» (макет 258 + 24: шапка сайта закрывает верх) */
-  position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; background: #182C31; color: #FFFAFA;
+  position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #FFFAFA;
+  background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* фон — как во втором блоке «Обо мне» */
 }
 .show__sub { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); margin: 0;
   font-weight: 300; font-size: calc(32 * var(--u)); line-height: 1.05; letter-spacing: -.01em; text-transform: uppercase; color: #FFFAFA; }
@@ -1092,10 +1093,11 @@ a { color: inherit; text-decoration: none; }
 .show__title { margin: 0; white-space: nowrap; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #FFFAFA; }
 .show__title .cap { font-size: 1em; line-height: 1.1; }
 .show__kicker { margin: 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #fff; }
-/* плашки справа вверху */
-.show__tags { position: absolute; z-index: 3; left: calc(1391 * var(--u)); top: calc(110 * var(--u)); width: calc(469 * var(--u)); height: calc(116 * var(--u)); margin: 0; padding: 0; list-style: none; }
-.show__tag { position: absolute; left: calc(var(--tx) * var(--u)); top: calc(var(--ty) * var(--u)); padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u));
-  background: rgba(255, 255, 255, .2); font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #fff; white-space: nowrap; }
+/* плашки справа вверху — того же вида, что во втором блоке «Обо мне» */
+.show__tags { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(110 * var(--u)); width: calc(469 * var(--u)); margin: 0; padding: 0; list-style: none;
+  display: flex; flex-wrap: wrap; justify-content: flex-end; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); }
+.show__tag { display: flex; align-items: center; justify-content: center; padding: calc(9 * var(--u)) calc(15 * var(--u)); border-radius: calc(27.89 * var(--u));
+  background: rgba(200, 189, 171, .1); color: #BDB7B1; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap; }
 /* пылинки слева — как точки в макете, тихо мерцают */
 .show__dots { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .show__dots i { position: absolute; left: calc((var(--dx) + 4) * var(--u)); top: calc((var(--dy) + 27) * var(--u)); width: calc(4 * var(--u)); height: calc(4 * var(--u)); border-radius: 50%; background: #fff;
@@ -1134,7 +1136,8 @@ a { color: inherit; text-decoration: none; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { font-size: 15px; }
   .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .show__tag { position: static; padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+  .show__tags { justify-content: flex-start; }
+  .show__tag { padding: 7px 14px; border-radius: 20px; font-size: 14px; }
   .show__dots { display: none; }
   .show__stage-gap { display: none; }
   .show__left, .show__right, .show__line { top: auto; }
