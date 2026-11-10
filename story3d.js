@@ -362,9 +362,6 @@ async function init() {
 
   /* сцена идёт сама, по времени — с паузами на чтение; запускается, когда блок почти целиком на экране */
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
-  const READ = 0.07;                                    // ~0.07 с на букву — спокойное чтение
-  const readTime = el => Math.max(2.2, Math.min(7, (el ? el.textContent.length : 40) * READ));
-  const screenText = 'Педагог дошкольного образования делает понятным хаотичный мир для тех, кто ещё не умеет читать';
   /* «Сейчас» висит в воздухе перед растением — на «глубине» 0.8: при движении фото смещается как ближний план */
   const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
   if (!stacked) gsap.set(ghostNowEl, { yPercent: -50 });           // центр слова — в точке над растением

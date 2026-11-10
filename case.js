@@ -47,7 +47,7 @@
   sec.querySelectorAll('.case__ghost').forEach(function (g) {
     g.innerHTML = Array.prototype.map.call(g.textContent, function (ch) { return '<span class="ch">' + ch + '</span>'; }).join('');
   });
-  var bits = function (p) { return p.querySelectorAll('.case__item, .case__card, .case__tstat, .case__stat, .case__divider'); };
+  var bits = function (p) { return p.querySelectorAll('.case__item, .case__card, .case__tstat'); };
   var shot = function (p) { return p.querySelector('.case__shot'); };
 
   /* заход в блок: заголовок выезжает из-под строки, цифра «+20%» проявляется, первая страница собирается */

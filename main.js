@@ -398,7 +398,6 @@ document.documentElement.classList.replace('no-js', 'js');
   var root = document.querySelector('[data-approach]');
   if (!root || !window.gsap) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var slides = Array.prototype.slice.call(root.querySelectorAll('.apx__slide'));
   var total = slides.length;
   var frame = root.closest('.approach__frame');
@@ -507,12 +506,10 @@ document.documentElement.classList.replace('no-js', 'js');
   if (window.ScrollTrigger && !stackedMq.matches && !reduce) {
     clearInterval(timer);
     restart = function () {};
-    var hint = section.querySelector('.apx__scroll');
     ScrollTrigger.create({
       trigger: section, start: 'top top', end: '+=' + (total - 1) * 100 + '%', pin: true, pinSpacing: true,
       onUpdate: function (self) {
         wanted = Math.min(total - 1, Math.floor(self.progress * total * 0.999));
-        if (hint) hint.classList.toggle('is-done', wanted === total - 1);
         if (!busy && wanted !== current) go(wanted > current ? 1 : -1);
       }
     });
@@ -530,7 +527,6 @@ document.documentElement.classList.replace('no-js', 'js');
       });
     };
     swap('.js-next', 1); swap('.js-prev', -1); swap('.js-card-next', 1);
-    if (hint) hint.addEventListener('click', function () { jump(1); });
   }
 })();
 
