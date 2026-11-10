@@ -1087,31 +1087,31 @@ a { color: inherit; text-decoration: none; }
 }
 .show__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); }
 /* «что умею» — подзаголовок над крупным заголовком */
-.show__sub { margin: 0 0 calc(14 * var(--u)); font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; letter-spacing: .01em; color: #C9A27A; }
+.show__sub { margin: 0 0 calc(22 * var(--u)); font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; letter-spacing: .01em; color: #C9A27A; }
 .show__title { white-space: nowrap; }
-.show__kicker { margin: calc(10 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
+.show__kicker { margin: calc(18 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 
 /* лента: по краям тает в фон */
-.show__stream { position: absolute; z-index: 2; left: 0; right: 0; top: calc(350 * var(--u)); height: calc(var(--ch) + 120 * var(--u)); cursor: grab; touch-action: pan-y; user-select: none;
+.show__stream { position: absolute; z-index: 2; left: 0; right: 0; top: calc(300 * var(--u)); height: calc(var(--ch) + 120 * var(--u)); cursor: grab; touch-action: pan-y; user-select: none;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%); }
 .show__stream.is-drag { cursor: grabbing; }
-.show__track { position: absolute; left: 0; top: calc(60 * var(--u)); height: var(--ch); display: flex; gap: calc(120 * var(--u)); will-change: transform; }
+.show__track { position: absolute; left: 0; top: calc(60 * var(--u)); height: var(--ch); display: flex; gap: calc(210 * var(--u)); will-change: transform; }
 /* работа и её описание — одна пара, вплотную */
-.show__item { flex: none; height: 100%; margin: 0; display: flex; gap: calc(14 * var(--u)); }
+.show__item { position: relative; flex: none; height: 100%; margin: 0; }
 .show__card { position: relative; flex: none; height: 100%; aspect-ratio: var(--ar); background: #081214; border: 1px solid rgba(189, 183, 177, .18); }
 .show__img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; -webkit-user-drag: none; }
 /* следующая работа — в полутонах: цвет сохранён, но приглушён тёмной вуалью; луч снимает вуаль */
 .show__veil { position: absolute; inset: 0; background: rgba(7, 15, 16, .62); pointer-events: none; }
 /* описание: выплывает из-за афиши, у левого края рассыпается буквами */
-.show__desc { position: relative; flex: none; width: calc(380 * var(--u)); height: 100%; margin: 0; --dbg: 1; }
-/* описание — просто текст на фоне блока, без карточки-подложки */
-.show__dwrap { position: absolute; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: calc(40 * var(--u)) 0; }
-.show__d-type { margin: 0; font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.25; color: #C9A27A; }
-.show__d-name { margin: auto 0 0; padding-bottom: calc(26 * var(--u)); border-bottom: 1px solid rgba(201, 162, 122, calc(.35 * var(--dbg))); font-weight: 500; font-size: calc(42 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }
-.show__d-list { margin: calc(26 * var(--u)) 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
-.show__d-list li { position: relative; padding-left: calc(24 * var(--u)); font-weight: 400; font-size: calc(21 * var(--u)); line-height: 1.25; color: #BDB7B1; }
-.show__d-list li::before { content: ""; position: absolute; left: 0; top: .5em; width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: #C9A27A; opacity: var(--dbg); }
-.show__desc .dw { display: inline-block; white-space: nowrap; }
+/* описание — просто текст у левого края афиши, прижат к ней */
+/* описание не занимает места в ленте: встаёт слева от своей афиши — туда, где предыдущее фото уже растаяло */
+.show__desc { position: absolute; top: 0; bottom: 0; right: calc(100% + 28 * var(--u)); margin: 0; display: flex; align-items: center; }
+.show__dwrap { display: flex; flex-direction: column; align-items: flex-end; text-align: right; white-space: nowrap; }
+/* каждая строка — в одну строку; промежутки ровные */
+.show__d-type { margin: 0; font-weight: 400; font-size: calc(22 * var(--u)); line-height: 1.2; color: #C9A27A; }
+.show__d-name { margin: calc(18 * var(--u)) 0 0; font-weight: 500; font-size: calc(42 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }
+.show__d-list { margin: calc(18 * var(--u)) 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; align-items: flex-end; gap: calc(8 * var(--u)); }
+.show__d-list li { font-weight: 300; font-size: calc(21 * var(--u)); line-height: 1.25; color: #BDB7B1; }
 .show__desc .dc { display: inline-block; white-space: pre; will-change: transform, opacity; }
 .show__sparks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* луч: тонкая светлая линия с медным свечением; когда сквозь него идёт работа — разгорается */
@@ -1129,14 +1129,15 @@ a { color: inherit; text-decoration: none; }
   .show__sub { margin-bottom: 8px; font-size: 18px; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { margin-top: 12px; font-size: 15px; }
-  .show__stream { margin: 32px -20px 0; height: calc(var(--ch) + 60px); }
-  .show__track { top: 30px; gap: 64px; }
+  .show__stream { margin: 32px -20px 0; height: calc(var(--ch) + 150px); }
+  .show__track { top: 30px; gap: 140px; }
+  /* на телефоне описание — под афишей, тянется вправо */
+  .show__desc { top: calc(100% + 14px); bottom: auto; left: 0; right: auto; }
+  .show__dwrap { align-items: flex-start; text-align: left; }
+  .show__d-list { align-items: flex-start; }
   .show__item { gap: 10px; }
-  .show__desc { width: 170px; }
-  .show__dwrap { padding: 24px 0; }
-  .show__d-type { font-size: 12.5px; }
-  .show__d-name { padding-bottom: 12px; font-size: 18px; }
-  .show__d-list { margin-top: 12px; gap: 5px; }
-  .show__d-list li { padding-left: 14px; font-size: 12.5px; }
-  .show__d-list li::before { width: 6px; height: 6px; }
+  .show__d-type { font-size: 12px; }
+  .show__d-name { margin-top: 10px; font-size: 18px; }
+  .show__d-list { margin-top: 10px; gap: 4px; }
+  .show__d-list li { font-size: 12px; }
 }

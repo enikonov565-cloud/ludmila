@@ -1,9 +1,9 @@
 /* Блок 8 «Баннеры, наружка, соцсети» (Figma «п-р10(5)», «п-р10(6)»).
    Оформление — по мотивам «сканера карточек» (codepen blacklead-studio/xbwaqxE, по мотивам evervault.com):
    работы плывут лентой справа налево. Пока работа не дошла до медного луча — она в полутонах (приглушена);
-   луч проявляет её в полную силу. Как только афиша прошла луч, из-за неё выплывает соседняя карточка
-   с описанием этой работы (слева от афиши), а у левого края описание рассыпается в мелкие буквы — пыль. От луча летят искры.
-   Ленту можно тянуть мышью или пальцем. */
+   луч проявляет её в полную силу, а дальше, левее луча, фото тает. Когда афиша входит в луч, слева от неё
+   выплывает описание этой работы; уходя влево, оно постепенно, буква за буквой, рассыпается пылью — до края экрана.
+   От луча летят искры. Ленту можно тянуть мышью или пальцем. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-show]');
@@ -17,13 +17,10 @@
   var tpl = Array.prototype.slice.call(track.children);   // четыре работы из разметки
   var total = tpl.length;
 
-  /* описание — по словам и буквам: слова не рвутся, буквы потом разлетаются пылью */
+  /* описание — по буквам: каждая буква потом сама превращается в пылинку */
   var splitText = function (root) {
     root.querySelectorAll('.show__d-type, .show__d-name, .show__d-list li').forEach(function (el) {
-      var words = el.textContent.split(' ');
-      el.innerHTML = words.map(function (w) {
-        return '<span class="dw">' + Array.prototype.map.call(w, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('') + '</span>';
-      }).join(' ');
+      el.innerHTML = Array.prototype.map.call(el.textContent, function (ch) { return '<span class="dc">' + ch + '</span>'; }).join('');
     });
   };
   tpl.forEach(function (n) {
@@ -47,56 +44,49 @@
     it._ht = it.querySelector('.show__veil');
     it._desc = it.querySelector('.show__desc');
     it._wrap = it.querySelector('.show__dwrap');
-    it._chars = it.querySelectorAll('.dc');
-    it._st = 0;   // 0 — ждёт, 1 — описание выплыло, 2 — рассыпалось
+    it._chars = Array.prototype.slice.call(it.querySelectorAll('.dc'));
+    /* у каждой буквы — своя траектория пылинки и своя очередь */
+    it._chars.forEach(function (ch) {
+      ch._dx = -(30 + Math.random() * 150); ch._dy = (Math.random() - 0.5) * 130; ch._r = (Math.random() - 0.5) * 120;
+      ch._j = Math.random(); ch._p = -1;
+    });
+    it._st = 0;   // 0 — описание спрятано за афишей, 1 — выплыло
   });
 
-  /* состояния карточки-описания */
-  var kill = function (it) { if (gsap) { gsap.killTweensOf([it._desc, it._wrap]); gsap.killTweensOf(it._chars); } };
+  /* описание: спрятано / выплыло */
+  var kill = function (it) { if (gsap) gsap.killTweensOf([it._desc, it._wrap]); };
   var put = function (it, st) {          // мгновенно (при перескоке ленты и при возврате назад)
     kill(it); it._st = st;
-    if (!gsap) { it._desc.style.visibility = st === 1 ? 'visible' : 'hidden'; return; }
-    gsap.set(it._chars, { clearProps: 'all' });
-    if (st === 0) gsap.set(it._desc, { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 100%)' });
-    if (st === 1) gsap.set(it._desc, { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)' });
-    if (st === 2) gsap.set(it._desc, { autoAlpha: 0 });
-    gsap.set(it._desc, { '--dbg': 1 });
-    gsap.set(it._wrap, { x: 0, clearProps: 'transform' });
+    it._desc.style.clipPath = st ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 0% 100%)';
+    it._wrap.style.transform = '';
   };
-  var reveal = function (it) {           // выплывает из-за афиши
+  var reveal = function (it) {           // выплывает из-за афиши влево
     kill(it); it._st = 1;
     if (!gsap || reduce) { put(it, 1); return; }
-    gsap.set(it._chars, { clearProps: 'all' });
-    gsap.set(it._desc, { autoAlpha: 1 });
-    gsap.fromTo(it._desc, { clipPath: 'inset(0% 0% 0% 100%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.out' });
-    gsap.fromTo(it._wrap, { x: '35%' }, { x: '0%', duration: 1.1, ease: 'power3.out' });
-  };
-  var dust = function (it) {             // рассыпается в мелкие буквы
-    kill(it); it._st = 2;
-    if (!gsap || reduce) { put(it, 2); return; }
-    var k = Math.max(0.5, u);
-    gsap.to(it._chars, {
-      x: function () { return (-40 - Math.random() * 160) * k; },
-      y: function () { return (Math.random() - 0.5) * 140 * k; },
-      rotation: function () { return (Math.random() - 0.5) * 90; },
-      scale: 0.25, autoAlpha: 0, color: '#C9A27A', filter: 'blur(1.5px)',
-      duration: 1.6, ease: 'power2.out', stagger: { each: 0.004, from: 'random' }
-    });
-    gsap.to(it._desc, { '--dbg': 0, duration: 0.9, ease: 'power2.out' });
+    gsap.fromTo(it._desc, { clipPath: 'inset(0% 0% 0% 100%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'power3.out' });
+    gsap.fromTo(it._wrap, { x: '30%' }, { x: '0%', duration: 1.2, ease: 'power3.out' });
   };
   items.forEach(function (it) { put(it, 0); });
 
   /* ---------- движение ленты ---------- */
   var narrow = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
-  var REVEAL = narrow ? -0.5 : 0.08, DUST = narrow ? 0.04 : 0.13;   // на телефоне описание выплывает раньше и держится дольше
-  var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, W = 0;
+  var REVEAL = 0.08;   // афиша входит в луч — выплывает описание
+  var u = 1, setW = 0, scanX = 0, x = 0, vel = 0, base = 0, dragging = false, running = false, W = 0, FADE = 260;
+  var DS = 0, DE = 0;                   // пыль: начинается у DS и заканчивается у края экрана DE
   var measure = function () {
     u = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-    if (window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) u = 0.62;
-    base = reduce ? 0 : (narrow ? -52 : -110 * Math.max(u, 0.5));   // на телефоне медленнее — описание успевают прочитать              // px в секунду, справа налево
+    if (narrow) u = 0.62;
+    base = reduce ? 0 : (narrow ? -40 : -110 * Math.max(u, 0.5));   // px в секунду, справа налево; на телефоне медленнее
     setW = items[total].offsetLeft - items[0].offsetLeft;      // ширина одного набора из четырёх работ
     W = stream.clientWidth; scanX = W / 2;
+    FADE = narrow ? 90 : 170 * u;                              // на сколько левее луча фото тает целиком
+    DS = W * (narrow ? 0.3 : 0.15); DE = W * 0.03;
     sparks.width = W; sparks.height = stream.clientHeight;
+    /* где каждая буква стоит в ленте (без сдвигов анимации) */
+    items.forEach(function (it) {
+      var base0 = it.offsetLeft + it._desc.offsetLeft;   // буквы отсчитываются от описания, описание — от своей пары
+      it._chars.forEach(function (ch) { ch._x = base0 + ch.offsetLeft + ch.offsetWidth / 2; });
+    });
   };
   /* лента перескочила на набор: копии стоят на тех же местах — переносим им состояния */
   var shift = function (dir) {
@@ -109,20 +99,39 @@
     while (x > 0) { x -= setW; shift(-1); }
   };
 
+  /* буквы описания: чем левее, тем больше рассыпаны — до края экрана */
+  var dustChars = function (it) {
+    var k = narrow ? 0.6 : Math.max(0.5, u), span = DS - DE;
+    for (var n = 0; n < it._chars.length; n++) {
+      var ch = it._chars[n], sx = x + ch._x;
+      var p = (DS - sx) / span;                          // 0 — целая буква, 1 — пыль у края
+      p = p * 1.35 - ch._j * 0.35;                        // буквы рассыпаются вразнобой
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+      if (Math.abs(p - ch._p) < 0.004) continue;
+      ch._p = p;
+      if (p === 0) { ch.style.transform = ''; ch.style.opacity = ''; continue; }
+      var e = p * p;
+      ch.style.transform = 'translate(' + (ch._dx * k * e).toFixed(1) + 'px,' + (ch._dy * k * e).toFixed(1) + 'px) rotate(' + (ch._r * e).toFixed(0) + 'deg) scale(' + (1 - 0.75 * p).toFixed(3) + ')';
+      ch.style.opacity = (1 - p).toFixed(3);
+    }
+  };
+
   var crossing = false;
   var layout = function () {
     track.style.transform = 'translate3d(' + x.toFixed(2) + 'px,0,0)';
     crossing = false;
     for (var i = 0; i < items.length; i++) {
-      var it = items[i], left = x + it._poster.offsetLeft, pw = it._poster.offsetWidth, dl = x + it._desc.offsetLeft;
+      var it = items[i], left = x + it.offsetLeft, pw = it._poster.offsetWidth, dl = left + it._desc.offsetLeft;
       if (dl > W + 50 || left + pw < -50) continue;
-      /* полутона (вуаль) справа от луча, слева — работа в полную силу */
-      var s = Math.max(0, Math.min(pw, scanX - left));
+      /* полутона (вуаль) справа от луча; левее луча фото тает */
+      var b = scanX - left, s = Math.max(0, Math.min(pw, b));
       it._ht.style.clipPath = 'inset(0 0 0 ' + s.toFixed(1) + 'px)';
+      var m = 'linear-gradient(90deg, transparent ' + (b - FADE).toFixed(1) + 'px, #000 ' + b.toFixed(1) + 'px)';
+      it._poster.style.webkitMaskImage = m; it._poster.style.maskImage = m;
       if (s > 0 && s < pw) crossing = true;
       if (left > scanX + 2) { if (it._st !== 0) put(it, 0); continue; }            // вернули назад — снова ждёт
       if (it._st === 0 && left + pw * REVEAL < scanX) reveal(it);                     // афиша входит в луч — слева от неё выплывает описание
-      if (it._st === 1 && dl + it._desc.offsetWidth * 0.5 < W * DUST) dust(it);   // у левого края — пыль
+      if (it._st === 1) dustChars(it);
     }
     scan.classList.toggle('is-hot', crossing);
   };
@@ -190,6 +199,7 @@
   wrap(); layout();
   window.addEventListener('resize', function () { measure(); wrap(); layout(); });
   window.addEventListener('load', function () { measure(); wrap(); layout(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); wrap(); layout(); });   // буквы встают на места после загрузки шрифта
 
   /* заголовок проявляется при заходе; лента крутится, только пока блок на экране */
   var introDone = false;
