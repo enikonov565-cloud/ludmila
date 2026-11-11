@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=285">
+<link rel="stylesheet" href="styles.css?v=287">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -510,14 +510,17 @@
     <img class="sites__quote" src="img/sites/review-niko.webp" width="689" height="187" alt="Отзыв Евгения Никонова: «Отзыв: созвонился с Людмилой с просьбой сделать сайт портфолио фотографа. Всегда были на связи. Людмила постоянно задавала вопросы и предлагала решения для портфолио. В итоге сайт получился визуально интересным и функциональным. Очень рекомендую»" loading="lazy">
   </figure>
 </section>
-<!-- Последняя страница — «Cinematic 3D Scroll», демо 1 (codrops, Joseph Santamaria): главные экраны пяти сайтов
-     на вращающемся цилиндре, камера при прокрутке облетает его, заглядывает внутрь и отходит; светлый фирменный фон;
-     в конце — кнопка «Связаться со мной». final.js -->
+<!-- Последняя страница — по мотивам «Cinematic 3D Scroll», демо 1 (codrops, Joseph Santamaria): главные экраны пяти сайтов
+     на цилиндре, он вращается сам; камера подлетает, затем поднимается — цилиндр становится кольцом, и в центре проявляются
+     заголовок, подзаголовок и кнопка «Связаться со мной». Светлый фирменный фон. final.js -->
 <section class="final" id="contact" aria-labelledby="final-title" data-final>
   <div class="final__stage">
     <canvas class="final__gl" aria-hidden="true"></canvas>
-    <h2 class="sr-only" id="final-title">Сайты: Nikonovphoto, Флорис, Театр кукол, Лисса Миляева, Комфорт интерьер</h2>
-    <a class="btn btn--order final__cta" href="#">Связаться со&nbsp;мной</a>
+    <div class="final__text">
+      <h2 class="story__title final__title" id="final-title"><span class="story__mask"><span class="story__reveal"><span class="cap">В</span>аш сайт</span></span><span class="story__mask"><span class="story__reveal">следующий</span></span></h2>
+      <p class="final__sub">Расскажите о&nbsp;своём деле, а&nbsp;я&nbsp;придумаю, как показать его с&nbsp;первого экрана</p>
+      <a class="btn btn--order final__cta" href="#">Связаться со&nbsp;мной</a>
+    </div>
   </div>
 </section>
 </main>
@@ -531,7 +534,7 @@
 <script src="case.js?v=24"></script>
 <script src="talk.js?v=12"></script>
 <script src="sites.js?v=12"></script>
-<script type="module" src="final.js?v=6"></script>
+<script type="module" src="final.js?v=8"></script>
 <script src="show.js?v=26"></script>
 <script type="module" src="gallery.js?v=11"></script>
 <script type="module" src="story3d.js?v=45"></script>

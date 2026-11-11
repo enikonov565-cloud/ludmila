@@ -1235,16 +1235,23 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== Последняя страница — главные экраны сайтов на вращающемся цилиндре («Cinematic 3D Scroll», codrops) ===== */
-/* блок высотой в 5 экранов: сцена «прилипает» к экрану, а прокрутка ведёт камеру вокруг цилиндра */
-.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 500svh; background: #EDE8E1; }
-.final__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip;
+.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; background: #EDE8E1; }
+.final__stage { position: absolute; inset: 0;
   background: radial-gradient(70% 62% at 50% 46%, #F4F0EA 0%, #EDE8E1 55%, #E1D7C9 100%); }
 .final__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.final__cta { position: absolute; z-index: 2; left: 50%; bottom: calc(90 * var(--u)); translate: -50% 0; padding-inline: calc(72 * var(--u)); font-size: calc(26 * var(--u));
-  opacity: 0; visibility: hidden; }
+/* в центре кольца: заголовок, подзаголовок, кнопка */
+.final__text { position: absolute; z-index: 2; left: 50%; top: 58%; translate: -50% -50%; width: calc(1000 * var(--u)); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.final__title { color: #1A2C30; font-size: calc(72 * var(--u)); }
+.final__title .story__mask { display: block; }
+.final__sub { margin: calc(26 * var(--u)) 0 0; max-width: calc(640 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; }
+.final__cta { margin-top: calc(38 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .final__cta { bottom: 56px; padding-inline: 40px; font-size: 18px; white-space: nowrap; }
+  .final { min-height: 640px; }
+  .final__text { width: calc(100% - 40px); }
+  .final__title { font-size: clamp(32px, 9vw, 56px); }
+  .final__sub { margin-top: 16px; max-width: 340px; font-size: 16px; }
+  .final__cta { margin-top: 24px; padding-inline: 36px; font-size: 18px; white-space: nowrap; }
 }
 
 /* блок не на экране — его бесконечные CSS-анимации (стрелки, пульс) стоят и не нагружают браузер */
