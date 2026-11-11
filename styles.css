@@ -1152,35 +1152,36 @@ a { color: inherit; text-decoration: none; }
   .gal__desc { width: auto; max-width: min(58vw, 270px); font-size: 10px; text-align: right; }
 }
 
-/* ===== Блок 10 «Делаю сайты: погружающие с первого экрана» — портрет-фон и 3D-карусели экранов сайтов ===== */
+/* ===== Блок 10 «Делаю сайты: погружающие с первого экрана» — портрет, 3D-карусели экранов сайтов, отзыв =====
+   ничего не перекрывает лицо: заголовок над портретом, отзыв справа внизу, название сайта — над каруселью */
 .sites { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; color: #E8DCC8; background: #070F10; }
-/* портрет — слева во всю высоту, к правому краю и низу тает в фон */
-.sites__bg { position: absolute; z-index: 0; left: 0; top: 0; bottom: 0; aspect-ratio: 718 / 960;
-  -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%), linear-gradient(0deg, transparent 0, #000 35%); -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, #000 55%, transparent 100%), linear-gradient(0deg, transparent 0, #000 35%); mask-composite: intersect; }
-.sites__bg img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
 .sites__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); }
 .sites__sub { margin: 0 0 calc(18 * var(--u)); font-style: italic; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #E8DCC8; }   /* как «Что умею:» */
 .sites__title { white-space: nowrap; }
-/* сцена с перспективой: карусель справа от портрета */
-.sites__stage { position: absolute; z-index: 2; left: 36%; right: 0; top: 0; bottom: 0; perspective: calc(1500 * var(--u)); pointer-events: none; }
+/* портрет — под заголовком, слева; края мягко тают в фон */
+.sites__bg { position: absolute; z-index: 0; left: calc(60 * var(--u)); top: calc(340 * var(--u)); height: calc(700 * var(--u)); aspect-ratio: 718 / 960;
+  -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%); -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, #000 70%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%); mask-composite: intersect; }
+.sites__bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* сцена с перспективой — правее портрета */
+.sites__stage { position: absolute; z-index: 2; left: calc(640 * var(--u)); right: 0; top: 0; height: calc(860 * var(--u)); perspective: calc(1500 * var(--u)); pointer-events: none; }
 .sites__scene { position: absolute; inset: 0; transform-style: preserve-3d; }
-.sites__carousel { --w: calc(640 * var(--u)); --h: calc(400 * var(--u));
-  position: absolute; left: 50%; top: 54%; width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+.sites__carousel { --w: calc(560 * var(--u)); --h: calc(350 * var(--u));
+  position: absolute; left: 50%; top: calc(470 * var(--u)); width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
   transform-style: preserve-3d; will-change: transform; }
 .sites__cell { position: absolute; inset: 0; transform-style: preserve-3d; }
 .sites__card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
-/* без больших теней: тень на вращающихся 3D-карточках перерисовывается каждый кадр и тормозит */
 .sites__face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--img) center / cover no-repeat #0B181B; outline: 1px solid rgba(255, 255, 255, .06); }
-.sites__face--back { transform: rotateY(180deg); filter: brightness(.55); }
-/* подпись: название сайта и тема — как подписи в галерее */
-.sites__label { position: absolute; z-index: 3; right: calc(60 * var(--u)); bottom: calc(56 * var(--u)); margin: 0; display: flex; flex-direction: column; align-items: flex-end; gap: calc(6 * var(--u));
-  text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; }
-.sites__name { font-size: calc(17 * var(--u)); color: #E8DCC8; }
-.sites__type { font-size: calc(14 * var(--u)); color: rgba(232, 220, 200, .7); }
-/* отзыв — слева внизу, так же, как отзыв Светланы Клок в блоке 7: скриншот сообщения, под ним слева имя и ниша, справа — главный экран сайта */
-.sites__review { position: absolute; z-index: 3; left: calc(60 * var(--u)); bottom: calc(56 * var(--u)); width: calc(640 * var(--u)); margin: 0;
-  display: grid; grid-template-columns: minmax(0, 1fr) calc(300 * var(--u)); column-gap: calc(24 * var(--u)); row-gap: calc(24 * var(--u)); }
+/* обратная сторона экрана — тёмная, без зеркальной картинки */
+.sites__face--back { transform: rotateY(180deg); background: #0B181B; }
+/* название сайта — над каруселью, по её центру, крупно */
+.sites__label { position: absolute; z-index: 3; left: calc(640 * var(--u) + (100% - 640 * var(--u)) / 2); top: calc(150 * var(--u)); translate: -50% 0; margin: 0;
+  display: flex; flex-direction: column; align-items: center; gap: calc(8 * var(--u)); text-align: center; text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; white-space: nowrap; }
+.sites__name { font-size: calc(28 * var(--u)); color: #E8DCC8; }
+.sites__type { font-size: calc(16 * var(--u)); color: rgba(232, 220, 200, .7); }
+/* отзыв — справа внизу, как отзыв Светланы Клок в блоке 7: скриншот, слева имя и ниша, справа главный экран сайта */
+.sites__review { position: absolute; z-index: 3; right: calc(60 * var(--u)); bottom: calc(46 * var(--u)); width: calc(560 * var(--u)); margin: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) calc(250 * var(--u)); column-gap: calc(22 * var(--u)); row-gap: calc(20 * var(--u)); }
 .sites__quote { grid-column: 1 / -1; display: block; width: 100%; height: auto; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); }
 .sites__by { grid-column: 1; grid-row: 2; align-self: end; margin: 0; display: flex; flex-direction: column; gap: calc(4 * var(--u)); }
 .sites__by b { font-weight: 500; font-size: calc(20 * var(--u)); color: #C9A27A; }
@@ -1189,21 +1190,21 @@ a { color: inherit; text-decoration: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  /* телефон: всё по порядку сверху вниз — заголовок и портрет, под ними карусель, подпись и отзыв; ничего не перекрывается */
-  .sites { --u: 1px; height: auto; min-height: 0; padding: 0 0 48px; display: flex; flex-direction: column; }
-  .sites__bg { right: 0; top: 150px; bottom: auto; height: 420px; aspect-ratio: auto;
-    -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 40%, #000 80%, transparent 100%); mask-image: linear-gradient(0deg, transparent 0, #000 40%, #000 80%, transparent 100%); -webkit-mask-composite: source-over; mask-composite: add; }
-  .sites__bg img { object-position: 35% 20%; }
-  .sites__head { left: 20px; right: 20px; top: 92px; }
+  /* телефон: по порядку сверху вниз — заголовок, портрет, название сайта, карусель, отзыв */
+  .sites { --u: 1px; height: auto; min-height: 0; padding: 92px 20px 48px; display: flex; flex-direction: column; }
+  .sites__head, .sites__bg, .sites__stage, .sites__label, .sites__review { position: relative; left: auto; right: auto; top: auto; bottom: auto; translate: none; }
+  .sites__head { order: 1; } .sites__bg { order: 2; } .sites__label { order: 3; } .sites__stage { order: 4; } .sites__review { order: 5; }
   .sites__sub { margin-bottom: 8px; font-size: 18px; }
   .sites__title { white-space: normal; font-size: clamp(30px, 8vw, 56px); }
-  .sites__stage { position: relative; left: auto; top: auto; height: 220px; margin-top: 510px; perspective: 900px; }
-  .sites__carousel { --w: 250px; --h: 158px; top: 50%; }
-  .sites__label { position: relative; right: auto; bottom: auto; margin: 6px 20px 0; }
-  .sites__name { font-size: 13px; }
-  .sites__type { font-size: 11px; }
-  .sites__review { position: relative; left: auto; bottom: auto; width: auto; margin: 22px 20px 0; }
-  .sites__review { grid-template-columns: minmax(0, 1fr) 46%; column-gap: 14px; row-gap: 16px; }
+  .sites__bg { margin: 24px auto 0; width: min(78%, 360px); height: auto;
+    -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 25%); mask-image: linear-gradient(0deg, transparent 0, #000 25%); -webkit-mask-composite: source-over; mask-composite: add; }
+  .sites__bg img { height: auto; }
+  .sites__label { margin-top: 28px; align-items: center; }
+  .sites__name { font-size: 18px; }
+  .sites__type { font-size: 12px; }
+  .sites__stage { height: 230px; margin: 0 -20px; perspective: 900px; }
+  .sites__carousel { --w: 240px; --h: 150px; top: 50%; }
+  .sites__review { width: auto; margin-top: 20px; grid-template-columns: minmax(0, 1fr) 46%; column-gap: 14px; row-gap: 16px; }
   .sites__by b { font-size: 16px; } .sites__by span { font-size: 14px; }
 }
 
