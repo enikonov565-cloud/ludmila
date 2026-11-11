@@ -869,7 +869,7 @@ document.documentElement.classList.replace('no-js', 'js');
     }
     var light = false;
     if (under) {
-      if (under.classList.contains('works')) light = true;
+      if (under.classList.contains('works') || under.classList.contains('final')) light = true;   // светлый фирменный фон
       /* в «Моём подходе» фон меняется со сценой: светлый текст блока = тёмный фон, и наоборот */
       else if (under.classList.contains('approach')) light = !isLight(getComputedStyle(under).color);
       else if (under.classList.contains('story')) light = under.classList.contains('is-now'); // «Сейчас» — светлое фото
