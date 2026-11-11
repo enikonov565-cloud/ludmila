@@ -1234,24 +1234,29 @@ a { color: inherit; text-decoration: none; }
   .sites__by b { font-size: 15px; } .sites__by span { font-size: 12px; }
 }
 
-/* ===== Последняя страница — главные экраны сайтов на вращающемся цилиндре («Cinematic 3D Scroll», codrops) ===== */
-.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 100svh; min-height: 560px; overflow: hidden; overflow: clip; background: #EDE8E1; }
-.final__stage { position: absolute; inset: 0;
+/* ===== Последняя страница — главные экраны сайтов на цилиндре («Cinematic 3D Scroll», codrops) ===== */
+/* как в оригинале: блок в 5 экранов, сцена «прилипает», прокрутка ведёт камеру */
+.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 500svh; background: #EDE8E1; }
+.final__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip;
   background: radial-gradient(70% 62% at 50% 46%, #F4F0EA 0%, #EDE8E1 55%, #E1D7C9 100%); }
 .final__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-/* в центре кольца: заголовок, подзаголовок, кнопка */
-.final__text { position: absolute; z-index: 2; left: 50%; top: 58%; translate: -50% -50%; width: calc(1000 * var(--u)); display: flex; flex-direction: column; align-items: center; text-align: center; }
-.final__title { color: #1A2C30; font-size: calc(72 * var(--u)); }
-.final__title .story__mask { display: block; }
-.final__sub { margin: calc(26 * var(--u)) 0 0; max-width: calc(640 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; }
-.final__cta { margin-top: calc(38 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); }
+/* заголовки этапов: вверху, в центре, внизу — как в образце; шрифты сайта, цвета для светлого фона */
+.final__step { position: absolute; z-index: 2; left: 50%; translate: -50% 0; width: calc(1400 * var(--u)); display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: none; }
+.final__step--top { top: calc(120 * var(--u)); }
+.final__step--center { top: 50%; translate: -50% -50%; }
+.final__step--bottom { bottom: calc(70 * var(--u)); pointer-events: auto; }
+.final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; }
+.final__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
+.final__sub { margin: calc(14 * var(--u)) 0 0; max-width: calc(760 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; }
+.final__cta { margin-top: calc(30 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .final { min-height: 640px; }
-  .final__text { width: calc(100% - 40px); }
-  .final__title { font-size: clamp(32px, 9vw, 56px); }
-  .final__sub { margin-top: 16px; max-width: 340px; font-size: 16px; }
-  .final__cta { margin-top: 24px; padding-inline: 36px; font-size: 18px; white-space: nowrap; }
+  .final__step { width: calc(100% - 40px); }
+  .final__step--top { top: 96px; }
+  .final__step--bottom { bottom: 40px; }
+  .final__title { font-size: clamp(28px, 8vw, 48px); }
+  .final__sub { margin-top: 10px; max-width: 340px; font-size: 15px; }
+  .final__cta { margin-top: 20px; padding-inline: 36px; font-size: 18px; white-space: nowrap; }
 }
 
 /* блок не на экране — его бесконечные CSS-анимации (стрелки, пульс) стоят и не нагружают браузер */
