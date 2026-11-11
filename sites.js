@@ -26,7 +26,7 @@
 
   /* непрерывное вращение и лёгкое покачивание — как у оригинала при прокрутке, только само */
   var spins = scenes.map(function (car) {
-    gsap.set(car, { z: -420, rotationY: -90, rotationX: 4, rotationZ: 2, autoAlpha: 0 });
+    gsap.set(car, { z: -420, rotationY: 0, rotationX: 4, rotationZ: 2, autoAlpha: 0 });   // 0° — к зрителю повёрнут первый экран: главный экран сайта
     var t = gsap.timeline({ paused: true, repeat: -1 });
     t.to(car, { rotationY: '-=360', duration: reduce ? 120 : 34, ease: 'none' }, 0);
     var sway = gsap.timeline({ paused: true, repeat: -1, yoyo: true });
@@ -45,7 +45,8 @@
   /* карусель приходит: из-под низа, с разворотом — как возвращение карусели в оригинале */
   var bringIn = function (i, delay) {
     var car = scenes[i];
-    spins[i].t.play(); spins[i].sway.play();
+    gsap.set(car, { rotationY: 0 });                      // каждая карусель открывается с главного экрана сайта
+    spins[i].t.invalidate().restart(); spins[i].sway.play();
     if (reduce) { gsap.set(car, { autoAlpha: 1, yPercent: 0, z: -420 }); return; }
     gsap.fromTo(car, { autoAlpha: 0, yPercent: 260, z: -900, rotationX: 24 },
       { autoAlpha: 1, yPercent: 0, z: -420, rotationX: 4, duration: 1.8, ease: 'expo.out', delay: delay || 0 });
