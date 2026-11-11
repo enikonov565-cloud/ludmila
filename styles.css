@@ -1165,17 +1165,13 @@ a { color: inherit; text-decoration: none; }
 .sites__sub { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(110 * var(--u)); margin: 0; font-style: italic; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #E8DCC8; }
 .sites__title { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(165 * var(--u)); white-space: nowrap; }
 .sites__tags { right: calc(60 * var(--u)); top: calc(139 * var(--u)); }
-/* карусель: справа вверху; главный экран 614×314 по центру (964…1578, 380…694), соседние — узкими краями по бокам */
-.sites__stage { position: absolute; z-index: 2; inset: 0; perspective: calc(1500 * var(--u)); perspective-origin: calc(1271 * var(--u)) calc(537 * var(--u)); pointer-events: none;
-  clip-path: inset(0 0 calc(100% - 821 * var(--u)) 0); }   /* карусель поднимается из-под отзыва: ниже его верхнего края её не видно */
-.sites__carousel { --w: calc(614 * var(--u)); --h: calc(314 * var(--u));
-  position: absolute; left: calc(1271 * var(--u)); top: calc(537 * var(--u)); width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
-  transform-style: preserve-3d; will-change: transform; visibility: hidden; }
-.sites__cell { position: absolute; inset: 0; transform-style: preserve-3d; }
-/* кадр заполняет экран карусели (пропорции широких кадров почти совпадают с ним — ничего важного не срезается); обратной стороны нет */
-.sites__face { display: block; width: 100%; height: 100%; object-fit: cover; background: transparent; backface-visibility: hidden; -webkit-backface-visibility: hidden; opacity: 0; -webkit-user-drag: none; }
-/* узкие кадры Флориса — целиком, поля по бокам полупрозрачные, цвета плашек-овалов */
-.sites__face--fit { object-fit: contain; background: rgba(200, 189, 171, .12); }
+/* кольцо экранов сайтов: справа от портрета, над отзывом. Ближние экраны — крупно и ниже, дальние — мельче, выше и темнее;
+   каждый экран в своих пропорциях, со скруглёнными углами. Ниже верхнего края отзыва кольца не видно — оно поднимается из-под него */
+.sites__stage { position: absolute; z-index: 2; left: calc(700 * var(--u)); top: calc(280 * var(--u)); width: calc(1180 * var(--u)); height: calc(541 * var(--u)); pointer-events: none;
+  clip-path: inset(calc(-300 * var(--u)) calc(-60 * var(--u)) 0 calc(-400 * var(--u))); }
+.sites__ring { position: absolute; inset: 0; opacity: 0; }
+.sites__card { position: absolute; left: 0; top: 0; display: block; max-width: none; border-radius: calc(14 * var(--u)); object-fit: cover; background: #0B181B;
+  box-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(0, 0, 0, .35); transform-origin: 50% 50%; will-change: transform, filter; backface-visibility: hidden; -webkit-user-drag: none; }
 /* отзыв: главный экран сайта (792, 821, 240×145), под ним имя и ниша; справа — скриншот сообщения (1063, 824, 711×193) */
 .sites__review { position: absolute; z-index: 3; left: calc(792 * var(--u)); top: calc(821 * var(--u)); width: calc(982 * var(--u)); margin: 0;
   display: grid; grid-template-columns: calc(240 * var(--u)) 1fr; column-gap: calc(31 * var(--u)); align-items: start; }
@@ -1195,8 +1191,8 @@ a { color: inherit; text-decoration: none; }
   .sites__bg { order: 4; margin: 20px auto 0; width: min(80%, 360px); height: auto; aspect-ratio: 718 / 960;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%, #000 92%, transparent 100%); -webkit-mask-composite: source-in;
             mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%, #000 92%, transparent 100%); mask-composite: intersect; }
-  .sites__stage { order: 5; height: 230px; margin: 10px -20px 0; perspective: 900px; perspective-origin: 50% 50%; clip-path: inset(0); }
-  .sites__carousel { --w: 300px; --h: 154px; left: 50%; top: 50%; }
+  .sites__stage { order: 5; width: auto; height: 250px; margin: 14px -20px 0; clip-path: inset(-200px 0 0 0); }
+  .sites__card { border-radius: 8px; }
   .sites__review { order: 6; width: auto; margin-top: 20px; grid-template-columns: 42% 1fr; column-gap: 12px; }
   .sites__shot { height: auto; aspect-ratio: 1100 / 563; }
   .sites__quote { grid-column: 1 / -1; grid-row: 2; margin-top: 14px; }
