@@ -1178,18 +1178,14 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; }
 .sites__name { font-size: calc(17 * var(--u)); color: #E8DCC8; }
 .sites__type { font-size: calc(14 * var(--u)); color: rgba(232, 220, 200, .7); }
-/* отзыв — слева внизу, сообщением из Telegram, как отзыв Светланы Клок в блоке 7 */
-.sites__review { position: absolute; z-index: 3; left: calc(60 * var(--u)); bottom: calc(56 * var(--u)); width: calc(640 * var(--u)); margin: 0; }
-.sites__review[hidden] { display: none; }
-.tg { display: flex; align-items: flex-end; gap: calc(12 * var(--u)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Arial, sans-serif; }
-.tg__ava { flex: none; display: grid; place-items: center; width: calc(46 * var(--u)); height: calc(46 * var(--u)); border-radius: 50%;
-  background: linear-gradient(160deg, #C9A27A, #A9502C); color: #fff; font-weight: 600; font-size: calc(20 * var(--u)); }
-.tg__msg { position: relative; padding: calc(10 * var(--u)) calc(16 * var(--u)) calc(12 * var(--u)); border-radius: calc(16 * var(--u)) calc(16 * var(--u)) calc(16 * var(--u)) calc(4 * var(--u));
-  background: rgba(33, 33, 33, .92); box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); color: #fff; }
-.tg__name { margin: 0 0 calc(4 * var(--u)); font-weight: 500; font-size: calc(17 * var(--u)); color: #A695E7; }
-.tg__text { margin: 0; font-weight: 400; font-size: calc(17 * var(--u)); line-height: 1.4; color: #fff; }
-.tg__text { padding-right: calc(46 * var(--u)); }
-.tg__time { position: absolute; right: calc(12 * var(--u)); bottom: calc(8 * var(--u)); font-size: calc(12 * var(--u)); color: rgba(255, 255, 255, .5); }
+/* отзыв — слева внизу, так же, как отзыв Светланы Клок в блоке 7: скриншот сообщения, под ним слева имя и ниша, справа — главный экран сайта */
+.sites__review { position: absolute; z-index: 3; left: calc(60 * var(--u)); bottom: calc(56 * var(--u)); width: calc(640 * var(--u)); margin: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) calc(300 * var(--u)); column-gap: calc(24 * var(--u)); row-gap: calc(24 * var(--u)); }
+.sites__quote { grid-column: 1 / -1; display: block; width: 100%; height: auto; box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, .45); }
+.sites__by { grid-column: 1; grid-row: 2; align-self: end; margin: 0; display: flex; flex-direction: column; gap: calc(4 * var(--u)); }
+.sites__by b { font-weight: 500; font-size: calc(20 * var(--u)); color: #C9A27A; }
+.sites__by span { font-weight: 300; font-size: calc(17 * var(--u)); color: rgba(189, 183, 177, .7); }
+.sites__shot { grid-column: 2; grid-row: 2; display: block; width: 100%; height: auto; aspect-ratio: 1100 / 563; object-fit: cover; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
@@ -1207,7 +1203,6 @@ a { color: inherit; text-decoration: none; }
   .sites__name { font-size: 13px; }
   .sites__type { font-size: 11px; }
   .sites__review { position: relative; left: auto; bottom: auto; width: auto; margin: 22px 20px 0; }
-  .tg__ava { width: 34px; height: 34px; font-size: 15px; }
-  .tg__name, .tg__text { font-size: 13px; }
-  .tg__time { font-size: 10px; }
+  .sites__review { grid-template-columns: minmax(0, 1fr) 46%; column-gap: 14px; row-gap: 16px; }
+  .sites__by b { font-size: 16px; } .sites__by span { font-size: 14px; }
 }
