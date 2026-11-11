@@ -1,18 +1,16 @@
 /* Последняя страница — «Cinematic 3D Scroll Experiences with GSAP», демо 1 (codrops, Joseph Santamaria),
-   переписано без React и OGL, на three.js сайта. Как в оригинале: страница высотой в пять экранов, сцена «прилипает»,
-   а прокрутка ведёт камеру — подлёт к широкому цилиндру → взгляд сверху (цилиндр становится кольцом) → вплотную сбоку →
-   внутрь → отход. На каждом этапе — свой заголовок (вверху, в центре, внизу), как в образце; последний — с кнопкой
-   «Связаться со мной» — остаётся. Цилиндр вращается по прокрутке и ещё медленно сам по себе. Главные экраны пяти сайтов —
-   в своих пропорциях; пропорции цилиндра и точки камеры — как в оригинале.
-   Изнутри экраны читаются не зеркально. Дуги-«частицы» видны, пока цилиндр быстро крутится. */
+   переписано без React и OGL, на three.js сайта. Пролёт идёт сам, без прокрутки и мыши: подлёт к широкому цилиндру →
+   взгляд сверху (кольцо) → вплотную сбоку → внутрь → спокойный отъезд, в конце цилиндр снова во весь экран.
+   На каждом этапе — свой заголовок; цвет заголовка подстраивается под фон ради читаемости. Последний заголовок —
+   с кнопкой «Заказать свой сайт» — остаётся. Цилиндр всё время медленно вращается сам. Изнутри экраны читаются
+   не зеркально. Дуги-«частицы» видны, пока цилиндр быстро крутится. Показ — заново при каждом возвращении к странице. */
 import * as THREE from 'three';
 
 const sec = document.querySelector('[data-final]');
-if (sec && window.gsap && window.ScrollTrigger) init();
+if (sec && window.gsap) init();
 
 function init() {
   const gsap = window.gsap;
-  gsap.registerPlugin(window.ScrollTrigger);
   const stage = sec.querySelector('.final__stage');
   const canvas = sec.querySelector('.final__gl');
   const steps = Array.prototype.slice.call(sec.querySelectorAll('.final__step'));
@@ -114,58 +112,80 @@ function init() {
     for (let i = 0; i < 18; i++) { m = (lo + hi) / 2; x = 3 * (1 - m) * (1 - m) * m * p1x + 3 * (1 - m) * m * m * p2x + m * m * m; if (x < t) lo = m; else hi = m; }
     m = (lo + hi) / 2; return 3 * (1 - m) * (1 - m) * m * p1y + 3 * (1 - m) * m * m * p2y + m * m * m;
   };
-  const silk = bez(0.45, 0.05, 0.55, 0.95), flow = bez(0.33, 0, 0.2, 1), lin = bez(0.4, 0, 0.6, 1);
+  const flow = bez(0.33, 0, 0.2, 1), lin = bez(0.4, 0, 0.6, 1);
 
   const scroll = { rot: 0 };
   const look = { y: 0 };                                               // куда смотрит камера по высоте
-  let tl = null;
-  /* пролёт камеры по прокрутке — точки оригинала, пересчитанные под наш цилиндр; заголовки этапов — по времени пролёта */
+  const T = 2.4;                                                       // секунд на единицу длительности оригинала
+  const HOLD = 1.4;                                                    // первый кадр стоит, чтобы прочитать заголовок
+  let tl = null, done = false;
+  /* пролёт камеры — сам, без прокрутки и мыши: точки и кривые оригинала, заголовки этапов меняются по ходу пролёта */
   const build = () => {
-    if (!cylinder.visible) return;
-    const prog = tl ? tl.scrollTrigger.progress : 0;
-    if (tl) { tl.scrollTrigger.kill(); tl.kill(); }
-    const D = F.D, far = D;                                            // как в оригинале: старт и первый кадр — спереди
+    if (tl) tl.kill();
+    const D = F.D, far = D;
     Object.assign(cam, { x: 0, y: 0, z: far });
     look.y = 0.42;                                                     // на старте цилиндр чуть ниже центра — над ним заголовок
-    tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top top', end: 'bottom bottom', scrub: reduce ? true : 2.5, refreshPriority: -10 } });
-    tl.to(cam, { x: 0, y: 0, z: D, duration: 1, ease: silk })
-      .to(cam, { x: 0, y: 5 * S, z: 5 * S, duration: 1, ease: flow })
-      .to(look, { y: 0, duration: 1, ease: flow }, '<')
-      .to(cam, { x: 1.5 * S, y: 2 * S, z: 2 * S, duration: 2, ease: lin })
-      .to(cam, { x: 0.5 * S, y: 0, z: 0.8 * S, duration: 3.5, ease: 'power1.inOut' })
-      /* выход — спокойный отъезд назад, без рывка: камера встаёт прямо, как в самом начале, цилиндр снова во весь экран
+    scroll.rot = 0; done = false;
+    gsap.set(steps, { autoAlpha: 0 });
+    steps.forEach((s) => s.classList.remove('is-light'));
+    const at = (u) => HOLD + u * T;
+    tl = gsap.timeline({ paused: true, onComplete: () => { done = true; } });
+    tl.to(cam, { x: 0, y: 5 * S, z: 5 * S, duration: 1 * T, ease: flow }, at(0))
+      .to(look, { y: 0, duration: 1 * T, ease: flow }, '<')
+      .to(cam, { x: 1.5 * S, y: 2 * S, z: 2 * S, duration: 2 * T, ease: lin })
+      .to(cam, { x: 0.5 * S, y: 0, z: 0.8 * S, duration: 3.5 * T, ease: 'power1.inOut' })
+      /* выход — спокойный отъезд назад, без рывка: камера встаёт прямо, цилиндр снова во весь экран
          и чуть выше центра, под ним — финальный текст и кнопка */
-      .to(cam, { x: 0, y: 0, z: far, duration: 2, ease: 'sine.inOut' })
-      .to(look, { y: -0.62, duration: 2, ease: 'sine.inOut' }, '<');
-    tl.to(scroll, { rot: 12.57, duration: 9.5, ease: 'none' }, 0);   // два оборота за весь пролёт — спокойнее оригинала
-    /* заголовки: вверху — на подлёте, в центре — сверху и внутри, внизу с кнопкой — в конце и остаётся */
+      .to(cam, { x: 0, y: 0, z: far, duration: 2 * T, ease: 'sine.inOut' })
+      .to(look, { y: -0.62, duration: 2 * T, ease: 'sine.inOut' }, '<');
+    tl.to(scroll, { rot: 12.57, duration: 8.5 * T, ease: 'power1.inOut' }, at(0));   // два плавных оборота за пролёт
+    /* заголовки: вверху — на старте, в центре — сверху и внутри, внизу с кнопкой — в конце и остаётся */
     const show = (el, a, b, stay) => {
-      tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35, ease: 'power1.out' }, a);
-      if (!stay) tl.to(el, { autoAlpha: 0, duration: 0.35, ease: 'power1.in' }, b - 0.35);
+      tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, ease: 'power1.out' }, a);
+      if (!stay) tl.to(el, { autoAlpha: 0, duration: 0.8, ease: 'power1.in' }, b - 0.8);
     };
-    show(steps[0], 0.15, 1.8);
-    show(steps[1], 2.1, 6.9);
-    show(steps[2], 8.6, 9.5, true);
-    tl.progress(prog);
+    show(steps[0], 0.3, at(0.8));
+    show(steps[1], at(1.1), at(6.9));
+    show(steps[2], at(7.8), at(8.5), true);
   };
-  window.addEventListener('resize', () => { resize(); build(); });
+  window.addEventListener('resize', () => { resize(); if (done) { Object.assign(cam, { x: 0, y: 0, z: F.D }); look.y = -0.62; } });
 
-  let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5;
-  /* лёгкое покачивание камеры за указателем — хочется водить мышью и рассматривать */
-  const ptr = { x: 0, y: 0 }, sway = { x: 0, y: 0 };
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (finePointer && !reduce) window.addEventListener('pointermove', (e) => { ptr.x = e.clientX / window.innerWidth * 2 - 1; ptr.y = e.clientY / window.innerHeight * 2 - 1; }, { passive: true });
+  let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5, tick = 0;
+  /* читаемость: под каждым видимым заголовком меряем яркость того, что сейчас нарисовано (экраны сайтов или светлый фон).
+     На светлом — тёмный текст, на тёмном — светлый. Пиксели читаются сразу после отрисовки кадра. */
+  const gl = renderer.getContext(), px = new Uint8Array(4), BG = 0.9;   // яркость светлого фона страницы
+  const contrast = () => {
+    const cr = canvas.getBoundingClientRect(), kx = canvas.width / cr.width, ky = canvas.height / cr.height;
+    steps.forEach((s) => {
+      if (parseFloat(getComputedStyle(s).opacity) < 0.05) return;
+      const r = s.querySelector('.final__title').getBoundingClientRect();
+      let dark = 0, n = 0;
+      for (let iy = 0; iy < 5; iy++) for (let ix = 0; ix < 11; ix++) {
+        const x = Math.round((r.left + r.width * (ix + 0.5) / 11 - cr.left) * kx);
+        const y = Math.round(canvas.height - (r.top + r.height * (iy + 0.5) / 5 - cr.top) * ky);
+        if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) continue;
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        const a = px[3] / 255, lum = (0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2]) / 255 + (1 - a) * BG;   // цвет уже умножен на прозрачность
+        if (lum < 0.5) dark++;
+        n++;
+      }
+      if (!n) return;
+      /* смешанный фон (светлые и тёмные места): решают тёмные места — если их хотя бы треть, текст светлый с мягким тёмным ореолом */
+      const f = dark / n, light = s.classList.contains('is-light');
+      if (!light && f > 0.33) s.classList.add('is-light');
+      else if (light && f < 0.2) s.classList.remove('is-light');     // с запасом, чтобы не мигал
+    });
+  };
   const frame = (now) => {
     raf = 0;
     const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0; lastT = now;
     if (!reduce) auto += SPIN * dt;
-    /* инерция: вращение плавно догоняет цель и мягко затухает, когда прокрутка остановилась */
+    /* вращение плавно догоняет цель — никаких рывков */
     const rot = auto + scroll.rot, prevRot = rotNow;
-    rotNow += (rot - rotNow) * (reduce ? 1 : 0.045);
+    rotNow += (rot - rotNow) * (reduce ? 1 : 0.06);
     const vel = rotNow - prevRot;
     cylinder.rotation.y = rotNow;
-    sway.x += (ptr.x - sway.x) * 0.03; sway.y += (ptr.y - sway.y) * 0.03;
-    camera.position.set(cam.x + sway.x * 0.35, cam.y - sway.y * 0.2, cam.z);
+    camera.position.set(cam.x, cam.y, cam.z);
     camera.lookAt(0, look.y, 0);
     const speed = Math.abs(vel) * 100;
     particles.forEach((p) => {
@@ -174,10 +194,17 @@ function init() {
       if (vel !== 0) { p.userData.base += vel * p.userData.speed * 1.5; p.userData.place(); }
     });
     renderer.render(scene, camera);
+    if (++tick % 8 === 0) contrast();
     if (running) raf = requestAnimationFrame(frame);
   };
-  const start = () => { if (running || !cylinder.visible) return; running = true; lastT = 0; raf = requestAnimationFrame(frame); };
-  const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; };
+  const start = () => {
+    if (running || !cylinder.visible) return;
+    running = true; lastT = 0; raf = requestAnimationFrame(frame);
+    if (reduce) { tl.progress(1); return; }
+    if (done) build();                                                 // вернулись к странице после показа — показ заново
+    tl.play();
+  };
+  const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; if (tl) tl.pause(); };
 
   const load = (src) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   let loading = false;
@@ -189,12 +216,12 @@ function init() {
       mat.uniforms.tMap.value = buildTexture(imgs);
       cylinder.visible = true;
       build();
-      window.ScrollTrigger.refresh();
       if (visible) start();
     });
   };
 
   gsap.set(steps, { autoAlpha: 0 });
   new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '150% 0px' }).observe(sec);
-  new IntersectionObserver((en) => { visible = en[0].isIntersecting; if (visible) start(); else stop(); }, { threshold: 0 }).observe(sec);
+  /* показ начинается, когда страница открыта больше чем наполовину */
+  new IntersectionObserver((en) => { visible = en[0].intersectionRatio > 0.5; if (visible) start(); else stop(); }, { threshold: [0, 0.5, 1] }).observe(sec);
 }
