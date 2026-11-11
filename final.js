@@ -14,6 +14,7 @@ function init() {
   const stage = sec.querySelector('.final__stage');
   const canvas = sec.querySelector('.final__gl');
   const steps = Array.prototype.slice.call(sec.querySelectorAll('.final__step'));
+  const lines = Array.prototype.slice.call(sec.querySelectorAll('.final__ln'));   // строки, цвет которых подстраивается под фон
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const IMAGES = ['niko', 'floris', 'theatre', 'lisa', 'mebel'].map((n) => 'img/final/' + n + '.webp');
@@ -106,49 +107,100 @@ function init() {
     return tex;
   };
 
-  /* кривые оригинала (CustomEase) */
-  const bez = (p1x, p1y, p2x, p2y) => (t) => {
-    let lo = 0, hi = 1, m, x;
-    for (let i = 0; i < 18; i++) { m = (lo + hi) / 2; x = 3 * (1 - m) * (1 - m) * m * p1x + 3 * (1 - m) * m * m * p2x + m * m * m; if (x < t) lo = m; else hi = m; }
-    m = (lo + hi) / 2; return 3 * (1 - m) * (1 - m) * m * p1y + 3 * (1 - m) * m * m * p2y + m * m * m;
+  /* пролёт камеры — одна непрерывная плавная траектория (сплайн Катмулла — Рома) через точки оригинала:
+     спереди → сверху → вплотную сбоку → внутрь → спереди. Камера идёт по ней с ровной скоростью по длине пути,
+     а там, где есть что рассмотреть (вид сверху и внутри цилиндра), плавно замедляется; весь пролёт — одной
+     мягкой кривой разгона и торможения. Так нет ни остановок, ни рывков, ни всплесков скорости на стыках. */
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const smoothstep = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+  const N = 600;                                                       // точность таблицы «время → место на пути»
+  let path = null, aim = null, tau = null, key = null;
+  const makePath = () => {
+    const D = F.D;
+    path = new THREE.CatmullRomCurve3([
+      V(0, 0, D),                         // спереди, цилиндр во весь экран
+      V(0, 5 * S, 5 * S),                 // сверху — цилиндр становится кольцом
+      V(1.5 * S, 2 * S, 2 * S),           // вплотную сбоку
+      V(0.5 * S, 0.02 * S, 0.8 * S),      // внутри
+      V(-0.35 * S, 0.06 * S, 0.65 * S),   // внутри, медленный поворот взгляда
+      V(0, 0, D)                          // снова спереди
+    ], false, 'centripetal');
+    path.arcLengthDivisions = 1200;
+    aim = new THREE.CatmullRomCurve3([
+      V(0, 0.42, 0), V(0, 0, 0), V(0, 0, 0), V(0, 0, 0), V(0, -0.1, 0), V(0, -0.62, 0)
+    ], false, 'centripetal');
+    /* скорость по пути: 1 — обычная, меньше — там, где хочется задержаться (плавно, без ступенек) */
+    const speedAt = (pt) => {
+      const r = Math.hypot(pt.x, pt.z);
+      const inside = smoothstep(RADIUS * 1.9, RADIUS * 0.6, r) * smoothstep(HEIGHT * 2, 0, Math.abs(pt.y));   // широкие плавные края зоны
+      const top = smoothstep(1.8 * S, 4.8 * S, pt.y);
+      return 1 - 0.55 * inside - 0.4 * top;
+    };
+    /* таблица: доля пути s → доля времени; плюс ключевые места пути для заголовков */
+    tau = new Float32Array(N + 1);
+    let acc = 0, yMax = -1e9, sTop = 0, sIn = -1, sOut = 0;
+    for (let i = 0; i <= N; i++) {
+      const s = i / N, pt = path.getPointAt(s);
+      if (i > 0) acc += (1 / N) / speedAt(pt);
+      tau[i] = acc;
+      if (pt.y > yMax) { yMax = pt.y; sTop = s; }
+      if (Math.hypot(pt.x, pt.z) < RADIUS) { if (sIn < 0) sIn = s; sOut = s; }
+    }
+    for (let i = 0; i <= N; i++) tau[i] /= acc;
+    const tAt = (s) => tau[Math.round(s * N)];
+    key = { top: tAt(sTop), in: tAt(Math.max(0, sIn)), out: tAt(sOut) };
   };
-  const flow = bez(0.33, 0, 0.2, 1), lin = bez(0.4, 0, 0.6, 1);
+  /* доля времени e (0…1) → доля пути s: обратная таблица, с интерполяцией — без ступенек */
+  const sAt = (e) => {
+    let lo = 0, hi = N;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (tau[m] < e) lo = m; else hi = m; }
+    const d = tau[hi] - tau[lo];
+    const f = d > 0 ? Math.min(1, Math.max(0, (e - tau[lo]) / d)) : 0;
+    return Math.min(1, Math.max(0, (lo + f) / N));                     // строго в пределах пути
+  };
+  makePath();
+  const fly = { e: 0 };
+  const place = () => {
+    const s = sAt(Math.min(1, Math.max(0, fly.e))), c = path.getPointAt(s), l = aim.getPoint(path.getUtoTmapping(s));
+    cam.x = c.x; cam.y = c.y; cam.z = c.z; look.y = l.y;
+  };
 
   const scroll = { rot: 0 };
   const look = { y: 0 };                                               // куда смотрит камера по высоте
-  const T = 2.4;                                                       // секунд на единицу длительности оригинала
-  const HOLD = 1.4;                                                    // первый кадр стоит, чтобы прочитать заголовок
+  const DUR = 17;                                                      // длительность пролёта, с — спокойно, но живее прежнего
+  const HOLD = 1.2;                                                    // первый кадр стоит, чтобы прочитать заголовок
+  /* кривая хода: мягкий разгон (первые 18% времени), ровный ход в середине, мягкое торможение — без всплеска скорости посередине */
+  const R = 0.18;
+  const glide = (t) => {
+    const k = 1 - R, ramp = (x) => (x - R / Math.PI * Math.sin(Math.PI * x / R)) / 2;
+    if (t <= 0) return 0; if (t >= 1) return 1;
+    if (t < R) return ramp(t) / k;
+    if (t > 1 - R) return 1 - ramp(1 - t) / k;
+    return (R / 2 + (t - R)) / k;
+  };
+  /* момент, когда пролёт дойдёт до доли времени пути e (обратная к glide) */
+  const atE = (e) => { let lo = 0, hi = 1; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (glide(m) < e) lo = m; else hi = m; } return HOLD + DUR * (lo + hi) / 2; };
   let tl = null, done = false;
-  /* пролёт камеры — сам, без прокрутки и мыши: точки и кривые оригинала, заголовки этапов меняются по ходу пролёта */
   const build = () => {
     if (tl) tl.kill();
-    const D = F.D, far = D;
-    Object.assign(cam, { x: 0, y: 0, z: far });
-    look.y = 0.42;                                                     // на старте цилиндр чуть ниже центра — над ним заголовок
+    fly.e = 0; place();
     scroll.rot = 0; done = false;
     gsap.set(steps, { autoAlpha: 0 });
-    steps.forEach((s) => s.classList.remove('is-light'));
-    const at = (u) => HOLD + u * T;
+    lines.forEach((s) => s.classList.remove('is-light'));
     tl = gsap.timeline({ paused: true, onComplete: () => { done = true; } });
-    tl.to(cam, { x: 0, y: 5 * S, z: 5 * S, duration: 1 * T, ease: flow }, at(0))
-      .to(look, { y: 0, duration: 1 * T, ease: flow }, '<')
-      .to(cam, { x: 1.5 * S, y: 2 * S, z: 2 * S, duration: 2 * T, ease: lin })
-      .to(cam, { x: 0.5 * S, y: 0, z: 0.8 * S, duration: 3.5 * T, ease: 'power1.inOut' })
-      /* выход — спокойный отъезд назад, без рывка: камера встаёт прямо, цилиндр снова во весь экран
-         и чуть выше центра, под ним — финальный текст и кнопка */
-      .to(cam, { x: 0, y: 0, z: far, duration: 2 * T, ease: 'sine.inOut' })
-      .to(look, { y: -0.62, duration: 2 * T, ease: 'sine.inOut' }, '<');
-    tl.to(scroll, { rot: 12.57, duration: 8.5 * T, ease: 'power1.inOut' }, at(0));   // два плавных оборота за пролёт
-    /* заголовки: вверху — на старте, в центре — сверху и внутри, внизу с кнопкой — в конце и остаётся */
+    tl.to(fly, { e: 1, duration: DUR, ease: glide, onUpdate: place }, HOLD);
+    tl.to(scroll, { rot: 12.57, duration: DUR, ease: glide }, HOLD);   // два плавных оборота за пролёт
+    /* заголовки: вверху — на старте, в центре — пока виден кольцом сверху (внутри цилиндра текста нет — граница экранов
+       прошла бы прямо по буквам), внизу с кнопкой — в конце и остаётся */
     const show = (el, a, b, stay) => {
-      tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, ease: 'power1.out' }, a);
-      if (!stay) tl.to(el, { autoAlpha: 0, duration: 0.8, ease: 'power1.in' }, b - 0.8);
+      tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: 'power1.out' }, a);
+      if (!stay) tl.to(el, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, b - 0.9);
     };
-    show(steps[0], 0.3, at(0.8));
-    show(steps[1], at(1.1), at(6.9));
-    show(steps[2], at(7.8), at(8.5), true);
+    show(steps[0], 0.3, atE(key.top * 0.55));
+    show(steps[1], atE(key.top * 0.7), atE(key.top + (key.in - key.top) * 0.95));   // только пока под ним чистый светлый фон кольца — до входа внутрь
+    show(steps[2], atE(key.out + (1 - key.out) * 0.55), atE(1), true);
   };
-  window.addEventListener('resize', () => { resize(); if (done) { Object.assign(cam, { x: 0, y: 0, z: F.D }); look.y = -0.62; } });
+  window.addEventListener('resize', () => { resize(); makePath(); place(); });
 
   let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5, tick = 0;
   /* читаемость: под каждым видимым заголовком меряем яркость того, что сейчас нарисовано (экраны сайтов или светлый фон).
@@ -156,9 +208,9 @@ function init() {
   const gl = renderer.getContext(), px = new Uint8Array(4), BG = 0.9;   // яркость светлого фона страницы
   const contrast = () => {
     const cr = canvas.getBoundingClientRect(), kx = canvas.width / cr.width, ky = canvas.height / cr.height;
-    steps.forEach((s) => {
-      if (parseFloat(getComputedStyle(s).opacity) < 0.05) return;
-      const r = s.querySelector('.final__title').getBoundingClientRect();
+    lines.forEach((s) => {
+      if (parseFloat(getComputedStyle(s.closest('.final__step')).opacity) < 0.05) return;
+      const r = s.getBoundingClientRect();
       let dark = 0, n = 0;
       for (let iy = 0; iy < 5; iy++) for (let ix = 0; ix < 11; ix++) {
         const x = Math.round((r.left + r.width * (ix + 0.5) / 11 - cr.left) * kx);
@@ -224,4 +276,6 @@ function init() {
   new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '150% 0px' }).observe(sec);
   /* показ начинается, когда страница открыта больше чем наполовину */
   new IntersectionObserver((en) => { visible = en[0].intersectionRatio > 0.5; if (visible) start(); else stop(); }, { threshold: [0, 0.5, 1] }).observe(sec);
+  /* досмотрели и ушли — сцена тихо возвращается к началу, пока её совсем не видно; при возвращении показ начнётся без скачка */
+  new IntersectionObserver((en) => { if (!en[0].isIntersecting && done && cylinder.visible) build(); }, { threshold: 0 }).observe(sec);
 }
