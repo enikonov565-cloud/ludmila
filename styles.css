@@ -1178,6 +1178,13 @@ a { color: inherit; text-decoration: none; }
 .sites__face, .sites__back { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: calc(15 * var(--u)); overflow: hidden;
   backface-visibility: hidden; -webkit-backface-visibility: hidden; object-fit: cover; background-size: cover; background-position: center; opacity: 0; -webkit-user-drag: none; }
 .sites__back { transform: rotateY(180deg); box-shadow: inset 0 0 0 100vmax rgba(10, 8, 6, .8); }
+/* точки смены колец — слева от колец, по их центру; стиль точек блока «Что умею», вертикально */
+.sites__dots { position: absolute; z-index: 4; left: calc(680 * var(--u)); top: calc(537 * var(--u)); translate: 0 -50%; display: flex; flex-direction: column; align-items: center; gap: calc(12 * var(--u)); }
+.sites__dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); padding: 0; border: 1px solid rgba(232, 220, 200, .7); border-radius: 99px; background: transparent; cursor: pointer;
+  transition: height .5s ease, background-color .5s ease, border-color .5s ease; }
+.sites__dot:hover { border-color: #E8DCC8; }
+.sites__dot.is-on { height: calc(30 * var(--u)); background: #E8DCC8; border-color: #E8DCC8; }
+.sites__dot:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
 /* отзыв: главный экран сайта (792, 821, 240×145), под ним имя и ниша; справа — скриншот сообщения (1063, 824, 711×193) */
 .sites__review { position: absolute; z-index: 3; left: calc(792 * var(--u)); top: calc(821 * var(--u)); width: calc(982 * var(--u)); margin: 0;
   display: grid; grid-template-columns: calc(240 * var(--u)) 1fr; column-gap: calc(31 * var(--u)); align-items: start; }
@@ -1201,6 +1208,8 @@ a { color: inherit; text-decoration: none; }
   .sites__wheel { left: 50%; top: 55%; }
   .sites__ring { --h: 136px; }
   .sites__face, .sites__back { border-radius: 8px; }
+  .sites__dots { position: absolute; left: 8px; translate: 0 -50%; gap: 10px; }   /* по высоте — к центру кольца, ставит sites.js */
+  .sites__dot { width: 9px; height: 9px; } .sites__dot.is-on { height: 24px; }
   .sites__review { order: 6; width: auto; margin-top: 20px; grid-template-columns: 42% 1fr; column-gap: 12px; }
   .sites__shot { height: auto; aspect-ratio: 1100 / 563; }
   .sites__quote { grid-column: 1 / -1; grid-row: 2; margin-top: 14px; }

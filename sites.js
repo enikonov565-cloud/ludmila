@@ -34,7 +34,26 @@
       wh._R = R; wh._h = h;
       apply(wh);
     });
+    /* на телефоне точки — слева, на высоте центра кольца */
+    dotsBox.style.top = getComputedStyle(stage).position === 'absolute' ? '' : (stage.offsetTop + stage.offsetHeight * 0.55) + 'px';
   };
+
+  /* точки: какой сайт сейчас показан; по нажатию — переход к нему */
+  var dotsBox = sec.querySelector('.sites__dots');
+  var dots = Array.prototype.slice.call(sec.querySelectorAll('.sites__dot'));
+  var setDot = function (i) {
+    dots.forEach(function (d, k) { d.classList.toggle('is-on', k === i); d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+  };
+  dots.forEach(function (d, i) {
+    d.addEventListener('click', function () {
+      if (!started || i === cur) return;
+      if (run) run.kill();
+      var old = wheels[cur], oldSkin = old.querySelectorAll('.sites__face, .sites__back');
+      gsap.killTweensOf(old); gsap.killTweensOf(oldSkin);
+      gsap.to(oldSkin, { opacity: 0, duration: 0.4, ease: 'power1.in', onComplete: function () { gsap.set(old, { visibility: 'hidden' }); } });
+      cur = i; run = showSite(i);
+    });
+  });
   /* на сколько опустить кольцо, чтобы оно целиком ушло под отзыв (на телефоне — под нижний край сцены) */
   var drop = function (wh) {
     var line = getComputedStyle(stage).position === 'absolute' ? review.offsetTop : stage.offsetHeight;
@@ -48,6 +67,7 @@
     var wh = wheels[i], skin = wh.querySelectorAll('.sites__face, .sites__back');
     var d = function (s) { return reduce ? 0.01 : s; };
     gsap.killTweensOf(wh); gsap.killTweensOf(skin);
+    setDot(i);
     wh._a = 0; apply(wh);
     gsap.set(wh, { visibility: 'visible', y: reduce ? 0 : drop(wh) });
     gsap.set(skin, { opacity: 0 });
