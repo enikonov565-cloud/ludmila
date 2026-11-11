@@ -723,7 +723,7 @@ a { color: inherit; text-decoration: none; }
 .story__title { margin: 0; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.12; letter-spacing: -.02em; color: #E8DCC8; }   /* заголовки на тёмных страницах — цветом шапки */
 .story__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
 .story__mask { display: block; overflow: hidden; padding: .1em 0 .4em; margin: -.1em 0 -.34em; } /* снизу место под «хвост» цифры 3 */
-.story__reveal { display: inline-block; will-change: transform; }
+.story__reveal { display: inline-block; }   /* слой на время анимации GSAP создаёт сам — постоянный will-change лишь копил слои */
 /* «30» — как цифра «30+» в блоке «Обо мне» */
 .story__num { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 1.5em; line-height: .8; letter-spacing: -.03em; }
 .story__then { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(150 * var(--u)); max-width: calc(820 * var(--u)); pointer-events: none; }
@@ -746,7 +746,7 @@ a { color: inherit; text-decoration: none; }
 .story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: -.55em 0 0; pointer-events: none;
   font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
 .story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
-.story__ghost .ch { display: inline-block; will-change: transform, opacity; }
+.story__ghost .ch { display: inline-block; }
 /* «Сейчас» парит перед растением: светлые буквы с мягкой тенью, сдвигаются вместе с объёмом фото (--fx/--fy) */
 .story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: auto; right: calc(60 * var(--u) - .06em - var(--fx, 0px)); top: calc(85% + var(--fy, 0px)); margin: 0; /* правый край — по линии «связаться со мной» */
   /* как «Тогда»: Inter Light, тот же размер (задаётся в story3d.js), цвет текстов страницы в полутоне */
@@ -980,7 +980,8 @@ a { color: inherit; text-decoration: none; }
 .talk__title { position: absolute; z-index: 3; left: var(--tl); top: calc(150 * var(--u)); width: auto; margin: 0; white-space: nowrap; font-size: calc(75 * var(--u)); }   /* на 2 ед. меньше общего — строка «я задаю правильные» помещается между линиями */
 
 /* ===== iPhone с перепиской ===== */
-.chat { position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js */ width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u))); height: auto; aspect-ratio: 1 / 2;
+.chat { will-change: transform;   /* телефон покачивается — свой слой, иначе каждый кадр перерисовывался целиком */
+  position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js */ width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u))); height: auto; aspect-ratio: 1 / 2;
   padding: calc(13 * var(--u)); border-radius: calc(66 * var(--u)); background: #1c1d1f;
   box-shadow: inset 0 0 0 calc(2 * var(--u)) #3a3b3e, 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(0, 0, 0, .55); }
 /* экран — как чат Telegram: зелёный фон темы с тонким узором-«каракулями» */

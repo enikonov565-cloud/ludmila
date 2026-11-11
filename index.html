@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=302">
+<link rel="stylesheet" href="styles.css?v=304">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -58,7 +58,7 @@
   <h1 class="sr-only">Людмила Иващенко — веб-дизайнер, который думает вашей головой</h1>
   <div class="stage__media">
     <div class="stage__photo">
-      <div class="stage__depth stage__depth--room" data-depth="room"><img class="stage__img" src="img/room.webp?v=2" width="1678" height="937" alt="" aria-hidden="true"></div>
+      <div class="stage__depth stage__depth--room" data-depth="room"><img decoding="async" class="stage__img" src="img/room.webp?v=2" width="1678" height="937" alt="" aria-hidden="true"></div>
       <div class="stage__shade stage__shade--l" aria-hidden="true"></div>
       <div class="stage__shade stage__shade--r" aria-hidden="true"></div>
       <!-- Надпись между комнатой и Людмилой: голова её частично закрывает -->
@@ -74,7 +74,7 @@
         </p>
       </div>
       </div>
-      <div class="stage__depth stage__depth--person" data-depth="person"><img class="stage__img" src="img/person.webp?v=2" width="2752" height="1536" alt="Людмила Иващенко с чашкой кофе"></div>
+      <div class="stage__depth stage__depth--person" data-depth="person"><img decoding="async" class="stage__img" src="img/person.webp?v=2" width="2752" height="1536" alt="Людмила Иващенко с чашкой кофе"></div>
     </div>
   </div>
 
@@ -117,13 +117,13 @@
     <div class="about__grid">
       <div class="about__left">
         <figure class="tile tile--portrait" data-reveal>
-          <img src="img/portrait-sq.jpg" width="711" height="711" alt="Людмила Иващенко в кепке и твидовом пиджаке" loading="lazy" data-inner-parallax>
+          <img decoding="async" src="img/portrait-sq.jpg" width="711" height="711" alt="Людмила Иващенко в кепке и твидовом пиджаке" loading="lazy" data-inner-parallax>
         </figure>
       </div>
 
       <div class="about__mid">
         <div class="tile tile--photo" data-reveal>
-          <img class="tile__bg" src="img/approach.webp" width="534" height="905" alt="Людмила поправляет волосы под кепкой" loading="lazy">
+          <img decoding="async" class="tile__bg" src="img/approach.webp" width="534" height="905" alt="Людмила поправляет волосы под кепкой" loading="lazy">
           <div class="pitch">
             <p class="pitch__title"><span class="pitch__cap">К</span>лиент поймёт вас с&nbsp;первого экрана</p>
             <p class="pitch__sub">Сайты и&nbsp;карточки товаров, которые доводят до&nbsp;заявки</p>
@@ -141,7 +141,7 @@
             <p class="case-card__note">Инфографика и&nbsp;карточки товаров</p>
             <a class="link-more" href="#" aria-label="Перейти к кейсу про маркетплейсы"><span class="link-more__word">Перейти</span><svg class="link-more__arrow" viewBox="0 0 25.8 21.6" aria-hidden="true"><path d="M.51 20.95 24.89.86M23.57 12.71 24.89.86 12.04 1.52" fill="none" stroke="currentColor" stroke-width="1.62"/></svg></a>
           </div>
-          <img class="case-card__img" src="img/card-tea.jpg" width="420" height="560" alt="Карточка товара «Чайная пара»" loading="lazy">
+          <img decoding="async" class="case-card__img" src="img/card-tea.jpg" width="420" height="560" alt="Карточка товара «Чайная пара»" loading="lazy">
         </article>
         <ul class="tags" data-reveal>
           <li class="tag tag--wide">AI - GPT/ Claude / Nano Banana / Midjourney</li>
@@ -166,19 +166,19 @@
   <div class="works__stage" data-works>
     <div class="works__tilt">
       <ul class="works__ring">
-        <li class="works__item" data-ratio="1.7775"><img class="works__face" src="img/works/w01.jpg" width="1422" height="800" alt="Главный экран сайта фотографа Nikonovphoto" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w01.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w02.jpg" width="600" height="800" alt="Карточка товара «Чайная пара. Морской бриз»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w02.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w04.jpg" width="600" height="800" alt="Карточка товара «Фарфоровый сервиз чайный»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w04.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="1.7775"><img class="works__face" src="img/works/w03.jpg" width="1422" height="800" alt="Главный экран сайта «Флорис»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w03.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w06.jpg" width="600" height="800" alt="Карточка товара «Набор кружек, ручная роспись»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w06.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w08.jpg" width="600" height="800" alt="Карточка товара «Сервиз чайный»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w08.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="1.7775"><img class="works__face" src="img/works/w05.jpg" width="1422" height="800" alt="Баннер «Авторский фарфор»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w05.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w09.jpg" width="600" height="800" alt="Карточка товара «Кофе Espresso»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w09.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w10.jpg" width="600" height="800" alt="Афиша спектакля «Гуси-лебеди»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w10.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="1.7775"><img class="works__face" src="img/works/w07.jpg" width="1422" height="800" alt="Главный экран сайта театра «Гуси-лебеди»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w07.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w11.jpg" width="600" height="800" alt="Карточка товара «Ваза, фарфор»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w11.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.5625"><img class="works__face" src="img/works/w12.jpg" width="450" height="800" alt="Баннер «Дома под ключ»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w12.jpg)" aria-hidden="true"></span></li>
-        <li class="works__item" data-ratio="0.7500"><img class="works__face" src="img/works/w13.jpg" width="600" height="800" alt="Карточка товара «Чайная пара. Грёзы»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w13.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="1.7775"><img decoding="async" class="works__face" src="img/works/w01.jpg" width="1422" height="800" alt="Главный экран сайта фотографа Nikonovphoto" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w01.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w02.jpg" width="600" height="800" alt="Карточка товара «Чайная пара. Морской бриз»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w02.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w04.jpg" width="600" height="800" alt="Карточка товара «Фарфоровый сервиз чайный»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w04.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="1.7775"><img decoding="async" class="works__face" src="img/works/w03.jpg" width="1422" height="800" alt="Главный экран сайта «Флорис»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w03.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w06.jpg" width="600" height="800" alt="Карточка товара «Набор кружек, ручная роспись»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w06.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w08.jpg" width="600" height="800" alt="Карточка товара «Сервиз чайный»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w08.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="1.7775"><img decoding="async" class="works__face" src="img/works/w05.jpg" width="1422" height="800" alt="Баннер «Авторский фарфор»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w05.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w09.jpg" width="600" height="800" alt="Карточка товара «Кофе Espresso»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w09.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w10.jpg" width="600" height="800" alt="Афиша спектакля «Гуси-лебеди»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w10.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="1.7775"><img decoding="async" class="works__face" src="img/works/w07.jpg" width="1422" height="800" alt="Главный экран сайта театра «Гуси-лебеди»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w07.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w11.jpg" width="600" height="800" alt="Карточка товара «Ваза, фарфор»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w11.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.5625"><img decoding="async" class="works__face" src="img/works/w12.jpg" width="450" height="800" alt="Баннер «Дома под ключ»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w12.jpg)" aria-hidden="true"></span></li>
+        <li class="works__item" data-ratio="0.7500"><img decoding="async" class="works__face" src="img/works/w13.jpg" width="600" height="800" alt="Карточка товара «Чайная пара. Грёзы»" loading="lazy" draggable="false"><span class="works__back" style="background-image:url(img/works/w13.jpg)" aria-hidden="true"></span></li>
       </ul>
     </div>
   </div>
@@ -189,7 +189,7 @@
      анимацией из примера Animated clip-path slider (внешний раскрывается снизу, внутренний сверху) -->
 <section class="approach" id="approach" aria-labelledby="approach-title">
   <canvas class="approach__bg" aria-hidden="true"></canvas>
-  <img class="approach__photo" src="img/approach/ludmila-cut-tight.webp" width="928" height="1060" alt="Людмила Иващенко в белом пиджаке" loading="lazy">
+  <img decoding="async" class="approach__photo" src="img/approach/ludmila-cut-tight.webp" width="928" height="1060" alt="Людмила Иващенко в белом пиджаке" loading="lazy">
   <div class="approach__frame">
     <h2 class="approach__title" id="approach-title"><span class="approach__title-text"><span class="cap">М</span>ой подход</span><canvas class="approach__particles" aria-hidden="true"></canvas></h2>
     <!-- Квадрат 680 с текстом сцены; при наведении сужается до 480 (как фото в примере CodePen),
@@ -203,7 +203,7 @@
             <button class="apx__hint js-open" type="button" aria-expanded="false"><span class="apx__hint-dot" aria-hidden="true"></span>Нажмите — как решаю я</button>
           </div>
           <div class="apx__back">
-            <img src="img/approach/s1.jpg?v=2" width="675" height="940" alt="" style="object-position:50% 22%" loading="lazy">
+            <img decoding="async" src="img/approach/s1.jpg?v=2" width="675" height="940" alt="" style="object-position:50% 22%" loading="lazy">
             <span class="apx__solution-label">Как решаю я</span>
             <p class="apx__solution">Начинаю с&nbsp;цели: сколько заявок нужно&nbsp;— под это и&nbsp;делаю сайт</p>
             <div class="apx__back-nav">
@@ -226,7 +226,7 @@
             <button class="apx__hint js-open" type="button" aria-expanded="false"><span class="apx__hint-dot" aria-hidden="true"></span>Нажмите — как решаю я</button>
           </div>
           <div class="apx__back">
-            <img src="img/approach/s2.jpg?v=3" width="1400" height="781" alt="" style="object-position:50% 28%" loading="lazy">
+            <img decoding="async" src="img/approach/s2.jpg?v=3" width="1400" height="781" alt="" style="object-position:50% 28%" loading="lazy">
             <span class="apx__solution-label">Как решаю я</span>
             <p class="apx__solution">С&nbsp;первого экрана показываю, чем вы&nbsp;лучше других</p>
             <div class="apx__back-nav">
@@ -249,7 +249,7 @@
             <button class="apx__hint js-open" type="button" aria-expanded="false"><span class="apx__hint-dot" aria-hidden="true"></span>Нажмите — как решаю я</button>
           </div>
           <div class="apx__back">
-            <img src="img/approach/s3.jpg?v=3" width="720" height="478" alt="" style="object-position:50% 30%" loading="lazy">
+            <img decoding="async" src="img/approach/s3.jpg?v=3" width="720" height="478" alt="" style="object-position:50% 30%" loading="lazy">
             <span class="apx__solution-label">Как решаю я</span>
             <p class="apx__solution">Сама разбираюсь в&nbsp;вашем деле&nbsp;— объяснять не&nbsp;придётся</p>
             <div class="apx__back-nav">
@@ -272,7 +272,7 @@
             <button class="apx__hint js-open" type="button" aria-expanded="false"><span class="apx__hint-dot" aria-hidden="true"></span>Нажмите — как решаю я</button>
           </div>
           <div class="apx__back">
-            <img src="img/approach/s4.jpg?v=3" width="941" height="544" alt="" style="object-position:45% 35%" loading="lazy">
+            <img decoding="async" src="img/approach/s4.jpg?v=3" width="941" height="544" alt="" style="object-position:45% 35%" loading="lazy">
             <span class="apx__solution-label">Как решаю я</span>
             <p class="apx__solution">Чёткие сроки и&nbsp;сайт, который решает задачу бизнеса</p>
             <div class="apx__back-nav">
@@ -310,7 +310,7 @@
 
   <button class="story__scroll" type="button" aria-label="Дальше — «Сейчас»"><span class="story__tap" aria-hidden="true"><span class="hint-arrow"></span></span></button>
   <div class="story__now">
-    <div class="story__now-photo"><div class="story__now-frame"><img src="img/story/now-full.jpg" width="1600" height="1600" alt="Людмила за ноутбуком — сейчас она веб-дизайнер" loading="lazy"></div></div>
+    <div class="story__now-photo"><div class="story__now-frame"><img decoding="async" src="img/story/now-full.jpg" width="1600" height="1600" alt="Людмила за ноутбуком — сейчас она веб-дизайнер" loading="lazy"></div></div>
     <div class="story__now-text">
       <h3 class="story__title"><span class="story__mask"><span class="story__reveal"><span class="cap">Т</span>еперь я&nbsp;делаю</span></span><span class="story__mask"><span class="story__reveal">это визуально.</span></span></h3>
     </div>
@@ -337,24 +337,24 @@
   <div class="case__pages">
     <article class="case__page case__page--shot is-active" aria-label="До оформления">
       <p class="case__ghost" aria-hidden="true">До</p>
-      <figure class="case__shot"><img src="img/case/before-main.webp" width="776" height="776" alt="До: чайная пара на белом фоне, без оформления" loading="lazy"></figure>
+      <figure class="case__shot"><img decoding="async" src="img/case/before-main.webp" width="776" height="776" alt="До: чайная пара на белом фоне, без оформления" loading="lazy"></figure>
       <ul class="case__grid">
-        <li class="case__item case__item--top"><img src="img/case/before-2.webp?v=2" width="200" height="200" alt="Исходное фото: чашка крупно" loading="lazy"><p>Вопросы покупателя не&nbsp;закрыты</p></li>
-        <li class="case__item case__item--left"><img src="img/case/before-3.webp?v=2" width="204" height="200" alt="Исходное фото: чашка на блюдце" loading="lazy"><p>Нет заголовка и&nbsp;описания</p></li>
-        <li class="case__item case__item--right"><img src="img/case/before-1.webp?v=2" width="204" height="200" alt="Исходное фото: блюдце и чашка сверху" loading="lazy"><p>Конкурирует только ценой</p></li>
+        <li class="case__item case__item--top"><img decoding="async" src="img/case/before-2.webp?v=2" width="200" height="200" alt="Исходное фото: чашка крупно" loading="lazy"><p>Вопросы покупателя не&nbsp;закрыты</p></li>
+        <li class="case__item case__item--left"><img decoding="async" src="img/case/before-3.webp?v=2" width="204" height="200" alt="Исходное фото: чашка на блюдце" loading="lazy"><p>Нет заголовка и&nbsp;описания</p></li>
+        <li class="case__item case__item--right"><img decoding="async" src="img/case/before-1.webp?v=2" width="204" height="200" alt="Исходное фото: блюдце и чашка сверху" loading="lazy"><p>Конкурирует только ценой</p></li>
       </ul>
     </article>
     <article class="case__page case__page--after" aria-label="После оформления">
       <p class="case__ghost case__ghost--after" aria-hidden="true">После</p>
-      <figure class="case__card case__card--a case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: главная карточка"><img class="is-on" src="img/case/after-main.webp?v=2" width="900" height="1200" alt="«Чайная пара „Грёзы“» на красном фоне" loading="lazy"><img src="img/case/tulip-1.webp" width="900" height="1200" alt="«Чайная пара „Тюльпан“», ручная работа, фарфор" loading="lazy"><img src="img/case/gzhel-1.webp" width="900" height="1200" alt="«Чайная пара „Морской бриз“» в стиле гжель" loading="lazy"></figure>
-      <figure class="case__card case__card--b case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: второй слайд"><img class="is-on" src="img/case/after-1.webp?v=2" width="280" height="380" alt="Слайд «Утончённый дизайн»" loading="lazy"><img src="img/case/tulip-2.webp" width="600" height="800" alt="Слайд «Изысканный дизайн»" loading="lazy"><img src="img/case/gzhel-2.webp" width="600" height="800" alt="Слайд «Изящная форма»" loading="lazy"></figure>
-      <figure class="case__card case__card--c case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: третий слайд"><img class="is-on" src="img/case/after-2.webp?v=2" width="600" height="800" alt="Слайд «Сохраняет тепло напитка»" loading="lazy"><img src="img/case/tulip-3.webp" width="600" height="800" alt="Слайд «Художественная ценность»" loading="lazy"><img src="img/case/gzhel-3.webp" width="600" height="800" alt="Слайд «Сохраняет тепло напитка»" loading="lazy"></figure>
-      <figure class="case__card case__card--d case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: четвёртый слайд"><img class="is-on" src="img/case/after-3.webp?v=2" width="600" height="800" alt="Слайд «Идеальный подарок»" loading="lazy"><img src="img/case/tulip-4.webp" width="600" height="800" alt="Слайд «Идеальный статусный подарок»" loading="lazy"><img src="img/case/gzhel-4.webp" width="600" height="800" alt="Слайд «Идеальный подарок»" loading="lazy"></figure>
+      <figure class="case__card case__card--a case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: главная карточка"><img decoding="async" class="is-on" src="img/case/after-main.webp?v=2" width="900" height="1200" alt="«Чайная пара „Грёзы“» на красном фоне" loading="lazy"><img decoding="async" src="img/case/tulip-1.webp" width="900" height="1200" alt="«Чайная пара „Тюльпан“», ручная работа, фарфор" loading="lazy"><img decoding="async" src="img/case/gzhel-1.webp" width="900" height="1200" alt="«Чайная пара „Морской бриз“» в стиле гжель" loading="lazy"></figure>
+      <figure class="case__card case__card--b case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: второй слайд"><img decoding="async" class="is-on" src="img/case/after-1.webp?v=2" width="280" height="380" alt="Слайд «Утончённый дизайн»" loading="lazy"><img decoding="async" src="img/case/tulip-2.webp" width="600" height="800" alt="Слайд «Изысканный дизайн»" loading="lazy"><img decoding="async" src="img/case/gzhel-2.webp" width="600" height="800" alt="Слайд «Изящная форма»" loading="lazy"></figure>
+      <figure class="case__card case__card--c case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: третий слайд"><img decoding="async" class="is-on" src="img/case/after-2.webp?v=2" width="600" height="800" alt="Слайд «Сохраняет тепло напитка»" loading="lazy"><img decoding="async" src="img/case/tulip-3.webp" width="600" height="800" alt="Слайд «Художественная ценность»" loading="lazy"><img decoding="async" src="img/case/gzhel-3.webp" width="600" height="800" alt="Слайд «Сохраняет тепло напитка»" loading="lazy"></figure>
+      <figure class="case__card case__card--d case__sets" aria-label="Комплекты «Грёзы», «Тюльпан», «Гжель»: четвёртый слайд"><img decoding="async" class="is-on" src="img/case/after-3.webp?v=2" width="600" height="800" alt="Слайд «Идеальный подарок»" loading="lazy"><img decoding="async" src="img/case/tulip-4.webp" width="600" height="800" alt="Слайд «Идеальный статусный подарок»" loading="lazy"><img decoding="async" src="img/case/gzhel-4.webp" width="600" height="800" alt="Слайд «Идеальный подарок»" loading="lazy"></figure>
       <div class="case__tstats">
         <div class="case__tstat" style="--w:326"><p class="case__tstat-num">49+</p><p class="case__tstat-text">Прошла тест конкурентного анализа на&nbsp;привлекательность</p></div>
-        <img class="case__vdiv" src="img/case/divider.svg" width="155" height="6" alt="">
+        <img decoding="async" class="case__vdiv" src="img/case/divider.svg" width="155" height="6" alt="">
         <div class="case__tstat" style="--w:360"><p class="case__tstat-num">↑&nbsp;CTR</p><p class="case__tstat-text">Видимость фирменного фона выделяет среди конкурентов</p></div>
-        <img class="case__vdiv" src="img/case/divider.svg" width="155" height="6" alt="">
+        <img decoding="async" class="case__vdiv" src="img/case/divider.svg" width="155" height="6" alt="">
         <div class="case__tstat" style="--w:330"><p class="case__tstat-num">4</p><p class="case__tstat-text">Слайда карточки товара решают отдельную задачу покупателя</p></div>
       </div>
     </article>
@@ -370,18 +370,18 @@
 
 <!-- Блок 7 «Я не жду ТЗ — я задаю правильные вопросы» (Figma «п-р 11»): принципы раскрываются по одному; talk.js -->
 <section class="talk" id="talk" aria-labelledby="talk-title" data-talk>
-  <picture class="talk__pic"><source media="(max-width: 1000px), (max-aspect-ratio: 7/5)" srcset="img/talk/window-m.webp"><img class="talk__window" src="img/talk/window.webp" width="1920" height="1080" alt="" loading="lazy"></picture>
-  <img class="talk__person" src="img/talk/ludmila.webp" width="784" height="1392" alt="Людмила Иващенко у окна с видом на высотку" loading="lazy">
+  <picture class="talk__pic"><source media="(max-width: 1000px), (max-aspect-ratio: 7/5)" srcset="img/talk/window-m.webp"><img decoding="async" class="talk__window" src="img/talk/window.webp" width="1920" height="1080" alt="" loading="lazy"></picture>
+  <img decoding="async" class="talk__person" src="img/talk/ludmila.webp" width="784" height="1392" alt="Людмила Иващенко у окна с видом на высотку" loading="lazy">
   <div class="talk__shade" aria-hidden="true"></div>
   <h2 class="story__title talk__title" id="talk-title"><span class="story__mask"><span class="story__reveal"><span class="cap">Я</span> не&nbsp;жду ТЗ&nbsp;—</span></span><span class="story__mask"><span class="story__reveal">я&nbsp;задаю правильные</span></span><span class="story__mask"><span class="story__reveal">вопросы</span></span></h2>
   <!-- отзыв клиентки (реальный, из её сообщения) и карточки из этого кейса -->
   <figure class="talk__review">
-    <img class="talk__quote" src="img/talk/review.webp" width="676" height="178" alt="Отзыв Светланы Клок: «ТЗ у меня не было — Людмила сама задала вопросы и поняла, что нужно, с первого раза! Карточки выделяются на фоне конкурентов, а все исходники остались у меня. Карточки работают!»" loading="lazy">
+    <img decoding="async" class="talk__quote" src="img/talk/review.webp" width="676" height="178" alt="Отзыв Светланы Клок: «ТЗ у меня не было — Людмила сама задала вопросы и поняла, что нужно, с первого раза! Карточки выделяются на фоне конкурентов, а все исходники остались у меня. Карточки работают!»" loading="lazy">
     <figcaption class="talk__by"><b>Светлана Клок</b><span>карточки товара для маркетплейсов</span></figcaption>
     <div class="talk__cards">
-      <img src="img/case/after-main.webp" width="900" height="1200" alt="Карточка «Чайная пара Грёзы»" loading="lazy">
-      <img src="img/case/gzhel-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Морской бриз»" loading="lazy">
-      <img src="img/case/tulip-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Тюльпан»" loading="lazy">
+      <img decoding="async" src="img/case/after-main.webp" width="900" height="1200" alt="Карточка «Чайная пара Грёзы»" loading="lazy">
+      <img decoding="async" src="img/case/gzhel-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Морской бриз»" loading="lazy">
+      <img decoding="async" src="img/case/tulip-1.webp" width="900" height="1200" alt="Карточка «Чайная пара Тюльпан»" loading="lazy">
     </div>
   </figure>
   <!-- iPhone с перепиской: ответы Людмилы — её принципы работы -->
@@ -440,10 +440,10 @@
   <div class="show__line" aria-hidden="true"></div>
   <!-- справа от линии — фото работ -->
   <div class="show__right">
-    <figure class="show__photo"><img src="img/works8/goose.webp" width="533" height="800" alt="Афиша спектакля «Гуси-лебеди» театра кукол на ночной улице"></figure>
-    <figure class="show__photo"><img src="img/works8/porcelain.webp" width="1100" height="1469" alt="Билборд «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес» — над вечерним проспектом"></figure>
-    <figure class="show__photo"><img src="img/works8/music.webp" width="533" height="800" alt="Афиша «Вечера живой музыки» на остановке транспорта"></figure>
-    <figure class="show__photo"><img src="img/works8/burger.webp" width="533" height="800" alt="Баннер кафе «Бургер-восторг» на фасаде над летней верандой"></figure>
+    <figure class="show__photo"><img decoding="async" src="img/works8/goose.webp" width="533" height="800" alt="Афиша спектакля «Гуси-лебеди» театра кукол на ночной улице"></figure>
+    <figure class="show__photo"><img decoding="async" src="img/works8/porcelain.webp" width="1100" height="1469" alt="Билборд «Авторский фарфор» — чаепитие в стиле «Алиса в Стране чудес» — над вечерним проспектом"></figure>
+    <figure class="show__photo"><img decoding="async" src="img/works8/music.webp" width="533" height="800" alt="Афиша «Вечера живой музыки» на остановке транспорта"></figure>
+    <figure class="show__photo"><img decoding="async" src="img/works8/burger.webp" width="533" height="800" alt="Баннер кафе «Бургер-восторг» на фасаде над летней верандой"></figure>
   </div>
   <canvas class="show__dust" aria-hidden="true"></canvas>
   <!-- точки: сколько работ и какая показана -->
@@ -466,7 +466,7 @@
      портрет слева, фон страницы — продолжение фона фотографии; справа вверху — три кольца по 4 экрана
      (по сайту на кольцо) в стиле кольца работ из блока «Дизайн, который продаёт»; кольца сменяют друг друга, поднимаясь из-под отзыва; внизу — отзыв; sites.js -->
 <section class="sites" id="sites" aria-labelledby="sites-title" data-sites>
-  <div class="sites__bg" aria-hidden="true"><img src="img/sites/portrait-brand.webp" width="718" height="960" alt="" loading="lazy"></div>
+  <div class="sites__bg" aria-hidden="true"><img decoding="async" src="img/sites/portrait-brand.webp" width="718" height="960" alt="" loading="lazy"></div>
   <p class="sites__sub">Делаю сайты:</p>
   <h2 class="story__title sites__title" id="sites-title"><span class="story__mask"><span class="story__reveal"><span class="cap">П</span>огружающие с&nbsp;первого экрана</span></span></h2>
   <ul class="show__tags sites__tags" aria-label="Что ещё делаю">
@@ -478,26 +478,26 @@
   <div class="sites__stage">
     <div class="sites__wheel"><div class="sites__tilt">
       <ul class="sites__ring" aria-label="Флорис — сайт цветочного магазина">
-        <li class="sites__item" data-ratio="1.9469"><img class="sites__face" src="img/sites/floris-3.webp?v=2" width="1100" height="565" alt="Флорис: главный экран «Свежие авторские букеты»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-3.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.2496"><img class="sites__face" src="img/sites/floris-1.webp?v=2" width="796" height="637" alt="Флорис: «Хиты сезона»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-1.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.2054"><img class="sites__face" src="img/sites/floris-2.webp?v=2" width="798" height="662" alt="Флорис: «Свадебные букеты»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-2.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.8830"><img class="sites__face" src="img/sites/floris-4.webp?v=2" width="1094" height="581" alt="Флорис: «Букеты для любого повода»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-4.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9469"><img decoding="async" class="sites__face" src="img/sites/floris-3.webp?v=2" width="1100" height="565" alt="Флорис: главный экран «Свежие авторские букеты»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-3.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.2496"><img decoding="async" class="sites__face" src="img/sites/floris-1.webp?v=2" width="796" height="637" alt="Флорис: «Хиты сезона»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-1.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.2054"><img decoding="async" class="sites__face" src="img/sites/floris-2.webp?v=2" width="798" height="662" alt="Флорис: «Свадебные букеты»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-2.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.8830"><img decoding="async" class="sites__face" src="img/sites/floris-4.webp?v=2" width="1094" height="581" alt="Флорис: «Букеты для любого повода»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/floris-4.webp?v=2)" aria-hidden="true"></span></li>
       </ul>
     </div></div>
     <div class="sites__wheel"><div class="sites__tilt">
       <ul class="sites__ring" aria-label="Nikonovphoto — сайт фотографа">
-        <li class="sites__item" data-ratio="1.9554"><img class="sites__face" src="img/sites/niko-1.webp?v=2" width="1097" height="561" alt="Nikonovphoto: главный экран с подписью" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-1.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.9448"><img class="sites__face" src="img/sites/niko-2.webp?v=2" width="1093" height="562" alt="Nikonovphoto: «Моменты, которые останутся с вами навсегда»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-2.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.9366"><img class="sites__face" src="img/sites/niko-3.webp?v=2" width="1100" height="568" alt="Nikonovphoto: галерея-выставка" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-3.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.9855"><img class="sites__face" src="img/sites/niko-4.webp?v=2" width="1098" height="553" alt="Nikonovphoto: «Мой подход»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-4.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9554"><img decoding="async" class="sites__face" src="img/sites/niko-1.webp?v=2" width="1097" height="561" alt="Nikonovphoto: главный экран с подписью" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-1.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9448"><img decoding="async" class="sites__face" src="img/sites/niko-2.webp?v=2" width="1093" height="562" alt="Nikonovphoto: «Моменты, которые останутся с вами навсегда»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-2.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9366"><img decoding="async" class="sites__face" src="img/sites/niko-3.webp?v=2" width="1100" height="568" alt="Nikonovphoto: галерея-выставка" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-3.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9855"><img decoding="async" class="sites__face" src="img/sites/niko-4.webp?v=2" width="1098" height="553" alt="Nikonovphoto: «Мой подход»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/niko-4.webp?v=2)" aria-hidden="true"></span></li>
       </ul>
     </div></div>
     <div class="sites__wheel"><div class="sites__tilt">
       <ul class="sites__ring" aria-label="Театр кукол — сайт театра кукол">
-        <li class="sites__item" data-ratio="1.9784"><img class="sites__face" src="img/sites/theatre-2.webp?v=2" width="1100" height="556" alt="Театр кукол: главный экран «Гуси-лебеди»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-2.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.9927"><img class="sites__face" src="img/sites/theatre-1.webp?v=2" width="1098" height="551" alt="Театр кукол: «О театре»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-1.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="1.9713"><img class="sites__face" src="img/sites/theatre-3.webp?v=2" width="1100" height="558" alt="Театр кукол: «Ближайшие представления»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-3.webp?v=2)" aria-hidden="true"></span></li>
-        <li class="sites__item" data-ratio="2.0542"><img class="sites__face" src="img/sites/theatre-4.webp?v=2" width="1099" height="535" alt="Театр кукол: спектакль «Айболит»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-4.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9784"><img decoding="async" class="sites__face" src="img/sites/theatre-2.webp?v=2" width="1100" height="556" alt="Театр кукол: главный экран «Гуси-лебеди»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-2.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9927"><img decoding="async" class="sites__face" src="img/sites/theatre-1.webp?v=2" width="1098" height="551" alt="Театр кукол: «О театре»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-1.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="1.9713"><img decoding="async" class="sites__face" src="img/sites/theatre-3.webp?v=2" width="1100" height="558" alt="Театр кукол: «Ближайшие представления»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-3.webp?v=2)" aria-hidden="true"></span></li>
+        <li class="sites__item" data-ratio="2.0542"><img decoding="async" class="sites__face" src="img/sites/theatre-4.webp?v=2" width="1099" height="535" alt="Театр кукол: спектакль «Айболит»" loading="lazy" draggable="false"><span class="sites__back" style="background-image:url(img/sites/theatre-4.webp?v=2)" aria-hidden="true"></span></li>
       </ul>
     </div></div>
   </div>
@@ -505,9 +505,9 @@
   <div class="sites__dots" aria-label="Сайты"><button class="sites__dot is-on" type="button" aria-label="Флорис" aria-current="true"></button><button class="sites__dot" type="button" aria-label="Nikonovphoto" aria-current="false"></button><button class="sites__dot" type="button" aria-label="Театр кукол" aria-current="false"></button></div>
   <!-- отзыв Евгения Никонова — как отзыв Светланы Клок в блоке 7: главный экран его сайта, имя и ниша, скриншот сообщения -->
   <figure class="sites__review">
-    <img class="sites__shot" src="img/sites/niko-1.webp?v=2" width="1100" height="563" alt="Главный экран сайта Nikonovphoto" loading="lazy">
+    <img decoding="async" class="sites__shot" src="img/sites/niko-1.webp?v=2" width="1100" height="563" alt="Главный экран сайта Nikonovphoto" loading="lazy">
     <figcaption class="sites__by"><b>Никонов Евгений</b><span>сайт портфолио фотографа</span></figcaption>
-    <img class="sites__quote" src="img/sites/review-niko.webp" width="689" height="187" alt="Отзыв Евгения Никонова: «Отзыв: созвонился с Людмилой с просьбой сделать сайт портфолио фотографа. Всегда были на связи. Людмила постоянно задавала вопросы и предлагала решения для портфолио. В итоге сайт получился визуально интересным и функциональным. Очень рекомендую»" loading="lazy">
+    <img decoding="async" class="sites__quote" src="img/sites/review-niko.webp" width="689" height="187" alt="Отзыв Евгения Никонова: «Отзыв: созвонился с Людмилой с просьбой сделать сайт портфолио фотографа. Всегда были на связи. Людмила постоянно задавала вопросы и предлагала решения для портфолио. В итоге сайт получился визуально интересным и функциональным. Очень рекомендую»" loading="lazy">
   </figure>
 </section>
 <!-- Последняя страница — «Cinematic 3D Scroll», демо 1 (codrops, Joseph Santamaria): главные экраны пяти сайтов на цилиндре;
@@ -538,13 +538,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=66"></script>
+<script src="main.js?v=67"></script>
 <script src="case.js?v=24"></script>
 <script src="talk.js?v=12"></script>
 <script src="sites.js?v=12"></script>
-<script type="module" src="final.js?v=22"></script>
+<script type="module" src="final.js?v=27"></script>
 <script src="show.js?v=26"></script>
-<script type="module" src="gallery.js?v=11"></script>
+<script type="module" src="gallery.js?v=12"></script>
 <script type="module" src="story3d.js?v=45"></script>
 </body>
 </html>

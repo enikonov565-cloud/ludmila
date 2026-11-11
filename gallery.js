@@ -116,7 +116,12 @@ function init() {
     if (!en[0].isIntersecting || loading) return;
     loading = true;
     Promise.all(DATA.map((d) => loader.loadAsync(d.src).then((tx) => { tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx; }).catch(() => null)))
-      .then((tex) => { build(tex); resize(); start(); });
+      .then(async (tex) => {
+        /* баннеры — на видеокарту по одному, в свободные минуты браузера: раньше все разом в первом кадре, и прокрутка подлагивала */
+        const idle = () => new Promise((r) => (window.requestIdleCallback ? window.requestIdleCallback(r, { timeout: 300 }) : setTimeout(r, 30)));
+        for (const t of tex) { if (t) { await idle(); renderer.initTexture(t); } }
+        build(tex); resize(); start();
+      });
   }, { rootMargin: '100% 0px' }).observe(sec);
   /* идёт, только пока блок на экране; досмотрели до конца и вернулись — заново с первого */
   new IntersectionObserver((en) => {

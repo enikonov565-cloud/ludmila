@@ -796,10 +796,12 @@ document.documentElement.classList.replace('no-js', 'js');
 
   var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   ready.then(function () {
+    /* рисуем, только когда блок действительно на экране: раньше фон крутился и за краем экрана (запас 100px),
+       пока смотрели соседний блок, — это заметно грузило страницу */
     new IntersectionObserver(function (e) {
-      visible = e[0].isIntersecting;
+      visible = e[0].isIntersecting && e[0].intersectionRatio > 0.02;
       if (visible) start();
-    }, { rootMargin: '100px' }).observe(section);
+    }, { threshold: [0, 0.02, 0.2] }).observe(section);
   });
   var rt = 0;
   window.addEventListener('resize', function () {

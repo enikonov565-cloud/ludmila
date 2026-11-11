@@ -17,11 +17,13 @@ function init() {
   const lines = Array.prototype.slice.call(sec.querySelectorAll('.final__ln'));   // строки, цвет которых подстраивается под фон
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const IMAGES = ['niko', 'floris', 'theatre', 'lisa', 'mebel'].map((n) => 'img/final/' + n + '.webp');
+  /* лента из пяти главных экранов (Nikonovphoto, Флорис, Театр кукол, Лисса Миляева, Комфорт интерьер) склеена заранее
+     в одну картинку нужного размера; рядом — крошечная карта яркости. В браузере ничего не рисуется и не масштабируется */
+  const STRIP = 'img/final/strip.webp', STRIP_LUM = 'img/final/strip-lum.png', SCREENS = 5;
   const LAPS = 1;
   const CELL = { w: 1920, h: 980 };
   const RADIUS = 2.5;                                                 // как в оригинале
-  const HEIGHT = (2 * Math.PI * RADIUS) * CELL.h / (CELL.w * IMAGES.length * LAPS);
+  const HEIGHT = (2 * Math.PI * RADIUS) * CELL.h / (CELL.w * SCREENS * LAPS);
   const SPIN = 0.05;                                                   // медленное собственное вращение, рад/с — спокойно, без суеты
 
   let renderer;
@@ -92,18 +94,36 @@ function init() {
   };
   resize();
 
-  const buildTexture = (imgs) => {
-    const maxTex = renderer.capabilities.maxTextureSize || 4096;
-    const limit = F.mobile ? Math.min(maxTex, 4096) : Math.min(maxTex, 8192);
-    const k = Math.min(1, limit / (CELL.w * imgs.length));
-    const cv = document.createElement('canvas');
-    cv.width = Math.floor(CELL.w * imgs.length * k); cv.height = Math.floor(CELL.h * k);
-    const ctx = cv.getContext('2d');
-    imgs.forEach((im, i) => { const x0 = Math.floor(i / imgs.length * cv.width), x1 = Math.floor((i + 1) / imgs.length * cv.width); ctx.drawImage(im, x0, 0, x1 - x0, cv.height); });
-    const tex = new THREE.CanvasTexture(cv);
+  const LW = 400, LH = 40, lumMap = new Float32Array(LW * LH);
+  /* свободная минута браузера: всю подготовку делаем кусочками между кадрами, пока смотрят соседний блок */
+  const idle = (fn) => (window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 400 }) : setTimeout(fn, 30));
+  const pause = () => new Promise((r) => idle(r));
+  /* картинка распаковывается в фоне, не в основном потоке (createImageBitmap); flip — сразу при распаковке */
+  const bitmap = async (src, flip) => {
+    const blob = await fetch(src).then((r) => r.blob());
+    if (window.createImageBitmap) {
+      try { return await createImageBitmap(blob, { imageOrientation: flip ? 'flipY' : 'none' }); } catch (e) {}
+    }
+    return null;
+  };
+  const loadImage = (src) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+  const buildTexture = async () => {
+    let tex = null;
+    const bmp = await bitmap(STRIP, true);
+    if (bmp) { tex = new THREE.Texture(bmp); tex.flipY = false; }
+    else { const im = await loadImage(STRIP); if (!im) return null; tex = new THREE.Texture(im); }
+    tex.needsUpdate = true;
     tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = THREE.RepeatWrapping;
     tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter;
+    /* карта яркости — 400×40 точек, читается мгновенно */
+    const lumImg = (await bitmap(STRIP_LUM, false)) || (await loadImage(STRIP_LUM));
+    if (lumImg) {
+      const sm = document.createElement('canvas'); sm.width = LW; sm.height = LH;
+      const sx = sm.getContext('2d'); sx.drawImage(lumImg, 0, 0, LW, LH);
+      const d = sx.getImageData(0, 0, LW, LH).data;
+      for (let i = 0; i < LW * LH; i++) lumMap[i] = (0.2126 * d[i * 4] + 0.7152 * d[i * 4 + 1] + 0.0722 * d[i * 4 + 2]) / 255 * 0.96;
+    } else lumMap.fill(BG);
     return tex;
   };
 
@@ -203,25 +223,38 @@ function init() {
   window.addEventListener('resize', () => { resize(); makePath(); place(); });
 
   let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5, tick = 0;
-  /* читаемость: под каждым видимым заголовком меряем яркость того, что сейчас нарисовано (экраны сайтов или светлый фон).
-     На светлом — тёмный текст, на тёмном — светлый. Пиксели читаются сразу после отрисовки кадра. */
-  const gl = renderer.getContext(), px = new Uint8Array(4), BG = 0.9;   // яркость светлого фона страницы
+  /* читаемость: на светлом — тёмный текст, на тёмном — светлый. Что лежит под каждой строкой, считаем, а не читаем
+     с видеокарты (чтение пикселей останавливало отрисовку и давало подлагивания): из камеры через точки строки
+     пускаем лучи; попал луч в цилиндр — берём яркость этого места экрана сайта по маленькой карте, не попал — там
+     светлый фон страницы. */
+  const BG = 0.9;                                                      // яркость светлого фона страницы
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), nrm = new THREE.Vector3();
+  let rects = null;
+  const measure = () => { const cr = canvas.getBoundingClientRect(); rects = { cr, lines: lines.map((s) => s.getBoundingClientRect()) }; };
+  window.addEventListener('resize', () => { rects = null; });
+  const lumUnder = (cx, cy) => {
+    const cr = rects.cr;
+    ndc.set((cx - cr.left) / cr.width * 2 - 1, -((cy - cr.top) / cr.height * 2 - 1));
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(cylinder, false)[0];
+    if (!hit || !hit.uv) return BG;
+    nrm.copy(hit.face.normal).transformDirection(cylinder.matrixWorld);
+    const front = nrm.dot(ray.ray.direction) < 0;                      // как в шейдере: снаружи лента отражена по горизонтали
+    let u = front ? 1 - hit.uv.x : hit.uv.x; u = u - Math.floor(u);
+    const x = Math.min(LW - 1, Math.floor(u * LW)), y = Math.min(LH - 1, Math.max(0, Math.floor((1 - hit.uv.y) * LH)));
+    return lumMap[y * LW + x];
+  };
   const contrast = () => {
-    const cr = canvas.getBoundingClientRect(), kx = canvas.width / cr.width, ky = canvas.height / cr.height;
-    lines.forEach((s) => {
-      if (parseFloat(getComputedStyle(s.closest('.final__step')).opacity) < 0.05) return;
-      const r = s.getBoundingClientRect();
+    if (!rects) measure();
+    lines.forEach((s, k) => {
+      const step = s.closest('.final__step');
+      if ((parseFloat(step.style.opacity) || 0) < 0.05) return;        // строка не видна — не считаем
+      const r = rects.lines[k];
       let dark = 0, n = 0;
-      for (let iy = 0; iy < 5; iy++) for (let ix = 0; ix < 11; ix++) {
-        const x = Math.round((r.left + r.width * (ix + 0.5) / 11 - cr.left) * kx);
-        const y = Math.round(canvas.height - (r.top + r.height * (iy + 0.5) / 5 - cr.top) * ky);
-        if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) continue;
-        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-        const a = px[3] / 255, lum = (0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2]) / 255 + (1 - a) * BG;   // цвет уже умножен на прозрачность
-        if (lum < 0.5) dark++;
+      for (let iy = 0; iy < 3; iy++) for (let ix = 0; ix < 9; ix++) {
+        if (lumUnder(r.left + r.width * (ix + 0.5) / 9, r.top + r.height * (iy + 0.5) / 3) < 0.5) dark++;
         n++;
       }
-      if (!n) return;
       /* смешанный фон (светлые и тёмные места): решают тёмные места — если их хотя бы треть, текст светлый */
       const f = dark / n, light = s.classList.contains('is-light');
       if (!light && f > 0.33) s.classList.add('is-light');
@@ -246,7 +279,7 @@ function init() {
       if (vel !== 0) { p.userData.base += vel * p.userData.speed * 1.5; p.userData.place(); }
     });
     renderer.render(scene, camera);
-    if (++tick % 8 === 0) contrast();
+    if (++tick % 10 === 0) contrast();
     if (running) raf = requestAnimationFrame(frame);
   };
   const start = () => {
@@ -258,22 +291,23 @@ function init() {
   };
   const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; if (tl) tl.pause(); };
 
-  const load = (src) => new Promise((res) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
   let loading = false;
   const setup = () => {
     if (loading) return; loading = true;
-    Promise.all(IMAGES.map(load)).then((imgs) => {
-      imgs = imgs.filter(Boolean);
-      if (!imgs.length) { gsap.set(steps[steps.length - 1], { autoAlpha: 1 }); return; }
-      mat.uniforms.tMap.value = buildTexture(imgs);
-      cylinder.visible = true;
+    buildTexture().then(async (tex) => {
+      if (!tex) { gsap.set(steps[steps.length - 1], { autoAlpha: 1 }); return; }
+      mat.uniforms.tMap.value = tex;
+      /* загрузка текстуры и сборка шейдера на видеокарте — заранее, в свободную минуту: иначе первый кадр
+         страницы застывал на десятую долю секунды */
+      await pause(); renderer.initTexture(tex);
+      await pause(); cylinder.visible = true; renderer.compile(scene, camera);
       build();
       if (visible) start();
     });
   };
 
   gsap.set(steps, { autoAlpha: 0 });
-  new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '150% 0px' }).observe(sec);
+  new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '250% 0px' }).observe(sec);
   /* показ начинается, когда страница открыта больше чем наполовину */
   new IntersectionObserver((en) => { visible = en[0].intersectionRatio > 0.5; if (visible) start(); else stop(); }, { threshold: [0, 0.5, 1] }).observe(sec);
   /* досмотрели и ушли — сцена тихо возвращается к началу, пока её совсем не видно; при возвращении показ начнётся без скачка */
