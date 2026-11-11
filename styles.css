@@ -1166,7 +1166,8 @@ a { color: inherit; text-decoration: none; }
 .sites__title { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(165 * var(--u)); white-space: nowrap; }
 .sites__tags { right: calc(60 * var(--u)); top: calc(139 * var(--u)); }
 /* карусель: справа вверху; главный экран 614×314 по центру (964…1578, 380…694), соседние — узкими краями по бокам */
-.sites__stage { position: absolute; z-index: 2; inset: 0; perspective: calc(1500 * var(--u)); perspective-origin: calc(1271 * var(--u)) calc(537 * var(--u)); pointer-events: none; }
+.sites__stage { position: absolute; z-index: 2; inset: 0; perspective: calc(1500 * var(--u)); perspective-origin: calc(1271 * var(--u)) calc(537 * var(--u)); pointer-events: none;
+  clip-path: inset(0 0 calc(100% - 821 * var(--u)) 0); }   /* карусель поднимается из-под отзыва: ниже его верхнего края её не видно */
 .sites__carousel { --w: calc(614 * var(--u)); --h: calc(314 * var(--u));
   position: absolute; left: calc(1271 * var(--u)); top: calc(537 * var(--u)); width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
   transform-style: preserve-3d; will-change: transform; visibility: hidden; }
@@ -1192,7 +1193,7 @@ a { color: inherit; text-decoration: none; }
   .sites__bg { order: 4; margin: 20px auto 0; width: min(80%, 360px); height: auto; aspect-ratio: 718 / 960;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%, #000 92%, transparent 100%); -webkit-mask-composite: source-in;
             mask-image: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(0deg, transparent 0, #000 22%, #000 92%, transparent 100%); mask-composite: intersect; }
-  .sites__stage { order: 5; height: 230px; margin: 10px -20px 0; perspective: 900px; perspective-origin: 50% 50%; }
+  .sites__stage { order: 5; height: 230px; margin: 10px -20px 0; perspective: 900px; perspective-origin: 50% 50%; clip-path: inset(0); }
   .sites__carousel { --w: 300px; --h: 154px; left: 50%; top: 50%; }
   .sites__review { order: 6; width: auto; margin-top: 20px; grid-template-columns: 42% 1fr; column-gap: 12px; }
   .sites__shot { height: auto; aspect-ratio: 1100 / 563; }
