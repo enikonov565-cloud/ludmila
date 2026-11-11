@@ -23,7 +23,7 @@ function init() {
   const CELL = { w: 1920, h: 980 };
   const RADIUS = 2.5;                                                 // как в оригинале
   const HEIGHT = (2 * Math.PI * RADIUS) * CELL.h / (CELL.w * IMAGES.length * LAPS);
-  const SPIN = 0.1;                                                    // медленное собственное вращение, рад/с
+  const SPIN = 0.05;                                                   // медленное собственное вращение, рад/с — спокойно, без суеты
 
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
@@ -127,14 +127,14 @@ function init() {
     const D = F.D, far = D;                                            // как в оригинале: старт и первый кадр — спереди
     Object.assign(cam, { x: 0, y: 0, z: far });
     look.y = 0.42;                                                     // на старте цилиндр чуть ниже центра — над ним заголовок
-    tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top top', end: 'bottom bottom', scrub: reduce ? true : 1, refreshPriority: -10 } });
+    tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top top', end: 'bottom bottom', scrub: reduce ? true : 2.5, refreshPriority: -10 } });
     tl.to(cam, { x: 0, y: 0, z: D, duration: 1, ease: silk })
       .to(cam, { x: 0, y: 5 * S, z: 5 * S, duration: 1, ease: flow })
       .to(look, { y: 0, duration: 1, ease: flow }, '<')
       .to(cam, { x: 1.5 * S, y: 2 * S, z: 2 * S, duration: 2, ease: lin })
       .to(cam, { x: 0.5 * S, y: 0, z: 0.8 * S, duration: 3.5, ease: 'power1.inOut' })
       .to(cam, { x: -6 * S, y: -1 * S, z: far, duration: 1, ease: smooth });
-    tl.to(scroll, { rot: 28.27, duration: 8.5, ease: 'none' }, 0);
+    tl.to(scroll, { rot: 12.57, duration: 8.5, ease: 'none' }, 0);   // два оборота за весь пролёт — спокойнее оригинала
     /* заголовки: вверху — на подлёте, в центре — сверху и внутри, внизу с кнопкой — в конце и остаётся */
     const show = (el, a, b, stay) => {
       tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35, ease: 'power1.out' }, a);
@@ -147,19 +147,27 @@ function init() {
   };
   window.addEventListener('resize', () => { resize(); build(); });
 
-  let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5;
+  let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5;
+  /* лёгкое покачивание камеры за указателем — хочется водить мышью и рассматривать */
+  const ptr = { x: 0, y: 0 }, sway = { x: 0, y: 0 };
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (finePointer && !reduce) window.addEventListener('pointermove', (e) => { ptr.x = e.clientX / window.innerWidth * 2 - 1; ptr.y = e.clientY / window.innerHeight * 2 - 1; }, { passive: true });
   const frame = (now) => {
     raf = 0;
     const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0; lastT = now;
     if (!reduce) auto += SPIN * dt;
-    const rot = auto + scroll.rot, vel = rot - cylinder.rotation.y;
-    cylinder.rotation.y = rot;
-    camera.position.set(cam.x, cam.y, cam.z);
+    /* инерция: вращение плавно догоняет цель и мягко затухает, когда прокрутка остановилась */
+    const rot = auto + scroll.rot, prevRot = rotNow;
+    rotNow += (rot - rotNow) * (reduce ? 1 : 0.045);
+    const vel = rotNow - prevRot;
+    cylinder.rotation.y = rotNow;
+    sway.x += (ptr.x - sway.x) * 0.03; sway.y += (ptr.y - sway.y) * 0.03;
+    camera.position.set(cam.x + sway.x * 0.35, cam.y - sway.y * 0.2, cam.z);
     camera.lookAt(0, look.y, 0);
     const speed = Math.abs(vel) * 100;
     particles.forEach((p) => {
-      const target = Math.min(Math.max(0, speed - 0.25) * 3, 0.9);
-      p.material.opacity += (target - p.material.opacity) * 0.15;
+      const target = Math.min(Math.max(0, speed - 0.12) * 3, 0.75);
+      p.material.opacity += (target - p.material.opacity) * 0.06;   // дуги проявляются и тают мягко
       if (vel !== 0) { p.userData.base += vel * p.userData.speed * 1.5; p.userData.place(); }
     });
     renderer.render(scene, camera);

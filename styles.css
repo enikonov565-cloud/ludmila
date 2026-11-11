@@ -1235,8 +1235,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== Последняя страница — главные экраны сайтов на цилиндре («Cinematic 3D Scroll», codrops) ===== */
-/* как в оригинале: блок в 5 экранов, сцена «прилипает», прокрутка ведёт камеру */
-.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 500svh; background: #EDE8E1; }
+/* блок в 8 экранов (медленнее оригинала): сцена «прилипает», прокрутка неспешно ведёт камеру */
+.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 800svh; background: #EDE8E1; }
 .final__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip;
   background: radial-gradient(70% 62% at 50% 46%, #F4F0EA 0%, #EDE8E1 55%, #E1D7C9 100%); }
 .final__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -1248,7 +1248,10 @@ a { color: inherit; text-decoration: none; }
 .final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; }
 .final__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
 .final__sub { margin: calc(14 * var(--u)) 0 0; max-width: calc(760 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; }
-.final__cta { margin-top: calc(30 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); }
+.final__cta { margin-top: calc(30 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); animation: final-breathe 3.2s ease-in-out infinite; }
+/* мягкое «дыхание» свечения вокруг кнопки — зовёт нажать, но не дёргается */
+@keyframes final-breathe { 0%, 100% { box-shadow: 0 0 0 0 rgba(169, 80, 44, .0), 0 calc(10 * var(--u)) calc(26 * var(--u)) rgba(169, 80, 44, .22); } 50% { box-shadow: 0 0 0 calc(10 * var(--u)) rgba(169, 80, 44, .12), 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(169, 80, 44, .32); } }
+@media (prefers-reduced-motion: reduce) { .final__cta { animation: none; } }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .final__step { width: calc(100% - 40px); }
