@@ -13,7 +13,7 @@
   var stage = sec.querySelector('.sites__stage'), review = sec.querySelector('.sites__review');
   var wheels = Array.prototype.slice.call(sec.querySelectorAll('.sites__wheel'));
   var GAP = 0.34;                              // зазор между плашками — доля высоты, как в кольце работ
-  var TURN = 24, RISE = 1.8, SINK = 1.4;       // полный оборот, подъём, спуск (секунды)
+  var TURN = 14, RISE = 1.3, SINK = 1.0;       // полный оборот, подъём, спуск (секунды) — живее
   var cur = 0, run = null, started = false;
 
   var apply = function (wh) {
@@ -72,12 +72,12 @@
     gsap.set(wh, { visibility: 'visible', y: reduce ? 0 : drop(wh) });
     gsap.set(skin, { opacity: 0 });
     var tl = gsap.timeline();
-    tl.to(wh, { y: 0, duration: d(RISE), ease: 'power3.out' }, 0)
-      .to(skin, { opacity: 1, duration: d(1.2), ease: 'power1.out' }, 0)
+    tl.to(wh, { y: 0, duration: d(RISE), ease: 'back.out(1.15)' }, 0)
+      .to(skin, { opacity: 1, duration: d(0.9), ease: 'power1.out' }, 0)
       /* полный оборот: начинает и заканчивает главным экраном к зрителю */
-      .to(wh, { _a: 360, duration: d(TURN), ease: 'sine.inOut', onUpdate: function () { apply(wh); } }, '+=1.2')
-      .to(wh, { y: function () { return reduce ? 0 : drop(wh); }, duration: d(SINK), ease: 'power2.in' }, '+=1')
-      .to(skin, { opacity: 0, duration: d(1), ease: 'power1.in' }, '<0.3')
+      .to(wh, { _a: 360, duration: d(TURN), ease: 'sine.inOut', onUpdate: function () { apply(wh); } }, '+=0.6')
+      .to(wh, { y: function () { return reduce ? 0 : drop(wh); }, duration: d(SINK), ease: 'power2.in' }, '+=0.5')
+      .to(skin, { opacity: 0, duration: d(0.8), ease: 'power1.in' }, '<0.2')
       .set(wh, { visibility: 'hidden' })
       .call(function () { cur = (cur + 1) % wheels.length; run = showSite(cur); });
     return tl;
