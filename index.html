@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=266">
+<link rel="stylesheet" href="styles.css?v=268">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -462,46 +462,44 @@
   <ul class="gal__list"><li>«Гуси-лебеди» — афиша</li><li>Сервиз чайный — реклама для электронных носителей</li><li>«Авторский фарфор» — баннер</li><li>Дома под ключ — реклама для электронных носителей</li><li>Ваза. Фарфор — реклама для электронных носителей</li><li>Кафе «Бургер-восторг» — баннер</li><li>Фарфоровый сервиз — реклама для электронных носителей</li><li>«Вечера живой музыки» — афиша</li><li>Набор кружек — реклама для электронных носителей</li></ul>
 </section>
 
-<!-- Блок 10 «Делаю сайты: погружающие с первого экрана» — фон-портрет и 3D-карусели экранов сайтов
-     (по мотивам codrops «On-Scroll 3D Carousel»): карусели сами вращаются и сменяют друг друга; sites.js -->
+<!-- Блок 10 «Делаю сайты: погружающие с первого экрана» — по макету Figma «Slide 4:3 - 2» (1046:378):
+     портрет слева, фон страницы — продолжение фона фотографии; справа вверху карусель экранов сайта — ровная,
+     без наклонов: экраны поворачиваются по одному, сайты уплывают и заплывают целиком; внизу — отзыв; sites.js -->
 <section class="sites" id="sites" aria-labelledby="sites-title" data-sites>
   <div class="sites__bg" aria-hidden="true"><img src="img/sites/portrait.webp" width="718" height="960" alt="" loading="lazy"></div>
-  <div class="sites__head">
-    <p class="sites__sub">Делаю сайты:</p>
-    <h2 class="story__title sites__title" id="sites-title"><span class="story__mask"><span class="story__reveal"><span class="cap">П</span>огружающие</span></span><span class="story__mask"><span class="story__reveal">с&nbsp;первого экрана</span></span></h2>
-  </div>
+  <p class="sites__sub">Делаю сайты:</p>
+  <h2 class="story__title sites__title" id="sites-title"><span class="story__mask"><span class="story__reveal"><span class="cap">П</span>огружающие с&nbsp;первого экрана</span></span></h2>
+  <ul class="show__tags sites__tags" aria-label="Что ещё делаю">
+    <li class="show__tag">Брендинг</li>
+    <li class="show__tag">Multi-page website</li>
+    <li class="show__tag">Адаптивная вёрстка</li>
+    <li class="show__tag">Landing page</li>
+  </ul>
   <div class="sites__stage">
-    <div class="sites__scene" data-name="Флорис" data-type="сайт цветочного магазина" role="group" aria-label="Флорис — сайт цветочного магазина">
-      <div class="sites__carousel">
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/floris-3.webp)" role="img" aria-label="Флорис: «Свадебные букеты»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/floris-1.webp)" role="img" aria-label="Флорис: первый экран «Свежие авторские букеты»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/floris-2.webp)" role="img" aria-label="Флорис: «Хиты сезона»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/floris-4.webp)" role="img" aria-label="Флорис: «Букеты для любого повода»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-      </div>
+    <div class="sites__carousel" role="group" aria-label="Флорис — сайт цветочного магазина">
+      <div class="sites__cell"><img class="sites__face" src="img/sites/floris-3.webp" alt="Флорис: главный экран «Свежие авторские букеты»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/floris-1.webp" alt="Флорис: «Хиты сезона»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/floris-2.webp" alt="Флорис: «Свадебные букеты»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/floris-4.webp" alt="Флорис: «Букеты для любого повода»" loading="lazy" draggable="false"></div>
     </div>
-    <div class="sites__scene" data-name="Nikonovphoto" data-type="сайт фотографа" role="group" aria-label="Nikonovphoto — сайт фотографа">
-      <div class="sites__carousel">
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/niko-1.webp)" role="img" aria-label="Nikonovphoto: первый экран с подписью"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/niko-2.webp)" role="img" aria-label="Nikonovphoto: «Моменты, которые останутся с вами навсегда»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/niko-3.webp)" role="img" aria-label="Nikonovphoto: галерея-выставка"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/niko-4.webp)" role="img" aria-label="Nikonovphoto: «Мой подход»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-      </div>
+    <div class="sites__carousel" role="group" aria-label="Nikonovphoto — сайт фотографа">
+      <div class="sites__cell"><img class="sites__face" src="img/sites/niko-1.webp" alt="Nikonovphoto: главный экран с подписью" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/niko-2.webp" alt="Nikonovphoto: «Моменты, которые останутся с вами навсегда»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/niko-3.webp" alt="Nikonovphoto: галерея-выставка" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/niko-4.webp" alt="Nikonovphoto: «Мой подход»" loading="lazy" draggable="false"></div>
     </div>
-    <div class="sites__scene" data-name="Театр кукол" data-type="сайт театра кукол" role="group" aria-label="Театр кукол — сайт театра кукол">
-      <div class="sites__carousel">
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/theatre-2.webp)" role="img" aria-label="Театр кукол: спектакль «Гуси-лебеди»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/theatre-1.webp)" role="img" aria-label="Театр кукол: «О театре»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/theatre-3.webp)" role="img" aria-label="Театр кукол: «Ближайшие представления»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-        <div class="sites__cell"><div class="sites__card" style="--img:url(img/sites/theatre-4.webp)" role="img" aria-label="Театр кукол: спектакль «Айболит»"><div class="sites__face"></div><div class="sites__face sites__face--back"></div></div></div>
-      </div>
+    <div class="sites__carousel" role="group" aria-label="Театр кукол — сайт театра кукол">
+      <div class="sites__cell"><img class="sites__face" src="img/sites/theatre-2.webp" alt="Театр кукол: главный экран «Гуси-лебеди»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/theatre-1.webp" alt="Театр кукол: «О театре»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/theatre-3.webp" alt="Театр кукол: «Ближайшие представления»" loading="lazy" draggable="false"></div>
+      <div class="sites__cell"><img class="sites__face" src="img/sites/theatre-4.webp" alt="Театр кукол: спектакль «Айболит»" loading="lazy" draggable="false"></div>
     </div>
   </div>
-  <p class="sites__label" aria-hidden="true"><span class="sites__name">Флорис</span><span class="sites__type">сайт цветочного магазина</span></p>
-  <!-- отзыв Евгения Никонова — так же, как отзыв Светланы Клок в блоке 7: скриншот сообщения из Telegram, имя и ниша, главный экран его сайта -->
+  <!-- отзыв Евгения Никонова — как отзыв Светланы Клок в блоке 7: главный экран его сайта, имя и ниша, скриншот сообщения -->
   <figure class="sites__review">
-    <img class="sites__quote" src="img/sites/review-niko.webp" width="689" height="187" alt="Отзыв Евгения Никонова: «Отзыв: созвонился с Людмилой с просьбой сделать сайт портфолио фотографа. Всегда были на связи. Людмила постоянно задавала вопросы и предлагала решения для портфолио. В итоге сайт получился визуально интересным и функциональным. Очень рекомендую»" loading="lazy">
-    <figcaption class="sites__by"><b>Евгений Никонов</b><span>сайт портфолио фотографа</span></figcaption>
     <img class="sites__shot" src="img/sites/niko-1.webp" width="1100" height="563" alt="Главный экран сайта Nikonovphoto" loading="lazy">
+    <figcaption class="sites__by"><b>Никонов Евгений</b><span>сайт портфолио фотографа</span></figcaption>
+    <img class="sites__quote" src="img/sites/review-niko.webp" width="689" height="187" alt="Отзыв Евгения Никонова: «Отзыв: созвонился с Людмилой с просьбой сделать сайт портфолио фотографа. Всегда были на связи. Людмила постоянно задавала вопросы и предлагала решения для портфолио. В итоге сайт получился визуально интересным и функциональным. Очень рекомендую»" loading="lazy">
   </figure>
 </section>
 </main>
@@ -514,7 +512,7 @@
 <script src="main.js?v=65"></script>
 <script src="case.js?v=24"></script>
 <script src="talk.js?v=10"></script>
-<script src="sites.js?v=5"></script>
+<script src="sites.js?v=6"></script>
 <script src="show.js?v=26"></script>
 <script type="module" src="gallery.js?v=11"></script>
 <script type="module" src="story3d.js?v=45"></script>
