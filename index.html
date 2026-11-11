@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=277">
+<link rel="stylesheet" href="styles.css?v=279">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -511,7 +511,7 @@
   </figure>
 </section>
 <!-- Блок 10, вторая страница — главные экраны сайтов во весь экран: слайдер с миниатюрами
-     (по присланному примеру «scroll or drag»: серия, счётчик 01 // 05 со стрелками, название, линейка, миниатюры); sites-home.js -->
+     (по присланному примеру «scroll or drag»: миниатюры и точки внизу); sites-home.js -->
 <section class="homes" id="sites-home" aria-label="Главные экраны сайтов" data-homes>
   <div class="homes__slides">
     <div class="homes__slide"><img class="homes__img" src="img/sites/home/floris.webp" width="1600" height="900" alt="Главный экран: Флорис — цветочный магазин" draggable="false"></div>
@@ -521,16 +521,7 @@
     <div class="homes__slide"><img class="homes__img" src="img/sites/home/niko.webp" width="1600" height="900" alt="Главный экран: Nikonovphoto — фотограф" loading="lazy" draggable="false"></div>
   </div>
   <div class="homes__shade" aria-hidden="true"></div>
-  <p class="homes__hint" aria-hidden="true">тяните или листайте</p>
   <div class="homes__ui">
-    <p class="homes__series">Главные экраны</p>
-    <div class="homes__counter">
-      <button class="homes__nav homes__nav--prev" type="button" aria-label="Предыдущий сайт">⟪</button>
-      <p class="homes__count"><span class="homes__cur">01</span><span class="homes__div">//</span><span class="homes__total">05</span></p>
-      <button class="homes__nav homes__nav--next" type="button" aria-label="Следующий сайт">⟫</button>
-    </div>
-    <div class="homes__title-box"><p class="homes__title" aria-live="polite">Флорис — цветочный магазин</p></div>
-    <div class="homes__ruler" aria-hidden="true"></div>
     <div class="homes__thumbs">
       <button class="homes__thumb is-on" type="button" aria-label="Флорис — цветочный магазин" data-title="Флорис — цветочный магазин"><img src="img/sites/home/floris.webp" alt="" loading="lazy" draggable="false"></button>
       <button class="homes__thumb" type="button" aria-label="Театр кукол" data-title="Театр кукол"><img src="img/sites/home/theatre.webp" alt="" loading="lazy" draggable="false"></button>
@@ -538,6 +529,7 @@
       <button class="homes__thumb" type="button" aria-label="Лисса Миляева — фотограф" data-title="Лисса Миляева — фотограф"><img src="img/sites/home/lisa.webp" alt="" loading="lazy" draggable="false"></button>
       <button class="homes__thumb" type="button" aria-label="Nikonovphoto — фотограф" data-title="Nikonovphoto — фотограф"><img src="img/sites/home/niko.webp" alt="" loading="lazy" draggable="false"></button>
     </div>
+    <div class="homes__dots" aria-label="Сайты"><button class="homes__dot is-on" type="button" aria-label="Флорис — цветочный магазин" aria-current="true"></button><button class="homes__dot" type="button" aria-label="Театр кукол" aria-current="false"></button><button class="homes__dot" type="button" aria-label="Комфорт интерьер — мебель на заказ" aria-current="false"></button><button class="homes__dot" type="button" aria-label="Лисса Миляева — фотограф" aria-current="false"></button><button class="homes__dot" type="button" aria-label="Nikonovphoto — фотограф" aria-current="false"></button></div>
   </div>
   <div class="homes__bar" aria-hidden="true"><span class="homes__bar-fill"></span></div>
 </section>
@@ -552,7 +544,7 @@
 <script src="case.js?v=24"></script>
 <script src="talk.js?v=10"></script>
 <script src="sites.js?v=11"></script>
-<script src="sites-home.js?v=2"></script>
+<script src="sites-home.js?v=3"></script>
 <script src="show.js?v=26"></script>
 <script type="module" src="gallery.js?v=11"></script>
 <script type="module" src="story3d.js?v=45"></script>

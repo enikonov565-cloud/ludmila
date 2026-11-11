@@ -1,8 +1,8 @@
 /* Блок 10, вторая страница — главные экраны сайтов во весь экран (по присланному примеру «scroll or drag»).
-   Экраны лежат лентой: её тянут мышью или пальцем, листают стрелками ⟪ ⟫, миниатюрами, клавишами ← →
+   Экраны лежат лентой: её тянут мышью или пальцем, листают миниатюрами, точками, клавишами ← →
    и горизонтальной прокруткой тачпада (вертикальная прокрутка остаётся странице). Лента идёт плавно, с инерцией,
    картинка внутри экрана сдвигается медленнее самого экрана (параллакс); отпустили — лента доводится до ближайшего сайта.
-   Название, счётчик, линейка, миниатюры и полоска внизу следуют за текущим сайтом. Кадры считаются, только пока блок на экране. */
+   Миниатюры, точки и полоска внизу следуют за текущим сайтом. Кадры считаются, только пока блок на экране. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-homes]');
@@ -12,34 +12,22 @@
   /* фон-подложка на телефоне — тот же экран, размытый (CSS) */
   slides.forEach(function (s, i) { s.style.setProperty('--bg', 'url(' + imgs[i].getAttribute('src') + ')'); });
   var thumbs = Array.prototype.slice.call(sec.querySelectorAll('.homes__thumb'));
-  var titleEl = sec.querySelector('.homes__title'), curEl = sec.querySelector('.homes__cur');
-  var ruler = sec.querySelector('.homes__ruler'), fill = sec.querySelector('.homes__bar-fill');
-  var N = slides.length, TICKS = 60;
+  var dots = Array.prototype.slice.call(sec.querySelectorAll('.homes__dot'));
+  var fill = sec.querySelector('.homes__bar-fill');
+  var N = slides.length;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var target = 0, pos = 0, shown = -1, visible = false, raf = 0;
-
-  /* линейка: штрихи; под текущим сайтом — светлые */
-  for (var t = 0; t < TICKS; t++) ruler.appendChild(document.createElement('i'));
-  var ticks = Array.prototype.slice.call(ruler.children);
   fill.style.width = (100 / N) + '%';
 
   var mod = function (a, n) { return ((a % n) + n) % n; };
   var wrap = function (d) { d = mod(d + N / 2, N) - N / 2; return d; };   // ближайшее смещение по кругу
 
+  /* текущий сайт: светлая миниатюра и вытянутая точка */
   var setActive = function (i) {
     if (i === shown) return;
-    var first = shown < 0;
     shown = i;
-    curEl.textContent = String(i + 1).padStart(2, '0');
     thumbs.forEach(function (b, k) { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
-    ticks.forEach(function (el, k) { var s = k / TICKS; el.classList.toggle('is-on', s >= i / N && s < (i + 1) / N); });
-    var text = thumbs[i].getAttribute('data-title');
-    if (first || reduce || !window.gsap) { titleEl.textContent = text; return; }
-    window.gsap.killTweensOf(titleEl);
-    window.gsap.to(titleEl, { yPercent: -110, autoAlpha: 0, duration: 0.3, ease: 'power2.in', onComplete: function () {
-      titleEl.textContent = text;
-      window.gsap.fromTo(titleEl, { yPercent: 110, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.55, ease: 'power3.out' });
-    } });
+    dots.forEach(function (b, k) { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
   };
 
   var render = function () {
@@ -66,10 +54,8 @@
   var kick = function () { if (!raf && visible) raf = requestAnimationFrame(frame); };
   var go = function (i) { target = Math.round(i); kick(); };
 
-  /* стрелки, миниатюры */
-  sec.querySelector('.homes__nav--prev').addEventListener('click', function () { go(Math.round(target) - 1); });
-  sec.querySelector('.homes__nav--next').addEventListener('click', function () { go(Math.round(target) + 1); });
-  thumbs.forEach(function (b, k) { b.addEventListener('click', function () { go(target + wrap(k - mod(target, N))); }); });
+  /* миниатюры и точки */
+  thumbs.concat(dots).forEach(function (b, k) { b.addEventListener('click', function () { go(target + wrap(k % N - mod(target, N))); }); });
 
   /* перетаскивание: по горизонтали — лента, по вертикали — прокрутка страницы */
   var drag = { on: false, x: 0, y: 0, decided: false, start: 0, v: 0, lastX: 0, lastT: 0 };
