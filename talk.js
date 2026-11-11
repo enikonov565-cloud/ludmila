@@ -37,12 +37,19 @@
   ];
   var SPRING = 'back.out(1.6)';   // упругий въезд, как spring из образца
 
+  var clock = 0;                  // время сообщений: 10:02, 10:03…
   var bubble = function (who, text) {
     var row = document.createElement('div');
     row.className = 'chat__row chat__row--' + who;
     var b = document.createElement('div');
     b.className = 'chat__msg';
     b.textContent = text.replace(/(^|\s)(а|в|и|к|о|с|у|не|на|по|за|из|до|что|как)\s/gi, function (m, p, w) { return p + w + ' '; });   // предлог — со следующим словом
+    /* время в углу пузыря, как в Telegram; у своих — две галочки «прочитано» */
+    var tm = document.createElement('span');
+    tm.className = 'chat__time';
+    tm.textContent = '10:' + String(2 + (clock++)).padStart(2, '0');
+    if (who === 'me') { var ck = document.createElement('span'); ck.className = 'chat__ticks'; ck.textContent = '✓✓'; tm.appendChild(ck); }
+    b.appendChild(tm);
     row.appendChild(b);
     return row;
   };
@@ -63,6 +70,7 @@
     timers.forEach(clearTimeout); timers = [];
     if (dotsTween) { dotsTween.kill(); dotsTween = null; }
     list.innerHTML = '';
+    clock = 0;
   };
 
   var play = function () {

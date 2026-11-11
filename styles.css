@@ -983,7 +983,13 @@ a { color: inherit; text-decoration: none; }
 .chat { position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js */ width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u))); height: auto; aspect-ratio: 1 / 2;
   padding: calc(13 * var(--u)); border-radius: calc(66 * var(--u)); background: #1c1d1f;
   box-shadow: inset 0 0 0 calc(2 * var(--u)) #3a3b3e, 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(0, 0, 0, .55); }
-.chat__screen { position: relative; height: 100%; border-radius: calc(54 * var(--u)); overflow: hidden; background: #F6EFE5; display: flex; flex-direction: column;
+/* экран — как чат Telegram: зелёный фон темы с тонким узором-«каракулями» */
+.chat__screen { position: relative; height: 100%; border-radius: calc(54 * var(--u)); overflow: hidden; display: flex; flex-direction: column;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%20viewBox%3D%270%200%20180%20180%27%20fill%3D%27none%27%20stroke%3D%27%231E4A2A%27%20stroke-opacity%3D%27.16%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M14%2030h26v10a13%2013%200%200%201-26%200z%20M40%2033h5a5%205%200%200%201%200%2010h-6%20M18%2058h18%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%2726%27%20r%3D%276%27%2F%3E%3Cpath%20d%3D%27M120%2014v-6M120%2044v-6M108%2026h-6M138%2026h-6M112%2018l-4-4M128%2034l4%204M128%2018l4-4M112%2034l-4%204%27%2F%3E%3Cpath%20d%3D%27M70%2092c-6-8-20-4-16%206%203%207%2016%2014%2016%2014s13-7%2016-14c4-10-10-14-16-6z%27%2F%3E%3Cpath%20d%3D%27M150%2096l4%209%2010%201-7%207%202%2010-9-5-9%205%202-10-7-7%2010-1z%27%2F%3E%3Cpath%20d%3D%27M24%20140c10-18%2030-18%2034-6-8%2012-26%2014-34%206z%20M24%20140l30-10%27%2F%3E%3Cpath%20d%3D%27M100%20150c6-10%2018-10%2018%200s-12%2010-12%202%208-6%2010-2%27%2F%3E%3Cpath%20d%3D%27M82%2034c4%206%204%2012%200%2018M90%2030c4%206%204%2014%200%2022%27%2F%3E%3Ccircle%20cx%3D%27160%27%20cy%3D%27160%27%20r%3D%273%27%2F%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27170%27%20r%3D%272%27%2F%3E%3Ccircle%20cx%3D%27120%27%20cy%3D%2770%27%20r%3D%272%27%2F%3E%3C%2Fsvg%3E") 0 0 / calc(180 * var(--u)) repeat,
+    radial-gradient(60% 45% at 12% 18%, #8FC07A 0%, rgba(143, 192, 122, 0) 100%),
+    radial-gradient(55% 45% at 88% 45%, #D6DC92 0%, rgba(214, 220, 146, 0) 100%),
+    radial-gradient(65% 50% at 25% 88%, #6FAE87 0%, rgba(111, 174, 135, 0) 100%),
+    #A8CB8B;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Helvetica Neue", Arial, sans-serif; color: #1A2C30; }
 .chat__status { position: relative; flex: none; height: calc(54 * var(--u)); padding: 0 calc(30 * var(--u)); display: flex; align-items: center; justify-content: space-between;
   font-weight: 600; font-size: calc(16 * var(--u)); }
@@ -992,23 +998,34 @@ a { color: inherit; text-decoration: none; }
 .chat__icons i { display: block; width: calc(16 * var(--u)); height: calc(10 * var(--u)); border-radius: calc(3 * var(--u)); background: #1A2C30; }
 .chat__icons i:last-child { width: calc(24 * var(--u)); }
 .chat__head { flex: none; display: flex; align-items: center; gap: calc(10 * var(--u)); padding: calc(8 * var(--u)) calc(18 * var(--u)) calc(12 * var(--u));
-  border-bottom: 1px solid rgba(26, 44, 48, .1); background: rgba(246, 239, 229, .92); }
-.chat__back { font-size: calc(34 * var(--u)); line-height: .8; color: #A9502C; }
-.chat__ava { display: grid; place-items: center; width: calc(38 * var(--u)); height: calc(38 * var(--u)); border-radius: 50%; background: #C9A27A; color: #fff; font-weight: 600; font-size: calc(16 * var(--u)); }
+  border-bottom: 1px solid rgba(0, 0, 0, .08); background: rgba(248, 248, 248, .94); }
+.chat__back { font-size: calc(34 * var(--u)); line-height: .8; color: #3390EC; }
+.chat__ava { display: grid; place-items: center; width: calc(38 * var(--u)); height: calc(38 * var(--u)); border-radius: 50%; background: linear-gradient(180deg, #FFB46B 0%, #F2804F 100%); color: #fff; font-weight: 600; font-size: calc(16 * var(--u)); }
 .chat__who { display: flex; flex-direction: column; line-height: 1.2; }
 .chat__who b { font-size: calc(18 * var(--u)); font-weight: 600; }
-.chat__who small { font-size: calc(14 * var(--u)); color: #6A5F51; }
+.chat__who small { font-size: calc(14 * var(--u)); color: #8E8E93; }
 /* сообщения прижаты к низу: новые появляются снизу, старые уходят вверх */
 .chat__list { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: calc(10 * var(--u)); padding: calc(14 * var(--u)); }
 .chat__row { display: flex; flex: none; }
 .chat__row--me { justify-content: flex-end; }
-.chat__msg { max-width: 82%; padding: calc(12 * var(--u)) calc(17 * var(--u)); font-size: calc(23 * var(--u)); line-height: 1.35; word-break: break-word;
-  border-radius: calc(20 * var(--u)) calc(20 * var(--u)) calc(20 * var(--u)) calc(4 * var(--u)); background: #E7DED1; color: #1A2C30; transform-origin: 0 100%; }
-.chat__row--me .chat__msg { border-radius: calc(20 * var(--u)) calc(20 * var(--u)) calc(4 * var(--u)) calc(20 * var(--u)); background: linear-gradient(180deg, #3E9BFF 0%, #0A7CFF 100%); color: #FFFFFF; transform-origin: 100% 100%; }   /* синий пузырь, как в iMessage */
+.chat__msg { position: relative; max-width: 82%; padding: calc(9 * var(--u)) calc(14 * var(--u)) calc(8 * var(--u)); font-size: calc(22 * var(--u)); line-height: 1.32; word-break: break-word;
+  border-radius: calc(18 * var(--u)) calc(18 * var(--u)) calc(18 * var(--u)) calc(5 * var(--u)); background: #FFFFFF; color: #000; transform-origin: 0 100%;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .12); }
+.chat__row--me .chat__msg { border-radius: calc(18 * var(--u)) calc(18 * var(--u)) calc(5 * var(--u)) calc(18 * var(--u)); background: #E3FEC6; color: #000; transform-origin: 100% 100%; }   /* свои — светло-зелёные, как в Telegram */
+/* хвостик пузыря */
+.chat__msg::after { content: ""; position: absolute; bottom: 0; left: calc(-7 * var(--u)); width: calc(14 * var(--u)); height: calc(16 * var(--u)); background: inherit;
+  -webkit-mask: radial-gradient(calc(14 * var(--u)) calc(16 * var(--u)) at 0 0, transparent 98%, #000 100%); mask: radial-gradient(calc(14 * var(--u)) calc(16 * var(--u)) at 0 0, transparent 98%, #000 100%); }
+.chat__row--me .chat__msg::after { left: auto; right: calc(-7 * var(--u));
+  -webkit-mask: radial-gradient(calc(14 * var(--u)) calc(16 * var(--u)) at 100% 0, transparent 98%, #000 100%); mask: radial-gradient(calc(14 * var(--u)) calc(16 * var(--u)) at 100% 0, transparent 98%, #000 100%); }
+/* время в правом нижнем углу пузыря; у своих — зелёное с двумя галочками «прочитано» */
+.chat__time { float: right; position: relative; top: .55em; margin-left: .6em; font-size: .56em; line-height: 1; color: #A1AAB3; white-space: nowrap; }
+.chat__row--me .chat__time { color: #5DB653; }
+.chat__ticks { display: inline-block; margin-left: .25em; letter-spacing: -.45em; padding-right: .45em; }
 .chat__typing { display: inline-flex; gap: calc(4 * var(--u)); padding: calc(13 * var(--u)) calc(16 * var(--u)); }
-.chat__typing i { display: block; width: calc(7 * var(--u)); height: calc(7 * var(--u)); border-radius: 50%; background: #8E8E93; opacity: .4; }   /* серые точки на светлом входящем пузыре, как в iMessage */
+.chat__typing i { display: block; width: calc(7 * var(--u)); height: calc(7 * var(--u)); border-radius: 50%; background: #8E8E93; opacity: .4; }
+.chat__typing::after { display: none; }   /* серые точки на светлом входящем пузыре, как в iMessage */
 .chat__input { flex: none; display: flex; align-items: center; justify-content: space-between; margin: 0 calc(14 * var(--u)) calc(30 * var(--u)); padding: calc(13 * var(--u)) calc(16 * var(--u));
-  border: 1px solid rgba(26, 44, 48, .18); border-radius: 99px; font-size: calc(17 * var(--u)); color: #9a9088; }
+  border: 1px solid rgba(0, 0, 0, .08); border-radius: 99px; background: #FFFFFF; font-size: calc(17 * var(--u)); color: #A1AAB3; }
 
 /* отзыв — в свободной тёмной части под заголовком, левее телефона */
 /* отзыв — строго под заголовком, той же ширины; по высоте — посередине между заголовком и линией 982u */
