@@ -948,3 +948,45 @@ document.documentElement.classList.replace('no-js', 'js');
   var hook = function () { if (window.lenis && window.lenis.on) window.lenis.on('scroll', arm); else window.addEventListener('scroll', arm, { passive: true }); };
   if (document.readyState === 'complete') hook(); else window.addEventListener('load', hook);
 })();
+
+/* Производительность: всё, что крутится бесконечно (парящие слова, покачивание телефона, пульсирующие стрелки),
+   замирает, пока его блок не на экране, и продолжается, когда блок вернулся. Внешне ничего не меняется,
+   но браузер больше не пересчитывает страницу ради невидимых блоков. */
+(function () {
+  'use strict';
+  if (!('IntersectionObserver' in window)) return;
+  var secs = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+  var infiniteIn = function (sec) {
+    if (!window.gsap) return [];
+    return window.gsap.globalTimeline.getChildren(true, true, true).filter(function (t) {
+      if (t.repeat() !== -1 || t.paused() || !t.isActive()) return false;
+      var tg = t.targets ? t.targets() : [];
+      return tg.length && tg[0] instanceof Element && sec.contains(tg[0]);
+    });
+  };
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var sec = e.target;
+      if (e.isIntersecting) {
+        sec.classList.remove('is-off');
+        (sec._sleep || []).forEach(function (t) { t.resume(); });
+        sec._sleep = null;
+      } else {
+        sec.classList.add('is-off');
+        sec._sleep = infiniteIn(sec);
+        sec._sleep.forEach(function (t) { t.pause(); });
+      }
+    });
+  }, { rootMargin: '10% 0px' });
+  secs.forEach(function (s) { io.observe(s); });
+  /* анимация могла запуститься с задержкой, когда блок уже ушёл с экрана, — подбираем и её */
+  setInterval(function () {
+    secs.forEach(function (s) {
+      if (!s.classList.contains('is-off')) return;
+      var more = infiniteIn(s);
+      if (!more.length) return;
+      more.forEach(function (t) { t.pause(); });
+      s._sleep = (s._sleep || []).concat(more);
+    });
+  }, 1500);
+})();

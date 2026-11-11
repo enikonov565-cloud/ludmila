@@ -1170,8 +1170,8 @@ a { color: inherit; text-decoration: none; }
   transform-style: preserve-3d; will-change: transform; }
 .sites__cell { position: absolute; inset: 0; transform-style: preserve-3d; }
 .sites__card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
-.sites__face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--img) center / cover no-repeat #0B181B;
-  box-shadow: 0 calc(24 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, .45); }
+/* без больших теней: тень на вращающихся 3D-карточках перерисовывается каждый кадр и тормозит */
+.sites__face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--img) center / cover no-repeat #0B181B; outline: 1px solid rgba(255, 255, 255, .06); }
 .sites__face--back { transform: rotateY(180deg); filter: brightness(.55); }
 /* подпись: название сайта и тема — как подписи в галерее */
 .sites__label { position: absolute; z-index: 3; right: calc(60 * var(--u)); bottom: calc(56 * var(--u)); margin: 0; display: flex; flex-direction: column; align-items: flex-end; gap: calc(6 * var(--u));
@@ -1206,3 +1206,6 @@ a { color: inherit; text-decoration: none; }
   .sites__review { grid-template-columns: minmax(0, 1fr) 46%; column-gap: 14px; row-gap: 16px; }
   .sites__by b { font-size: 16px; } .sites__by span { font-size: 14px; }
 }
+
+/* блок не на экране — его бесконечные CSS-анимации (стрелки, пульс) стоят и не нагружают браузер */
+.is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }

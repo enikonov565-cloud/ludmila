@@ -192,7 +192,7 @@
     var cv = sec.querySelector('.show__burst'), line = sec.querySelector('.show__line');
     if (!cv || !line) return;
     var bx = cv.getContext('2d');
-    var SPEED = 0.9, SIZE = 1.2, OPACITY = 0.13, TWINKLE = 0.2, SPOKES = 100, PER = 15;
+    var SPEED = 0.9, SIZE = 1.2, OPACITY = 0.13, TWINKLE = 0.2, SPOKES = 80, PER = 10;   // штрихов меньше — легче для браузера, на вид то же
     var seed = 0xbadf00d >>> 0;
     var rng = function () { seed = (seed + 0x6d2b79f5) >>> 0; var t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
     var cosA = new Float32Array(SPOKES), sinA = new Float32Array(SPOKES);
@@ -240,13 +240,14 @@
       bx.setTransform(dpr, 0, 0, dpr, 0, 0); bx.globalAlpha = 1; bx.globalCompositeOperation = 'source-over';
     };
     var raf = 0, last = 0, on = false;
-    var loop = function (t) { raf = requestAnimationFrame(loop); var dt = Math.min(0.05, Math.max(0.001, (t - (last || t)) / 1000)); last = t; draw(dt); };
+    /* лучи — не чаще 40 кадров в секунду: глазом не отличить, а работы вдвое-втрое меньше на быстрых экранах */
+    var loop = function (t) { raf = requestAnimationFrame(loop); if (last && t - last < 24) return; var dt = Math.min(0.05, Math.max(0.001, (t - (last || t)) / 1000)); last = t; draw(dt); };
     size(); for (var k = 0; k < 60; k++) draw(1 / 60);                         // сразу «в полёте», а не из центра
     window.addEventListener('resize', function () { size(); if (!on) draw(0); });
     if (reduce) return;
     new IntersectionObserver(function (en) {
       if (en[0].isIntersecting && !on) { on = true; last = 0; raf = requestAnimationFrame(loop); }
       else if (!en[0].isIntersecting && on) { on = false; cancelAnimationFrame(raf); }
-    }, { threshold: 0 }).observe(sec);
+    }, { threshold: 0, rootMargin: '-8% 0px' }).observe(sec);   // рисуем, только пока блок действительно на экране
   })();
 })();

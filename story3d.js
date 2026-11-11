@@ -364,9 +364,10 @@ async function init() {
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
   /* «Сейчас» висит в воздухе перед растением — на «глубине» 0.8: при движении фото смещается как ближний план */
   const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
+  let nowW = 0; window.addEventListener('resize', () => { nowW = 0; });
   if (!stacked) gsap.set(ghostNowEl, { yPercent: -50 });           // центр слова — в точке над растением
   const depth = depthPhoto(nowFrame, { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36], onMove: stacked ? null : (ox, oy, z) => {
-    const W = nowFrame.clientWidth, k = (0.6 - 0.37) * z;
+    const W = nowW || (nowW = nowFrame.clientWidth), k = (0.6 - 0.37) * z;   // ширина кадра — из запаса: чтение размеров в каждом кадре заставляло браузер пересчитывать страницу
     ghostNowEl.style.setProperty('--fx', (-ox * k * W * 0.35).toFixed(1) + 'px');  // вбок — чуть-чуть, чтобы край держал линию
     ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
   } });
