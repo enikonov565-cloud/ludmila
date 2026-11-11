@@ -114,7 +114,7 @@ function init() {
     for (let i = 0; i < 18; i++) { m = (lo + hi) / 2; x = 3 * (1 - m) * (1 - m) * m * p1x + 3 * (1 - m) * m * m * p2x + m * m * m; if (x < t) lo = m; else hi = m; }
     m = (lo + hi) / 2; return 3 * (1 - m) * (1 - m) * m * p1y + 3 * (1 - m) * m * m * p2y + m * m * m;
   };
-  const silk = bez(0.45, 0.05, 0.55, 0.95), flow = bez(0.33, 0, 0.2, 1), lin = bez(0.4, 0, 0.6, 1), smooth = bez(0.25, 0.1, 0.25, 1);
+  const silk = bez(0.45, 0.05, 0.55, 0.95), flow = bez(0.33, 0, 0.2, 1), lin = bez(0.4, 0, 0.6, 1);
 
   const scroll = { rot: 0 };
   const look = { y: 0 };                                               // куда смотрит камера по высоте
@@ -133,8 +133,11 @@ function init() {
       .to(look, { y: 0, duration: 1, ease: flow }, '<')
       .to(cam, { x: 1.5 * S, y: 2 * S, z: 2 * S, duration: 2, ease: lin })
       .to(cam, { x: 0.5 * S, y: 0, z: 0.8 * S, duration: 3.5, ease: 'power1.inOut' })
-      .to(cam, { x: -6 * S, y: -1 * S, z: far, duration: 1, ease: smooth });
-    tl.to(scroll, { rot: 12.57, duration: 8.5, ease: 'none' }, 0);   // два оборота за весь пролёт — спокойнее оригинала
+      /* выход — спокойный отъезд назад, без рывка: камера встаёт прямо, как в самом начале, цилиндр снова во весь экран
+         и чуть выше центра, под ним — финальный текст и кнопка */
+      .to(cam, { x: 0, y: 0, z: far, duration: 2, ease: 'sine.inOut' })
+      .to(look, { y: -0.62, duration: 2, ease: 'sine.inOut' }, '<');
+    tl.to(scroll, { rot: 12.57, duration: 9.5, ease: 'none' }, 0);   // два оборота за весь пролёт — спокойнее оригинала
     /* заголовки: вверху — на подлёте, в центре — сверху и внутри, внизу с кнопкой — в конце и остаётся */
     const show = (el, a, b, stay) => {
       tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.35, ease: 'power1.out' }, a);
@@ -142,7 +145,7 @@ function init() {
     };
     show(steps[0], 0.15, 1.8);
     show(steps[1], 2.1, 6.9);
-    show(steps[2], 7.7, 8.5, true);
+    show(steps[2], 8.6, 9.5, true);
     tl.progress(prog);
   };
   window.addEventListener('resize', () => { resize(); build(); });

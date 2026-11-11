@@ -1236,7 +1236,13 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Последняя страница — главные экраны сайтов на цилиндре («Cinematic 3D Scroll», codrops) ===== */
 /* блок в 8 экранов (медленнее оригинала): сцена «прилипает», прокрутка неспешно ведёт камеру */
-.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 800svh; background: #EDE8E1; }
+.final { --u: min(calc(100vw / 1920), calc(100svh / 1080)); position: relative; height: 800svh; background: #EDE8E1;
+  animation: final-tone 12s ease-in-out infinite; }
+/* общий «тон» страницы плавно перетекает по фирменным цветам: медь → бирюза → коричневый → медь;
+   кнопка заливается им, а заголовки и подзаголовки меняют цвет вместе с ней */
+@property --tone { syntax: "<color>"; inherits: true; initial-value: #A9502C; }
+@keyframes final-tone { 0%, 100% { --tone: #A9502C; } 33% { --tone: #2F4B52; } 66% { --tone: #6A5F51; } }
+.final.is-off { animation-play-state: paused; }
 .final__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip;
   background: radial-gradient(70% 62% at 50% 46%, #F4F0EA 0%, #EDE8E1 55%, #E1D7C9 100%); }
 .final__gl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -1245,16 +1251,25 @@ a { color: inherit; text-decoration: none; }
 .final__step--top { top: calc(120 * var(--u)); }
 .final__step--center { top: 50%; translate: -50% -50%; }
 .final__step--bottom { bottom: calc(70 * var(--u)); pointer-events: auto; }
-.final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; }
+.final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: var(--tone, #1A2C30); }
 .final__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
-.final__sub { margin: calc(14 * var(--u)) 0 0; max-width: calc(760 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; }
+.final__sub { margin: calc(14 * var(--u)) 0 0; max-width: calc(760 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: color-mix(in srgb, var(--tone, #6A5F51) 70%, #6A5F51); }
 /* финал: заголовок и подзаголовок — в одну строку, кнопка шире */
 .final__title--one, .final__sub--one { white-space: nowrap; }
 .final__sub--one { max-width: none; }
-.final__cta { margin-top: calc(30 * var(--u)); width: calc(760 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u)); animation: final-breathe 3.2s ease-in-out infinite; }
-/* мягкое «дыхание» свечения вокруг кнопки — зовёт нажать, но не дёргается */
-@keyframes final-breathe { 0%, 100% { box-shadow: 0 0 0 0 rgba(169, 80, 44, .0), 0 calc(10 * var(--u)) calc(26 * var(--u)) rgba(169, 80, 44, .22); } 50% { box-shadow: 0 0 0 calc(10 * var(--u)) rgba(169, 80, 44, .12), 0 calc(14 * var(--u)) calc(34 * var(--u)) rgba(169, 80, 44, .32); } }
-@media (prefers-reduced-motion: reduce) { .final__cta { animation: none; } }
+.final__cta { margin-top: calc(30 * var(--u)); width: calc(760 * var(--u)); padding-inline: calc(64 * var(--u)); font-size: calc(24 * var(--u));
+  display: inline-flex; align-items: center; justify-content: center; gap: calc(14 * var(--u));
+  background-color: var(--tone, #A9502C); color: #FBF4E6; animation: final-breathe 3.2s ease-in-out infinite;
+  transition: filter .3s ease, transform .3s ease; }   /* без перехода фона — иначе он «застывает» и не перетекает по цветам */
+.final__cta:hover { background-color: var(--tone, #A9502C); filter: brightness(.88); }
+/* стрелка мягко «подталкивает» вперёд; при наведении уходит дальше */
+.final__arrow { flex: none; width: calc(28 * var(--u)); height: calc(28 * var(--u)); animation: final-nudge 1.8s ease-in-out infinite; }
+.final__cta:hover .final__arrow { animation-duration: .9s; }
+@keyframes final-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(calc(7 * var(--u))); } }
+/* мягкое «дыхание» свечения вокруг кнопки — того же цвета, что и кнопка */
+@keyframes final-breathe { 0%, 100% { box-shadow: 0 0 0 0 transparent, 0 calc(10 * var(--u)) calc(26 * var(--u)) color-mix(in srgb, var(--tone, #A9502C) 22%, transparent); }
+  50% { box-shadow: 0 0 0 calc(10 * var(--u)) color-mix(in srgb, var(--tone, #A9502C) 14%, transparent), 0 calc(14 * var(--u)) calc(34 * var(--u)) color-mix(in srgb, var(--tone, #A9502C) 32%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .final, .final__cta, .final__arrow { animation: none; } }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .final__step { width: calc(100% - 40px); }
@@ -1262,7 +1277,8 @@ a { color: inherit; text-decoration: none; }
   .final__step--bottom { bottom: 40px; }
   .final__title { font-size: clamp(28px, 8vw, 48px); }
   .final__sub { margin-top: 10px; max-width: 340px; font-size: 15px; }
-  .final__cta { margin-top: 20px; width: min(100%, 340px); padding-inline: 36px; font-size: 18px; white-space: nowrap; }
+  .final__cta { margin-top: 20px; width: min(100%, 340px); padding-inline: 36px; font-size: 18px; white-space: nowrap; gap: 10px; }
+  .final__arrow { width: 20px; height: 20px; }
   .final__title--one, .final__sub--one { white-space: normal; }   /* на телефоне в одну строку не помещается */
 }
 
