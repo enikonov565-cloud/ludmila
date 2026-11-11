@@ -1247,7 +1247,12 @@ a { color: inherit; text-decoration: none; }
 .final__step--bottom { bottom: calc(70 * var(--u)); pointer-events: auto; }
 .final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; transition: color .8s ease; }
 /* на тёмном (экраны сайтов под заголовком) — светлый текст, на светлом — тёмный, без теней. Решает final.js по яркости под текстом */
+/* высказывания под заголовками — мелко, как подзаголовок; автор — чуть тише */
+.final__quote { margin: calc(16 * var(--u)) 0 0; max-width: calc(820 * var(--u)); font-weight: 300; font-size: calc(20 * var(--u)); line-height: 1.45; color: #6A5F51; text-wrap: balance; }
+.final__author { white-space: nowrap; font-style: italic; opacity: .8; }
+.final__step--center .final__quote { max-width: calc(660 * var(--u)); }   /* в центре кольца — уже, чтобы не подходить к стенкам */
 /* цвет — у каждой строки свой, по фону прямо под ней */
+.final__quote.final__ln.is-light { color: rgba(247, 242, 234, .88); }
 .final__ln { transition: color .8s ease; }
 .final__ln.is-light { color: #F7F2EA; }
 .final__sub.final__ln.is-light { color: rgba(247, 242, 234, .88); }
@@ -1277,6 +1282,7 @@ a { color: inherit; text-decoration: none; }
   .final__step--bottom { bottom: 40px; }
   .final__title { font-size: clamp(28px, 8vw, 48px); }
   .final__sub { margin-top: 10px; max-width: 340px; font-size: 15px; }
+  .final__quote, .final__step--center .final__quote { margin-top: 10px; max-width: 330px; font-size: 13px; }
   .final__cta { margin-top: 20px; width: min(100%, 340px); padding-inline: 36px; font-size: 18px; white-space: nowrap; gap: 10px; }
   .final__arrow { width: 20px; height: 20px; }
   .final__title--one, .final__sub--one { white-space: normal; }   /* на телефоне в одну строку не помещается */
