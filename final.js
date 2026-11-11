@@ -170,7 +170,7 @@ function init() {
         n++;
       }
       if (!n) return;
-      /* смешанный фон (светлые и тёмные места): решают тёмные места — если их хотя бы треть, текст светлый с мягким тёмным ореолом */
+      /* смешанный фон (светлые и тёмные места): решают тёмные места — если их хотя бы треть, текст светлый */
       const f = dark / n, light = s.classList.contains('is-light');
       if (!light && f > 0.33) s.classList.add('is-light');
       else if (light && f < 0.2) s.classList.remove('is-light');     // с запасом, чтобы не мигал

@@ -1245,10 +1245,10 @@ a { color: inherit; text-decoration: none; }
 .final__step--top { top: calc(120 * var(--u)); }
 .final__step--center { top: 50%; translate: -50% -50%; }
 .final__step--bottom { bottom: calc(70 * var(--u)); pointer-events: auto; }
-.final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; transition: color .8s ease, text-shadow .8s ease; }
-/* на тёмном (экраны сайтов под заголовком) — светлый текст с мягкой тенью; на светлом — тёмный. Решает final.js по яркости под текстом */
+.final__title { margin: 0; font-weight: 500; font-size: calc(72 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #1A2C30; transition: color .8s ease; }
+/* на тёмном (экраны сайтов под заголовком) — светлый текст, на светлом — тёмный, без теней. Решает final.js по яркости под текстом */
 .final__step.is-light .final__sub { color: rgba(247, 242, 234, .85); }
-.final__step.is-light .final__title { color: #F7F2EA; text-shadow: 0 0 calc(22 * var(--u)) rgba(7, 15, 16, .75), 0 0 calc(8 * var(--u)) rgba(7, 15, 16, .6), 0 calc(2 * var(--u)) calc(3 * var(--u)) rgba(7, 15, 16, .5); }
+.final__step.is-light .final__title { color: #F7F2EA; }
 .final__title .cap { width: auto; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; }
 .final__sub { margin: calc(14 * var(--u)) 0 0; max-width: calc(760 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #6A5F51; transition: color .8s ease; }
 /* финал: заголовок и подзаголовок — в одну строку, кнопка шире */
