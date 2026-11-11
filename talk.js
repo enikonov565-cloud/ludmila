@@ -70,9 +70,9 @@
     var t = 600;
     DIALOG.forEach(function (m) {
       var who = m[0], text = m[1];
-      if (who === 'me') {                       // Людмила печатает — точки прыгают волной
+      if (who === 'them') {                     // это телефон Людмилы: как в iMessage, «печатает…» видно у собеседницы — точки прыгают волной
         later(function () {
-          var tr = typing('me'); appear(tr);
+          var tr = typing('them'); appear(tr);
           dotsTween = gsap.to(tr.querySelectorAll('i'), { y: -5, opacity: 1, duration: 0.4, ease: 'sine.inOut', yoyo: true, repeat: -1, stagger: 0.18 });
         }, t);
         t += 900 + Math.min(1600, text.length * 14);
@@ -80,10 +80,10 @@
           var tr = list.querySelector('.is-typing');
           if (dotsTween) { dotsTween.kill(); dotsTween = null; }
           if (tr) tr.remove();
-          appear(bubble('me', text));
+          appear(bubble('them', text));
         }, t);
       } else {
-        later(function () { appear(bubble('them', text)); }, t);
+        later(function () { appear(bubble('me', text)); }, t);   // свои сообщения Людмила отправляет сразу
       }
       t += 700 + text.length * 32;               // пауза на чтение
     });
