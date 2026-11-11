@@ -1172,8 +1172,10 @@ a { color: inherit; text-decoration: none; }
   position: absolute; left: calc(1271 * var(--u)); top: calc(537 * var(--u)); width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
   transform-style: preserve-3d; will-change: transform; visibility: hidden; }
 .sites__cell { position: absolute; inset: 0; transform-style: preserve-3d; }
-/* кадр — целиком, без обрезки; обратной стороны нет */
-.sites__face { display: block; width: 100%; height: 100%; object-fit: contain; background: #0C120D; backface-visibility: hidden; -webkit-backface-visibility: hidden; opacity: 0; -webkit-user-drag: none; }
+/* кадр заполняет экран карусели (пропорции широких кадров почти совпадают с ним — ничего важного не срезается); обратной стороны нет */
+.sites__face { display: block; width: 100%; height: 100%; object-fit: cover; background: transparent; backface-visibility: hidden; -webkit-backface-visibility: hidden; opacity: 0; -webkit-user-drag: none; }
+/* узкие кадры Флориса — целиком, поля по бокам полупрозрачные, цвета плашек-овалов */
+.sites__face--fit { object-fit: contain; background: rgba(200, 189, 171, .12); }
 /* отзыв: главный экран сайта (792, 821, 240×145), под ним имя и ниша; справа — скриншот сообщения (1063, 824, 711×193) */
 .sites__review { position: absolute; z-index: 3; left: calc(792 * var(--u)); top: calc(821 * var(--u)); width: calc(982 * var(--u)); margin: 0;
   display: grid; grid-template-columns: calc(240 * var(--u)) 1fr; column-gap: calc(31 * var(--u)); align-items: start; }
