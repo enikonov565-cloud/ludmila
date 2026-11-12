@@ -491,15 +491,16 @@ a { color: inherit; text-decoration: none; }
 .apx__clock { position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: center; padding: 3% 0 30%;
   background: radial-gradient(75% 70% at 50% 40%, #34505A 0%, #2A434A 55%, #20363B 100%); }   /* светлее, чем раньше */
 .apx__clock .clock__svg { width: 58%; height: auto; display: block; filter: drop-shadow(0 calc(10 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, .45)); transform-origin: 50% 50%; }
-/* вторая карточка: стеклянная прозрачная ёмкость со статуэткой внутри (portal.js поворачивает её) */
-.apx__portal { --d: calc(110 * var(--u)); position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: center; padding-bottom: 24%;
-  background: radial-gradient(70% 60% at 50% 36%, #33525A 0%, #1F363B 55%, #12221F 100%); perspective: calc(1500 * var(--u)); }
-.portal__scene { width: 40%; aspect-ratio: 3 / 4.3; transform-style: preserve-3d; transform-origin: 50% 50%; }
+/* вторая карточка: стеклянная прозрачная ёмкость со статуэткой внутри на тёмно-бежевом фоне (portal.js поворачивает её
+   и собирает объём статуэтки из слоёв) */
+.apx__portal { --d: calc(110 * var(--u)); position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: center; padding: 8% 0 20%;
+  background: radial-gradient(70% 60% at 50% 38%, #857766 0%, #6A5F51 50%, #4A4238 100%); perspective: calc(1500 * var(--u)); }
+.portal__scene { width: 44%; aspect-ratio: 3 / 4.1; transform-style: preserve-3d; transform-origin: 50% 50%; }
 .portal__card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; will-change: transform; --sheen: 50%; }
 /* стенки ёмкости: задняя — глубокая бирюза, боковые, верх и низ — прозрачное стекло */
 .portal__wall { position: absolute; background: rgba(200, 220, 222, .06); border: 1px solid rgba(232, 220, 200, .22); backface-visibility: visible; }
 .portal__wall--back { inset: 0; border-radius: calc(14 * var(--u)); transform: translateZ(calc(var(--d) * -1));
-  background: linear-gradient(165deg, #2A454B 0%, #172A2E 70%, #10201F 100%); border-color: rgba(232, 220, 200, .12); }
+  background: linear-gradient(165deg, #5C5246 0%, #463E35 70%, #3A332B 100%); border-color: rgba(232, 220, 200, .14); }
 .portal__wall--l, .portal__wall--r { top: 0; bottom: 0; width: var(--d); }
 .portal__wall--l { left: 0; transform-origin: 0 50%; transform: rotateY(90deg); }
 .portal__wall--r { right: 0; transform-origin: 100% 50%; transform: rotateY(-90deg); }
@@ -510,8 +511,10 @@ a { color: inherit; text-decoration: none; }
 .portal__glow { position: absolute; inset: 12% 8% 16%; border-radius: 50%; transform: translateZ(calc(var(--d) * -.85));
   background: radial-gradient(closest-side, rgba(201, 162, 122, .45), rgba(201, 162, 122, 0)); }
 /* статуэтка — в середине ёмкости по глубине */
-.portal__award { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: 5%; height: 88%; width: auto; max-width: none; aspect-ratio: 371 / 872; transform: translateZ(calc(var(--d) * -.45));
-  filter: drop-shadow(0 calc(10 * var(--u)) calc(14 * var(--u)) rgba(0, 0, 0, .45)); -webkit-user-drag: none; }
+/* статуэтка стоит на дне ёмкости; объём — из слоёв (portal.js): задние слои темнее, как боковая грань металла */
+.portal__award { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: 1.5%; height: 93%; aspect-ratio: 371 / 872; transform-style: preserve-3d; transform: translateZ(calc(var(--d) * -.4)); }
+.portal__award img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; -webkit-user-drag: none; }
+.portal__award .is-front { filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(255, 220, 150, .25)); }
 /* переднее стекло: тонкая кромка и блик, который скользит при повороте */
 .portal__glass { position: absolute; inset: 0; border-radius: calc(14 * var(--u)); border: 1px solid rgba(232, 220, 200, .45);
   background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .22) 46%, rgba(255, 255, 255, .05) 52%, rgba(255, 255, 255, 0) 64%) var(--sheen) 0 / 260% 100% no-repeat,
