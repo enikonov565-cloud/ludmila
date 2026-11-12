@@ -165,7 +165,7 @@ a { color: inherit; text-decoration: none; }
 
 .about__count {
   position: absolute; left: calc(1396 * var(--u)); bottom: calc(772.9 * var(--u)); width: calc(464 * var(--u));
-  display: flex; flex-direction: column; align-items: flex-end; gap: calc(24 * var(--u));
+  display: flex; flex-direction: column; align-items: flex-end; gap: calc(6 * var(--u));   /* плотнее: верх «30+» не уходит под шапку, низ — на прежней линии */
 }
 .about__count-top { display: flex; flex-direction: column; align-items: flex-start; gap: calc(15 * var(--u)); }
 .about__num {
@@ -740,7 +740,6 @@ a { color: inherit; text-decoration: none; }
   font-family: "Cormorant Garamond", serif; font-weight: 400; font-size: max(26px, calc(40 * var(--hu))); line-height: 1.1; color: inherit;
   opacity: 0; transform: translateY(8px); transition: opacity .4s var(--ease), transform .4s var(--ease), color .3s;
 }
-.site-menu__list a span { font-family: Inter, sans-serif; font-weight: 300; font-size: max(11px, calc(14 * var(--hu))); letter-spacing: .2em; color: #C9A27A; }
 .site-menu.is-open .site-menu__list a { opacity: 1; transform: none; }
 .site-menu.is-open .site-menu__list li:nth-child(2) a { transition-delay: .04s; }
 .site-menu.is-open .site-menu__list li:nth-child(3) a { transition-delay: .08s; }
@@ -857,7 +856,7 @@ a { color: inherit; text-decoration: none; }
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
-.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(80 * var(--u)); width: calc(900 * var(--u)); }
+.case__head { position: absolute; z-index: 2; left: calc(60 * var(--u)); top: calc(112 * var(--u)); width: calc(900 * var(--u)); }   /* в макете 80 — опущено, чтобы росчерк «Д» не уходил под шапку */
 .case__kicker { margin: calc(4 * var(--u)) 0 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #BDB7B1; }
 /* результат кейса — под крупным фото, по центру: цифра шрифтом сайта (Wulkan), подпись и пояснение */
 .case__result { position: absolute; z-index: 2; left: auto; right: calc(60 * var(--u)); top: calc(808 * var(--u)); width: calc(616 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(14 * var(--u)); text-align: center; color: #BDB7B1; }
@@ -1352,3 +1351,45 @@ a { color: inherit; text-decoration: none; }
 
 /* блок не на экране — его бесконечные CSS-анимации (стрелки, пульс) стоят и не нагружают браузер */
 .is-off *, .is-off *::before, .is-off *::after { animation-play-state: paused !important; }
+
+
+/* ===== Кнопки связи по смыслу блока — у каждой свой вид (все ведут в Telegram Людмилы) ===== */
+/* «Хочу такие же карточки» — под результатом кейса: строка со стрелкой, медь */
+.cta-arrow { margin-top: calc(18 * var(--u)); display: inline-flex; align-items: center; gap: calc(12 * var(--u));
+  font-weight: 500; font-size: calc(21 * var(--u)); line-height: 1.2; letter-spacing: -.01em; color: #C9A27A; transition: color .45s var(--ease); }
+.cta-arrow__word { position: relative; padding-bottom: calc(4 * var(--u)); }
+.cta-arrow__word::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: max(1px, calc(1.5 * var(--u))); background: currentColor; transform-origin: right; }
+.cta-arrow svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); flex: none; transition: transform .5s var(--ease); }
+.cta-arrow:hover svg { transform: translateX(calc(6 * var(--u))); }
+.cta-arrow:hover .cta-arrow__word::after { animation: line-run .9s var(--ease); }
+.cta-arrow:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.case[data-page="1"] .cta-arrow { color: #A9502C; }
+.case[data-page="1"] .cta-arrow:hover { color: #1A2C30; }
+.case[data-page="0"] .cta-arrow:hover { color: #E8DCC8; }
+
+/* «Написать в Telegram» — под телефоном с перепиской: капсула с самолётиком */
+.btn-tg { position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 450 * var(--u)); width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u)));
+  display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--u)); padding: calc(14 * var(--u)) calc(24 * var(--u));
+  border: 1px solid rgba(232, 220, 200, .4); border-radius: 999px; color: #E8DCC8;
+  font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.01em;
+  transition: background-color .45s var(--ease), color .45s var(--ease), border-color .45s var(--ease); }
+.btn-tg svg { width: calc(22 * var(--u)); height: calc(22 * var(--u)); flex: none; color: #C9A27A; transition: color .45s var(--ease), transform .6s var(--ease); }
+.btn-tg:hover { background: #E8DCC8; border-color: #E8DCC8; color: #1A2C30; }
+.btn-tg:hover svg { color: #A9502C; transform: translate(calc(3 * var(--u)), calc(-3 * var(--u))); }
+.btn-tg:focus-visible { outline: 2px solid #E8DCC8; outline-offset: 4px; }
+
+/* «Заказать баннер или афишу» — под заголовком блока: строгая рамка, прописные */
+.btn-frame { align-self: flex-start; margin-top: calc(6 * var(--u)); display: inline-flex; align-items: center;
+  padding: calc(14 * var(--u)) calc(26 * var(--u)); border: 1px solid #C9A27A; border-radius: calc(4 * var(--u)); color: #E8DCC8;
+  font-weight: 400; font-size: calc(16 * var(--u)); line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
+  transition: background-color .45s var(--ease), border-color .45s var(--ease); }
+.btn-frame:hover { background: #A9502C; border-color: #A9502C; }
+.btn-frame:focus-visible { outline: 2px solid #E8DCC8; outline-offset: 4px; }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .cta-arrow { margin-top: 16px; gap: 10px; font-size: 17px; }
+  .cta-arrow svg { width: 20px; height: 20px; }
+  .btn-tg { position: relative; right: auto; top: auto; display: flex; width: min(320px, 86vw); margin: 24px auto 0; padding: 14px 22px; gap: 10px; font-size: 16px; }
+  .btn-tg svg { width: 20px; height: 20px; }
+  .btn-frame { margin-top: 6px; padding: 12px 20px; font-size: 13px; letter-spacing: .12em; }
+}

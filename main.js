@@ -852,7 +852,27 @@ document.documentElement.classList.replace('no-js', 'js');
       e.preventDefault();
       var wasOpen = burger.getAttribute('aria-expanded') === 'true';
       if (wasOpen) setOpen(false);
-      var goTo = function () { if (window.lenis) window.lenis.scrollTo(target, { duration: 1.4 }); else target.scrollIntoView({ behavior: 'smooth' }); };
+      /* куда прокрутить: к началу блока (закреплённого — к началу его обёртки); если верхний текст блока
+         оказался бы под шапкой — чуть выше, чтобы шапка его не закрывала */
+      var where = function () {
+        if (id === '#top') return 0;
+        var host = target.parentElement && target.parentElement.classList.contains('pin-spacer') ? target.parentElement : target;
+        var y = host.getBoundingClientRect().top + window.scrollY;
+        if (host === target) {
+          var top0 = target.getBoundingClientRect().top, first = Infinity;
+          target.querySelectorAll('h2, h3, p, .about__count').forEach(function (el) {
+            var r = el.getBoundingClientRect();
+            if (r.height > 2 && r.width > 2) first = Math.min(first, r.top - top0);
+          });
+          var need = header.offsetHeight + 12 - first;
+          if (need > 0 && first !== Infinity) y -= need;
+        }
+        return Math.max(0, y);
+      };
+      var goTo = function () {
+        var y = where();
+        if (window.lenis) window.lenis.scrollTo(y, { duration: 1.4 }); else window.scrollTo({ top: y, behavior: 'smooth' });
+      };
       wasOpen ? setTimeout(goTo, 350) : goTo();
     });
   });
