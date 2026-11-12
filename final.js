@@ -190,7 +190,7 @@ function init() {
   const scroll = { rot: 0 };
   const look = { y: 0 };                                               // куда смотрит камера по высоте
   const DUR = 17;                                                      // длительность пролёта, с — спокойно, но живее прежнего
-  const HOLD = 1.2;                                                    // первый кадр стоит, чтобы прочитать заголовок
+  const HOLD = 0.5;                                                    // первый кадр стоит, чтобы прочитать заголовок
   /* кривая хода: мягкий разгон (первые 18% времени), ровный ход в середине, мягкое торможение — без всплеска скорости посередине */
   const R = 0.18;
   const glide = (t) => {
@@ -219,13 +219,13 @@ function init() {
       tl.fromTo(el, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: 'power1.out' }, a);
       if (!stay) tl.to(el, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, b - 0.9);
     };
-    show(steps[0], 0.3, atE(key.top * 0.55));
+    show(steps[0], 0, atE(key.top * 0.55));                         // заголовок — сразу, как страница открылась
     show(steps[1], atE(key.top * 0.7), atE(key.top + (key.in - key.top) * 0.95));   // только пока под ним чистый светлый фон кольца — до входа внутрь
     show(steps[2], atE(key.out + (1 - key.out) * 0.55), atE(1), true);
   };
   window.addEventListener('resize', () => { resize(); makePath(); place(); });
 
-  let running = false, visible = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5, tick = 0;
+  let running = false, visible = false, near = false, raf = 0, lastT = 0, auto = 0.5, rotNow = 0.5, tick = 0;
   /* читаемость: на светлом — тёмный текст, на тёмном — светлый. Что лежит под каждой строкой, считаем, а не читаем
      с видеокарты (чтение пикселей останавливало отрисовку и давало подлагивания): из камеры через точки строки
      пускаем лучи; попал луч в цилиндр — берём яркость этого места экрана сайта по маленькой карте, не попал — там
@@ -288,14 +288,21 @@ function init() {
     if (++tick % 10 === 0) contrast();
     if (running) raf = requestAnimationFrame(frame);
   };
-  const start = () => {
+  /* кадры идут, пока страница хоть немного на экране: цилиндр виден уже при подъезде страницы, а не появляется рывком */
+  const draw = () => {
     if (running || !cylinder.visible) return;
     running = true; lastT = 0; raf = requestAnimationFrame(frame);
+  };
+  const halt = () => { running = false; cancelAnimationFrame(raf); raf = 0; };
+  /* пролёт и заголовки — когда страница открыта больше чем наполовину */
+  const start = () => {
+    if (!cylinder.visible) return;
+    draw();
     if (reduce) { tl.progress(1); return; }
     if (done) build();                                                 // вернулись к странице после показа — показ заново
-    tl.play();
+    if (tl.paused()) tl.play();
   };
-  const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; if (tl) tl.pause(); };
+  const stop = () => { if (tl) tl.pause(); if (!near) halt(); };
 
   let loading = false;
   const setup = () => {
@@ -308,12 +315,18 @@ function init() {
       await pause(); renderer.initTexture(tex);
       await pause(); cylinder.visible = true; renderer.compile(scene, camera);
       build();
+      renderer.render(scene, camera);                                  // первый кадр готов заранее
+      if (near) draw();
       if (visible) start();
     });
   };
 
   gsap.set(steps, { autoAlpha: 0 });
   new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '250% 0px' }).observe(sec);
+  /* лента загружается заранее — в первую свободную минуту после загрузки сайта, чтобы к последней странице всё было готово */
+  const early = () => idle(setup);
+  if (document.readyState === 'complete') setTimeout(early, 1500); else window.addEventListener('load', () => setTimeout(early, 1500));
+  new IntersectionObserver((en) => { near = en[0].isIntersecting; if (near) draw(); else if (!visible) halt(); }, { threshold: 0 }).observe(sec);
   /* показ начинается, когда страница открыта больше чем наполовину */
   new IntersectionObserver((en) => { visible = en[0].intersectionRatio > 0.5; if (visible) start(); else stop(); }, { threshold: [0, 0.5, 1] }).observe(sec);
   /* досмотрели и ушли — сцена тихо возвращается к началу, пока её совсем не видно; при возвращении показ начнётся без скачка */
