@@ -52,7 +52,7 @@ function init() {
     if (i === labelIndex) return;
     labelIndex = i;
     label.classList.add('is-swap');
-    setTimeout(() => { lName.textContent = DATA[i].name; lDesc.textContent = DATA[i].desc; lChip.style.backgroundColor = DATA[i].accentColor; label.classList.remove('is-swap'); }, 220);
+    setTimeout(() => { lName.textContent = DATA[i].name; lDesc.innerHTML = '<span class="gal__type"><span class="gal__t1">' + DATA[i].kind + '</span> <span class="gal__t2">' + DATA[i].where + '</span></span><span class="gal__note">' + DATA[i].note + '</span>'; lChip.style.backgroundColor = DATA[i].accentColor; label.classList.remove('is-swap'); }, 220);
   };
 
   /* ---------- кадр ---------- */

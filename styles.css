@@ -1151,23 +1151,30 @@ a { color: inherit; text-decoration: none; }
   background: radial-gradient(70% 55% at 50% 100%, rgba(26, 44, 48, .55), transparent 70%), #070F10; }
 .gal__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .6s ease; }
 
-/* подпись — как цветовая метка в оригинале: мелко, заглавными, с разрядкой; слева название и цветная точка, справа описание */
+/* подписи — тем же стилем, что в «Что умею»: слева название (как «АВТОРСКИЙ ФАРФОР»), справа в две строки —
+   тип работы крупнее с уточнением мельче (как «Баннер: на билборде») и короткая заметка (как пункт списка) */
 .gal__label { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #E8DCC8; transition: color .26s ease, opacity .6s ease;
-  font-weight: 400; text-transform: uppercase; letter-spacing: .08em; line-height: 1.15; }
+  font-weight: 400; line-height: 1.2; }
 .gal__label .gal__left, .gal__label .gal__desc { transition: opacity .22s ease; }
 .gal__label.is-swap .gal__left, .gal__label.is-swap .gal__desc { opacity: 0; }   /* подпись сменяется мягко */
 .gal__left { position: absolute; left: clamp(2.5rem, 8vw, 12rem); top: 50%; display: grid; gap: .75rem; justify-items: start; }
-.gal__name { margin: 0; font-size: clamp(12px, .9vw, 17px); white-space: nowrap; }
+.gal__name { margin: 0; font-size: calc(30 * var(--u)); text-transform: uppercase; white-space: nowrap; }
 .gal__chip { display: inline-block; width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); transition: background-color .26s ease; }
-.gal__desc { position: absolute; right: clamp(2.5rem, 7vw, 10rem); top: 50%; margin: 0; width: min(28vw, 360px); font-size: clamp(11px, .8vw, 15px); color: rgba(232, 220, 200, .75); }
+.gal__desc { position: absolute; right: clamp(2.5rem, 7vw, 10rem); top: 50%; margin: 0; width: max-content; display: flex; flex-direction: column; gap: calc(10 * var(--u)); }   /* ровно две строки */
+.gal__type { display: flex; align-items: baseline; gap: 0 calc(7 * var(--u)); white-space: nowrap; }
+.gal__t1 { font-size: calc(30 * var(--u)); }
+.gal__t2 { font-size: calc(20 * var(--u)); }
+.gal__note { white-space: nowrap; font-size: calc(19 * var(--u)); line-height: normal; letter-spacing: -.02em; color: rgba(232, 220, 200, .8); }
 /* список работ — для экранного диктора */
 .gal__list { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; padding: 0; }
 @media (max-width: 768px) {
   .gal__label { inset: auto 0 max(6.25rem, env(safe-area-inset-bottom)) 0; display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: start; column-gap: 1.5rem; padding: 0 1rem; }
   .gal__left, .gal__desc { position: static; }
   .gal__left { gap: .5rem; }
-  .gal__name { font-size: 11px; }
-  .gal__desc { width: auto; max-width: min(58vw, 270px); font-size: 10px; text-align: right; }
+  .gal__name { font-size: 15px; }
+  .gal__desc { width: auto; max-width: min(58vw, 270px); text-align: right; gap: 4px; }
+  .gal__type { justify-content: flex-end; white-space: normal; flex-wrap: wrap; column-gap: 5px; } .gal__note { white-space: normal; }
+  .gal__t1 { font-size: 17px; } .gal__t2 { font-size: 13px; color: rgba(232, 220, 200, .8); } .gal__note { font-size: 12px; }
 }
 
 /* ===== Блок 10 «Делаю сайты: погружающие с первого экрана» — по макету Figma «Slide 4:3 - 2» (1046:378), кадр 1920×1080 ===== */
