@@ -1029,12 +1029,12 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(90deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .1) 28%, rgba(7, 15, 16, .88) 43%, #070F10 54%),
               linear-gradient(0deg, rgba(7, 15, 16, .55) 0%, rgba(7, 15, 16, 0) 30%); }
 /* заголовок — в свободной тёмной части, телефон — справа */
-.talk { --tl: min(calc(783 * var(--u)), calc(100% - 1240 * var(--u))); }   /* левый край текста: у вас на экране — по линии 783u, на 16:9 — левее, чтобы не упереться в телефон */
+.talk { --cw: clamp(calc(340 * var(--u)), calc(100% - 1580 * var(--u)), calc(400 * var(--u)));   /* на 16:9 телефон чуть уже — наклонённый угол не задевает отзыв и карточки */ --tl: min(calc(783 * var(--u)), calc(100% - 1240 * var(--u))); }   /* левый край текста: у вас на экране — по линии 783u, на 16:9 — левее, чтобы не упереться в телефон */
 .talk__title { position: absolute; z-index: 3; left: var(--tl); top: calc(150 * var(--u)); width: auto; margin: 0; white-space: nowrap; font-size: calc(75 * var(--u)); }   /* на 2 ед. меньше общего — строка «я задаю правильные» помещается между линиями */
 
 /* ===== iPhone с перепиской ===== */
 .chat { will-change: transform;   /* телефон покачивается — свой слой, иначе каждый кадр перерисовывался целиком */
-  position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js */ width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u))); height: auto; aspect-ratio: 1 / 2;
+  position: absolute; z-index: 3; right: calc(60 * var(--u) + .118 * var(--cw)); top: calc(50% + 30 * var(--u)); /* наклон и центрирование задаёт talk.js; наклонённый угол телефона — ровно по правому полю сайта (60), как «связаться со мной» */ width: var(--cw); height: auto; aspect-ratio: 1 / 2;
   padding: calc(13 * var(--u)); border-radius: calc(66 * var(--u)); background: #1c1d1f;
   box-shadow: inset 0 0 0 calc(2 * var(--u)) #3a3b3e, 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(0, 0, 0, .55); }
 /* экран — как чат Telegram: зелёный фон темы с тонким узором-«каракулями» */
@@ -1368,7 +1368,7 @@ a { color: inherit; text-decoration: none; }
 .case[data-page="0"] .cta-arrow:hover { color: #E8DCC8; }
 
 /* «Написать в Telegram» — под телефоном с перепиской: капсула с самолётиком */
-.btn-tg { position: absolute; z-index: 3; right: calc(45 * var(--u)); top: calc(50% + 450 * var(--u)); width: clamp(calc(360 * var(--u)), calc(100% - 1560 * var(--u)), calc(400 * var(--u)));
+.btn-tg { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(50% + 450 * var(--u)); width: var(--cw);   /* правый край — по полю сайта */
   display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--u)); padding: calc(14 * var(--u)) calc(24 * var(--u));
   border: 1px solid rgba(232, 220, 200, .4); border-radius: 999px; color: #E8DCC8;
   font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.01em;

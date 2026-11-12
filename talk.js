@@ -112,7 +112,7 @@
 
   var phone = sec.querySelector('.chat');
   var stackedMq = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
-  var TILT = stackedMq ? 4 : 9;                      // наклон: низ телефона — к центру страницы
+  var TILT = stackedMq ? 4 : 7;                      // наклон: низ телефона — к центру страницы
   gsap.set(phone, { yPercent: stackedMq ? 0 : -50, rotation: TILT });
   var introDone = false;
   var startIntro = function () { if (!introDone) { introDone = true; intro.play(); } };
