@@ -16,7 +16,7 @@ function init() {
   const COLORS = ['#A9502C', '#C9A27A', '#E8DCC8', '#2F4B52', '#6F7B74', '#6A5F51'].map((c) => new THREE.Color(c));
   const BLANK = new THREE.Color('#070F10');
   const FACE = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
-  const GRID = 3, GAP = 1, ROUND = 0.0735, PERSPECTIVE = 0.15, SIZE = 95;
+  const GRID = 3, GAP = 1, ROUND = 0.0735, PERSPECTIVE = 0.15, SIZE = 80;   // кубик чуть меньше — ровные отступы до подписи и текста
   const SPIN = { x: 0, y: 11, z: 0 };                       // собственное вращение (как в образце)
   const SPRING = { k: 200, c: 20, m: 1 };                   // упругий поворот слоя: жёсткость, затухание, масса
 
