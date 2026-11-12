@@ -24,6 +24,7 @@ function init() {
   const CELL = { w: 1920, h: 980 };
   const RADIUS = 2.5;                                                 // как в оригинале
   const HEIGHT = (2 * Math.PI * RADIUS) * CELL.h / (CELL.w * SCREENS * LAPS);
+  const MAXW = 1.3;                                                    // предел скорости вращения, рад/с: ход всегда спокойный
   const SPIN = 0.05;                                                   // медленное собственное вращение, рад/с — спокойно, без суеты
 
   let renderer;
@@ -206,6 +207,7 @@ function init() {
     if (tl) tl.kill();
     fly.e = 0; place();
     scroll.rot = 0; done = false;
+    if (typeof rotNow === 'number') auto = rotNow;                     // показ заново — вращение продолжается с того же места, без обратной перемотки
     gsap.set(steps, { autoAlpha: 0 });
     lines.forEach((s) => s.classList.remove('is-light'));
     tl = gsap.timeline({ paused: true, onComplete: () => { done = true; } });
@@ -268,7 +270,10 @@ function init() {
     if (!reduce) auto += SPIN * dt;
     /* вращение плавно догоняет цель — никаких рывков */
     const rot = auto + scroll.rot, prevRot = rotNow;
-    rotNow += (rot - rotNow) * (reduce ? 1 : 0.06);
+    let stepR = (rot - rotNow) * (reduce ? 1 : 0.06);
+    const lim = MAXW * Math.max(dt, 1 / 120);                           // не быстрее спокойного предела — даже если цель скакнула
+    if (!reduce) stepR = Math.max(-lim, Math.min(lim, stepR));
+    rotNow += stepR;
     const vel = rotNow - prevRot;
     cylinder.rotation.y = rotNow;
     camera.position.set(cam.x, cam.y, cam.z);
