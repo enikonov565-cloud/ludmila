@@ -1394,3 +1394,29 @@ a { color: inherit; text-decoration: none; }
   .btn-tg svg { width: 20px; height: 20px; }
   .btn-frame { margin-top: 6px; padding: 12px 20px; border-radius: 10px; font-size: 13px; letter-spacing: .12em; }
 }
+
+/* ===== Единая форма всех кнопок — как «Обсудить проект» в блоке «Дизайн, который продаёт»:
+   те же отступы, скругление 12, шрифт 24 Medium, строчные буквы. Цвет у каждой — свой ===== */
+.btn-frame, .btn-tg, .cta-arrow {
+  display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--u));
+  padding: calc(22 * var(--u)) calc(40 * var(--u)); border-radius: calc(12 * var(--u));
+  font-weight: 500; font-size: calc(24 * var(--u)); line-height: 1; letter-spacing: -.01em; text-transform: none;
+  transition: background-color .45s var(--ease), border-color .45s var(--ease), color .45s var(--ease), transform .6s var(--ease);
+}
+.btn-frame:hover, .btn-tg:hover, .cta-arrow:hover { transform: translateY(calc(-2 * var(--u))); }
+/* «Хочу такие же карточки» — рамка медью, при наведении — заливка медью */
+.cta-arrow { align-self: center; border: 1px solid currentColor; }
+.cta-arrow__word { padding-bottom: 0; }
+.cta-arrow__word::after { display: none; }
+.case[data-page="0"] .cta-arrow:hover { background: #C9A27A; border-color: #C9A27A; color: #1A2C30; }
+.case[data-page="1"] .cta-arrow:hover { background: #A9502C; border-color: #A9502C; color: #F6EFE5; }
+.btn-tg svg, .cta-arrow svg { width: 1em; height: 1em; }   /* значок — высотой с буквы: кнопка той же высоты, что «Обсудить проект» */
+/* ширина — по тексту, в одну строку; по центру под низом наклонённого телефона */
+.btn-tg { width: auto; white-space: nowrap; right: calc(60 * var(--u) + .74 * var(--cw)); translate: 50% 0; }
+
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .btn-frame, .btn-tg, .cta-arrow { padding: 16px 26px; border-radius: 10px; gap: 10px; font-size: clamp(16px, 4.4vw, 20px); letter-spacing: -.01em; }
+  .cta-arrow { align-self: flex-start; }
+  .btn-tg { display: flex; }
+  .btn-tg { width: auto; right: auto; translate: none; margin-left: auto; margin-right: auto; }
+}
