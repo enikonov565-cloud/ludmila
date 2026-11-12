@@ -82,12 +82,13 @@
   };
   tick();
 
-  /* идут, только пока часы на экране (карточка открыта и блок виден) */
-  var raf = 0, on = false;
-  var loop = function () { tick(); raf = on ? requestAnimationFrame(loop) : 0; };
+  /* идут, только пока карточка открыта и видна; время выставляется сразу, ещё до проявления оборота */
+  var back = host.closest('.apx__back'), slide = host.closest('.apx__slide');
+  var raf = 0, inView = false, want = false;
+  var isOpen = function () { return want || (back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02); };
+  var loop = function () { tick(); raf = inView && isOpen() ? requestAnimationFrame(loop) : 0; };
+  var check = function () { if (inView && !raf && isOpen()) { tick(); raf = requestAnimationFrame(loop); } };
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setInterval(tick, 1000); return; }
-  new IntersectionObserver(function (en) {
-    on = en[0].isIntersecting;
-    if (on && !raf) raf = requestAnimationFrame(loop);
-  }, { threshold: 0 }).observe(host);
+  if (slide) slide.addEventListener('apx:card', function (e) { want = e.detail.open; if (want) check(); });
+  new IntersectionObserver(function (en) { inView = en[0].isIntersecting; check(); }, { threshold: 0 }).observe(host);
 })();

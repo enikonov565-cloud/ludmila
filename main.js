@@ -429,7 +429,9 @@ document.documentElement.classList.replace('no-js', 'js');
       .to(s.querySelector('.apx__front'), { autoAlpha: 0, y: -20, duration: 0.5, ease: 'power2.in' }, 0)
       .fromTo(s.querySelector('.apx__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.45)
       .from(s.querySelector('.apx__back > img, .apx__back .apx__clock svg, .apx__back .apx__goal-canvas, .apx__back .portal__scene, .apx__back .apx__rubik'), { scale: 1.15, duration: 1.2, ease: 'power2.out' }, 0.45)
-      .from(s.querySelector('.apx__solution'), { y: 24, autoAlpha: 0, duration: 0.8, ease: 'power2.out' }, 0.7)
+      .from(s.querySelector('.apx__solution-label'), { y: 12, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 0.6)   // порядок на обороте:
+      .from(s.querySelector('.apx__solution'), { y: 24, autoAlpha: 0, duration: 0.8, ease: 'power2.out' }, 0.75)          // подпись → текст → кнопки
+      .from(s.querySelector('.apx__back-nav'), { y: 16, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 1.0)
       .to(more[0], { x: '1.5rem', opacity: 1 }, 0)
       .to(more[1], { x: '-1.5rem', opacity: 1 }, 0)
       .to(num, { y: 0, duration: 1 }, 0.3)
@@ -440,13 +442,19 @@ document.documentElement.classList.replace('no-js', 'js');
 
   /* нажатие на карточку: она сужается и показывает фото и решение Людмилы; повторное — возвращает проблему */
   var opened = false;
+  /* анимации на обороте (часы, «Цель», статуэтка, кубик) узнают об открытии и закрытии сразу — по событию карточки */
+  var tell = function (slide, open) { slide.dispatchEvent(new CustomEvent('apx:card', { detail: { open: open } })); };
   var setOpen = function (v) {
+    if (busy || opened === v) return;                         // пока сцена меняется — не открываем и не закрываем
     opened = v;
     var card = slides[current].querySelector('.apx__card');
     var hintBtn = card.querySelector('.js-open');
     if (hintBtn) hintBtn.setAttribute('aria-expanded', v ? 'true' : 'false');
+    tell(slides[current], v);
     if (v) hoverTl[current].timeScale(1).play(); else hoverTl[current].timeScale(1.4).reverse();
   };
+  /* Esc закрывает открытую карточку */
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && opened) { setOpen(false); restart(); } });
   var showMeaning = function () {};
   slides.forEach(function (s) {
     var card = s.querySelector('.apx__card');
@@ -465,7 +473,7 @@ document.documentElement.classList.replace('no-js', 'js');
     busy = true;
     var next = (current + dir + total) % total;
     var active = slides[current], incoming = slides[next];
-    if (opened) { opened = false; var hb = active.querySelector('.js-open'); if (hb) hb.setAttribute('aria-expanded', 'false'); }
+    if (opened) { opened = false; var hb = active.querySelector('.js-open'); if (hb) hb.setAttribute('aria-expanded', 'false'); tell(active, false); }
     hoverTl[current].timeScale(1.4).reverse();
     active.classList.remove('active');
     incoming.classList.add('active');
@@ -479,7 +487,7 @@ document.documentElement.classList.replace('no-js', 'js');
       onComplete: function () {
         gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
         busy = false; showMeaning();
-        if (wanted !== current) go(wanted > current ? 1 : -1); /* прокрутили дальше, пока шла смена — догоняем */
+        if (pinned && wanted !== current) go(wanted > current ? 1 : -1); /* прокрутили дальше, пока шла смена — догоняем */
       } });
     current = next;
     if (cur) cur.textContent = String(current + 1).padStart(2, '0');
@@ -495,17 +503,18 @@ document.documentElement.classList.replace('no-js', 'js');
     new IntersectionObserver(function (e) {
       inView = e[0].isIntersecting;
       if (inView) { showMeaning(); if (answer) answer.classList.add('is-in'); }
+      else if (opened) setOpen(false);                          /* ушли из блока — карточка закрывается, вернёмся к лицевой стороне */
     }, { threshold: 0.4 }).observe(root);
   }
   restart();
 
   /* Компьютер: блок закрепляется на экране, и прокрутка колёсиком листает сцены 01→04;
      после четвёртой страница едет дальше. Автолистание тогда не нужно — сцену задаёт прокрутка. */
-  var wanted = 0;
+  var wanted = 0, pinned = false;
   var stackedMq = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
   if (window.ScrollTrigger && !stackedMq.matches && !reduce) {
     clearInterval(timer);
-    restart = function () {};
+    restart = function () {}; pinned = true;
     ScrollTrigger.create({
       trigger: section, start: 'top top', end: '+=' + (total - 1) * 100 + '%', pin: true, pinSpacing: true,
       onUpdate: function (self) {

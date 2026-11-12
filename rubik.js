@@ -108,7 +108,8 @@ function init() {
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
 
   let raf = 0, lastT = 0, inView = false;
-  const isOpen = () => back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02;
+  let want = false;
+  const isOpen = () => want || (back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02);
   const step = (now) => {
     raf = 0;
     if (!inView || !isOpen()) return;
@@ -128,10 +129,8 @@ function init() {
     renderer.render(scene, camera);
   };
   const check = () => { if (inView && !raf && isOpen()) { lastT = 0; raf = requestAnimationFrame(step); } };
-  let poll = 0;
-  new IntersectionObserver((e) => {
-    inView = e[0].isIntersecting;
-    clearInterval(poll);
-    if (inView) poll = setInterval(check, 200);            // карточку открыли — заметим за пятую долю секунды
-  }, { threshold: 0 }).observe(host);
+  const slide = host.closest('.apx__slide');
+  if (slide) slide.addEventListener('apx:card', (e) => { want = e.detail.open; if (want) check(); });   // старт — вместе с открытием
+  new IntersectionObserver((e) => { inView = e[0].isIntersecting; check(); }, { threshold: 0 }).observe(host);
+  renderer.render(scene, camera);                          // первый кадр готов заранее — оборот проявляется уже с кубиком
 }

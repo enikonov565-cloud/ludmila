@@ -32,7 +32,8 @@
   });
   if (fine) host.addEventListener('pointerleave', function () { ptr.x = 0; ptr.y = 0; });
 
-  var isOpen = function () { return back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02; };
+  var want = false;
+  var isOpen = function () { return want || (back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02); };
   var frame = function (now) {
     raf = 0;
     if (!inView || !isOpen()) return;
@@ -48,10 +49,10 @@
   };
   var check = function () { if (inView && !raf && isOpen()) raf = requestAnimationFrame(frame); };
   if (reduce) { card.style.transform = 'rotateY(-12deg)'; return; }
-  var poll = 0;
-  new IntersectionObserver(function (e) {
-    inView = e[0].isIntersecting;
-    clearInterval(poll);
-    if (inView) poll = setInterval(check, 200);                // карточку открыли — заметим за пятую долю секунды
-  }, { threshold: 0 }).observe(host);
+  var slide = host.closest('.apx__slide');
+  if (slide) slide.addEventListener('apx:card', function (e) {
+    want = e.detail.open;
+    if (want) { t0 = 0; check(); }                             // каждый раз — с ровного положения, плавно
+  });
+  new IntersectionObserver(function (e) { inView = e[0].isIntersecting; check(); }, { threshold: 0 }).observe(host);
 })();

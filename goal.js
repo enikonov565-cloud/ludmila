@@ -93,7 +93,9 @@
     ctx.globalAlpha = 1;
   };
 
-  var isOpen = function () { return back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02; };
+  /* открыта ли карточка: по событию блока (сразу) или, на всякий случай, по видимости оборота */
+  var want = false;
+  var isOpen = function () { return want || (back && back.style.visibility !== 'hidden' && (parseFloat(back.style.opacity) || 0) > 0.02); };
   var check = function () {
     if (!inView || raf || !isOpen()) return;
     if (!built && !build()) return;
@@ -101,14 +103,14 @@
     raf = requestAnimationFrame(frame);
   };
   if (reduce) return;
-  var poll = 0;
+  var slide = host.closest('.apx__slide');
+  if (slide) slide.addEventListener('apx:card', function (e) {
+    want = e.detail.open;
+    if (want) { shown = false; check(); }                       // слово начинает собираться вместе с проявлением оборота
+  });
   var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   ready.then(function () {
-    new IntersectionObserver(function (e) {
-      inView = e[0].isIntersecting;
-      clearInterval(poll);
-      if (inView) poll = setInterval(check, 200);              // карточку открыли — заметим за пятую долю секунды
-    }, { threshold: 0 }).observe(host);
+    new IntersectionObserver(function (e) { inView = e[0].isIntersecting; check(); }, { threshold: 0 }).observe(host);
   });
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { if (built) { build(); } }, 200); });
