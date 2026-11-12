@@ -1420,3 +1420,7 @@ a { color: inherit; text-decoration: none; }
   .btn-tg { display: flex; }
   .btn-tg { width: auto; right: auto; translate: none; margin-left: auto; margin-right: auto; }
 }
+/* «Заказать баннер или афишу» — короче по длине: текст чуть мельче, боковые отступы меньше; высота и скругление — как у остальных */
+@media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
+  .btn-frame { padding: calc(25 * var(--u)) calc(28 * var(--u)); font-size: calc(20 * var(--u)); }
+}
