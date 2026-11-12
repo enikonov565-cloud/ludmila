@@ -38,10 +38,11 @@ function init() {
 
   /* расстояние, при котором цилиндр спереди занимает ~88% ширины (на телефоне — шире экрана) */
   const fit = () => {
-    const w = stage.clientWidth || window.innerWidth, h = stage.clientHeight || window.innerHeight;
+    const w = stage.clientWidth || window.innerWidth || 1280, h = stage.clientHeight || window.innerHeight || 720;   // размер ещё не известен — берём окно, чтобы расчёты не сломались
     const aspect = w / h, mobile = aspect < 1, fov = mobile ? 50 : 45;
     const th = Math.tan(fov * Math.PI / 360) * aspect;
     const D = RADIUS / Math.sin(Math.atan((mobile ? 1.6 : 0.7) * th));
+    if (!isFinite(D) || D <= RADIUS) return { fov, aspect: isFinite(aspect) ? aspect : 16 / 9, D: 6, w, h, mobile };
     return { fov, aspect, D, w, h, mobile };
   };
   let F = fit();
