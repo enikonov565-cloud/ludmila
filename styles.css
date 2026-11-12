@@ -682,7 +682,8 @@ a { color: inherit; text-decoration: none; }
   color: var(--hc); transition: background-color .5s var(--ease), padding .5s var(--ease), transform .5s var(--ease), color .5s var(--ease);
 }
 /* при прокрутке подложка проявляется, чтобы шапка читалась на любом блоке */
-.site-header.is-scrolled { background: rgba(var(--hc-bg), .22); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding-top: calc(14 * var(--hu)); padding-bottom: calc(14 * var(--hu)); }
+/* полупрозрачная: без размытия, лёгкая подложка тает книзу — заголовки блоков под шапкой видны */
+.site-header.is-scrolled { background: linear-gradient(180deg, rgba(var(--hc-bg), .45) 0%, rgba(var(--hc-bg), .2) 60%, rgba(var(--hc-bg), 0) 100%); -webkit-backdrop-filter: none; backdrop-filter: none; padding-top: calc(14 * var(--hu)); padding-bottom: calc(14 * var(--hu)); }
 .site-header__left { display: flex; align-items: center; gap: calc(28 * var(--hu)); }
 
 .burger {
