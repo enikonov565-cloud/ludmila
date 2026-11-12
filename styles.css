@@ -488,9 +488,12 @@ a { color: inherit; text-decoration: none; }
 .apx__back { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
 .apx__back img { position: absolute; inset: 14.7%; width: 70.6%; height: 70.6%; object-fit: cover; }
 /* «Итог»: вместо фото — часы в фирменных цветах на тёмной бирюзе (clock.js); над часами — подпись, под ними — текст */
-.apx__clock { position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: center; padding: 6% 0 22%;
-  background: radial-gradient(75% 70% at 50% 40%, #22383D 0%, #1A2C30 55%, #12201F 100%); }
-.apx__clock .clock__svg { width: 64%; height: auto; display: block; filter: drop-shadow(0 calc(10 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, .45)); transform-origin: 50% 50%; }
+.apx__clock { position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: center; padding: 3% 0 30%;
+  background: radial-gradient(75% 70% at 50% 40%, #34505A 0%, #2A434A 55%, #20363B 100%); }   /* светлее, чем раньше */
+.apx__clock .clock__svg { width: 58%; height: auto; display: block; filter: drop-shadow(0 calc(10 * var(--u)) calc(18 * var(--u)) rgba(0, 0, 0, .45)); transform-origin: 50% 50%; }
+/* на карточке с часами — затемнение мягче, фон светлее; текст ниже, не наплывает на часы */
+.apx__back--clock::after { background: linear-gradient(180deg, rgba(14, 27, 30, .3) 0%, rgba(14, 27, 30, 0) 26%, rgba(14, 27, 30, 0) 55%, rgba(14, 27, 30, .55) 100%) !important; }
+@media (min-width: 1001px) and (min-aspect-ratio: 7/5) { .apx__back--clock .apx__solution { bottom: calc(176 * var(--u)); } }
 .apx__back::after { content: ""; position: absolute; inset: 14.7%; background: linear-gradient(180deg, rgba(14, 27, 30, .55) 0%, rgba(14, 27, 30, 0) 26%, rgba(14, 27, 30, 0) 40%, rgba(14, 27, 30, .85) 100%); }
 .apx__solution {
   position: absolute; z-index: 1; left: calc(130 * var(--u)); right: calc(130 * var(--u)); bottom: calc(196 * var(--u)); margin: 0;
