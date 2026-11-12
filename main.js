@@ -428,7 +428,7 @@ document.documentElement.classList.replace('no-js', 'js');
       .to(s.querySelector('.apx__card'), { clipPath: 'inset(14.7%)', scale: 0.97 }, 0)
       .to(s.querySelector('.apx__front'), { autoAlpha: 0, y: -20, duration: 0.5, ease: 'power2.in' }, 0)
       .fromTo(s.querySelector('.apx__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.45)
-      .from(s.querySelector('.apx__back > img, .apx__back .apx__clock svg, .apx__back .apx__goal-canvas, .apx__back .portal__scene'), { scale: 1.15, duration: 1.2, ease: 'power2.out' }, 0.45)
+      .from(s.querySelector('.apx__back > img, .apx__back .apx__clock svg, .apx__back .apx__goal-canvas, .apx__back .portal__scene, .apx__back .apx__rubik'), { scale: 1.15, duration: 1.2, ease: 'power2.out' }, 0.45)
       .from(s.querySelector('.apx__solution'), { y: 24, autoAlpha: 0, duration: 0.8, ease: 'power2.out' }, 0.7)
       .to(more[0], { x: '1.5rem', opacity: 1 }, 0)
       .to(more[1], { x: '-1.5rem', opacity: 1 }, 0)
