@@ -1380,10 +1380,10 @@ a { color: inherit; text-decoration: none; }
 
 /* «Заказать баннер или афишу» — под заголовком блока: строгая рамка, прописные */
 .btn-frame { align-self: flex-start; margin-top: calc(6 * var(--u)); display: inline-flex; align-items: center;
-  padding: calc(14 * var(--u)) calc(26 * var(--u)); border: 1px solid #C9A27A; border-radius: calc(4 * var(--u)); color: #E8DCC8;
+  padding: calc(14 * var(--u)) calc(26 * var(--u)); border: 1px solid #E8DCC8; border-radius: calc(4 * var(--u)); color: #C9A27A;   /* рамка светлая, буквы медные */
   font-weight: 400; font-size: calc(16 * var(--u)); line-height: 1.2; letter-spacing: .14em; text-transform: uppercase;
-  transition: background-color .45s var(--ease), border-color .45s var(--ease); }
-.btn-frame:hover { background: #A9502C; border-color: #A9502C; }
+  transition: background-color .45s var(--ease), border-color .45s var(--ease), color .45s var(--ease); }
+.btn-frame:hover { background: #A9502C; border-color: #A9502C; color: #E8DCC8; }
 .btn-frame:focus-visible { outline: 2px solid #E8DCC8; outline-offset: 4px; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
