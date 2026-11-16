@@ -165,7 +165,6 @@ function init() {
   const leftPage = (ctx, s, i) => {
     paper(ctx, SPINE_L);
     marginLine(ctx, M * 0.62);
-    flag(ctx, PW * 0.012, PH * 0.1, PW * 0.3, PW * 0.075, 1, TAPE[i % 4], -0.02);        // закладка у внешнего края
     if (stacked) sprig(ctx, PW * 0.64, PH * 0.9, PW * 0.88, PH * 0.73, 1.1); else sprig(ctx, PW * 0.56, PH * 0.9, PW * 0.84, PH * 0.68, 1.3);
     const maxW = PW - M * 2 - PW * 0.04, size = PW * 0.115;
     let y = PH * (stacked ? 0.27 : 0.3);
@@ -180,7 +179,6 @@ function init() {
   const LAB_Y = stacked ? 0.17 : 0.14, SOL_Y = stacked ? 0.74 : 0.76, SOL_S = stacked ? 0.064 : 0.07;
   const rightStatic = (ctx, s, i) => {
     paper(ctx, SPINE_R);
-    flag(ctx, PW * 0.988, PH * (stacked ? 0.14 : 0.1), PW * 0.26, PW * 0.075, -1, TAPE[(i + 2) % 4], 0.02);   // закладка у внешнего края
     const size = PW * 0.08;
     ctx.font = `400 ${size}px ${FONT}`;
     const lw = ctx.measureText(s.label).width;
@@ -261,6 +259,7 @@ function init() {
       dark = document.createElement('canvas'); dark.width = img.naturalWidth; dark.height = img.naturalHeight;
       const d = dark.getContext('2d'); d.drawImage(img, 0, 0);
       d.globalCompositeOperation = 'source-atop'; d.fillStyle = 'rgba(70, 48, 18, .55)'; d.fillRect(0, 0, dark.width, dark.height);
+      if (api.onReady) api.onReady();                             // картинка пришла — страница перерисовывается сразу, не дожидаясь своей очереди
     };
     let t = 0;
     const cx = AREA.x + AREA.w / 2, cy = AREA.y + AREA.h * 0.5;
@@ -274,7 +273,7 @@ function init() {
       const k = F / (F + Z);
       return [cx + X * k, cy + Y * k, Z];
     };
-    return {
+    const api = {
       enter() { t = 0; },
       tick(dt) { t += dt; },
       draw(ctx) {
@@ -317,6 +316,7 @@ function init() {
         poly(front); ctx.fillStyle = sg; ctx.fill();
       },
     };
+    return api;
   };
 
   /* кубик Рубика из фирменных цветов: сам поворачивает слои с упругим доводом и медленно вращается */
@@ -459,7 +459,8 @@ function init() {
       const R = mk(); const base = document.createElement('canvas'); base.width = PW; base.height = PH;
       rightStatic(base.getContext('2d'), s, i);
       const anim = MAKERS[s.anim] ? MAKERS[s.anim]() : null;
-      const paint = () => { R.ctx.drawImage(base, 0, 0); if (anim) anim.draw(R.ctx); R.tex.needsUpdate = true; };
+      const paint = () => { R.ctx.drawImage(base, 0, 0); if (anim) anim.draw(R.ctx); R.tex.needsUpdate = true; if (book) book.needsRender = true; };
+      if (anim) anim.onReady = paint;
       paint();
       return { L, R, anim, paint };
     });
@@ -531,7 +532,10 @@ function init() {
     build();
     host.classList.add('is-flat');
     host.innerHTML = '<div class="nb-pad"><div class="nb-slot nb-top"></div><div class="nb-bind" aria-hidden="true"><i></i><i></i></div>'
-      + '<div class="nb-slot nb-bottom"></div><div class="nb-leaf" aria-hidden="true"><div class="nb-face nb-front"></div><div class="nb-face nb-back"></div></div></div>';
+      + '<div class="nb-slot nb-bottom"></div><div class="nb-leaf" aria-hidden="true"><div class="nb-face nb-front"></div><div class="nb-face nb-back"></div></div>'
+      /* закладки-стикеры выглядывают из-за краёв листов */
+      + [['r', 14, '#A9502C'], ['r', 24, '#C9A27A'], ['r', 62, '#6F7B74'], ['r', 74, '#2F4B52'], ['l', 36, '#6F7B74'], ['l', 86, '#A9502C']]
+        .map((t) => '<i class="nb-tab nb-tab--' + t[0] + '" style="top:' + t[1] + '%;--c:' + t[2] + '" aria-hidden="true"></i>').join('') + '</div>';
     pad = {
       top: host.querySelector('.nb-top'), bottom: host.querySelector('.nb-bottom'), leaf: host.querySelector('.nb-leaf'),
       front: host.querySelector('.nb-front'), back: host.querySelector('.nb-back'), bind: host.querySelector('.nb-bind'),
@@ -592,7 +596,39 @@ function init() {
       });
     }
     view.scene.add(ringGroup);
+    if (!tabGroup) tabGroup = makeTabs();
+    view.scene.add(tabGroup);
     book.needsRender = true;
+  };
+  /* закладки-стикеры, как в настоящем блокноте: вклеены между листами и выглядывают из-за краёв стопок —
+     сбоку справа и слева, пара — сверху. Часть под страницами не видна; у видимой — свет и тень сцены */
+  let tabGroup = null;
+  const makeTabs = () => {
+    const g = new THREE.Group();
+    const rounded = (w, h, r) => {
+      const sh = new THREE.Shape();
+      sh.moveTo(-w / 2, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+      sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2, h / 2); sh.closePath();
+      return new THREE.ShapeGeometry(sh, 6);
+    };
+    const mat = (c, o) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.38, metalness: 0, transparent: o < 1, opacity: o, side: THREE.DoubleSide });
+    const half = ASPECT / 2;
+    /* [сторона, положение вдоль края (доля), цвет, прозрачность, z — на каком листе стопки] */
+    const TABS = [
+      ['r', 0.30, '#A9502C', 0.96, 0.0016], ['r', 0.12, '#C9A27A', 0.9, 0.0022], ['r', -0.08, '#6F7B74', 0.94, 0.0012], ['r', -0.28, '#2F4B52', 0.92, 0.0019],
+      ['l', 0.22, '#6F7B74', 0.94, 0.0014], ['l', -0.02, '#A9502C', 0.92, 0.002], ['l', -0.24, '#C8BDAB', 0.96, 0.0011],
+      ['t', 0.42, '#2F4B52', 0.92, 0.0015], ['t', 0.62, '#C9A27A', 0.9, 0.0021],
+    ];
+    const W = 0.2, H = 0.1, OUT = 0.085;                      // длина стикера, ширина, сколько выглядывает
+    TABS.forEach(([side, at, c, o, z]) => {
+      const m = new THREE.Mesh(rounded(W, H, 0.012), mat(c, o));
+      if (side === 'r') { m.position.set(1 + OUT - W / 2, half * at * 2, z); }
+      else if (side === 'l') { m.position.set(-1 - OUT + W / 2, half * at * 2, z); m.rotation.z = Math.PI; }
+      else { m.position.set(at, half + OUT - W / 2, z); m.rotation.z = Math.PI / 2; }
+      m.castShadow = true; m.receiveShadow = false;
+      g.add(m);
+    });
+    return g;
   };
 
   const start = () => {
