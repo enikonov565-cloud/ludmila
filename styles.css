@@ -1393,8 +1393,6 @@ a { color: inherit; text-decoration: none; }
   .apx__answer-head { white-space: normal; }
   .apx__nav { left: calc(700 * var(--u)); top: calc(940 * var(--u)); }   /* счётчик и стрелки — под блокнотом */
   .apx__answer-sub { width: calc(300 * var(--u)); }
-  .apx__answer-sub .apx__line { display: inline; }
-  .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
 }
 .apx__book { position: absolute; z-index: 1; inset: 0; }
 .apx__book { pointer-events: none; }
@@ -1437,12 +1435,15 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ===== «Я работаю иначе» — как заголовки других страниц сайта ===== */
+.apx__br { display: none; }
 .apx__answer-head .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; margin-right: .42em; }   /* у рукописной «Я» длинный росчерк вправо — отступ, чтобы не слипалась со словом */
 /* компьютер: заголовком сверху слева, над блокнотом (крупно, рукописная «Я»), под ним — подпись одной строкой */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
   .apx__answer { left: calc(170 * var(--u)); top: calc(130 * var(--u)); width: auto; gap: calc(18 * var(--u)); }
   .apx__answer-head { font-size: calc(77 * var(--u)); white-space: nowrap; }
   .apx__answer-sub { width: auto; white-space: nowrap; font-size: calc(28 * var(--u)); }
+  .apx__answer-sub .apx__line { display: inline; }
+  .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
 }
 /* телефон: «Мой подход» → портрет рядом с «Я работаю иначе» → блокнот → стрелки */
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
@@ -1450,13 +1451,22 @@ a { color: inherit; text-decoration: none; }
   .approach__frame { display: contents; }
   .approach__title { grid-area: title; margin-bottom: 16px; }
   .apx__answer { grid-area: answer; align-self: center; padding: 0 0 12px; }
-  .apx__answer-head { font-size: clamp(28px, 7.6vw, 48px); white-space: normal; }
-  .apx__answer-sub { font-size: clamp(14px, 3.9vw, 20px); }
+  /* «Я работаю» / «иначе.» — ровно две строки; подпись — две строки, как в макете, мельче */
+  .apx__br { display: inline; }
+  .apx__answer-head { font-size: clamp(24px, 6.6vw, 42px); white-space: nowrap; }
+  .apx__answer-head .cap { margin-right: .3em; }
+  .apx__answer { gap: 10px; }
+  .apx__answer-sub { font-size: clamp(12.5px, 3.45vw, 18px); white-space: nowrap; }
   .approach__photo { grid-area: photo; order: 0; align-self: end; width: calc(100% + 20px); height: auto; margin: 0 -20px 0 0; }
   .apx { grid-area: book; margin-top: 6px; }
   /* место под блокнот — сразу, до его сборки: две квадратные страницы и кольца; иначе блок вырос бы позже и наехал на следующий */
   .apx__book { height: calc((100vw - 40px) * 2 + 14px); }
-  .apx__answer-sub .apx__line { display: inline; }
-  .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
-  .apx__nav { grid-area: nav; margin: 22px 0 56px; }
+  /* стрелки — сразу под блокнотом, компактно */
+  .apx__nav { grid-area: nav; margin: 14px 0 44px; width: 160px; height: 52px; }
+  .apx__count { bottom: 22px; gap: 8px; }
+  .apx__cur { font-size: 26px; }
+  .apx__total { font-size: 14px; }
+  .apx__sep { width: 16px; }
+  .apx__arrow { width: 72px; height: 18px; }
+  .apx__arrow.js-next { left: 86px; }
 }
