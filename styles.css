@@ -459,146 +459,100 @@ a { color: inherit; text-decoration: none; }
 /* квадрат 680 со сценой: текст стоит во внутренней зоне 480 (поля по 100),
    поэтому при сужении до 480 он не обрезается */
 .apx { position: absolute; left: calc(60 * var(--u)); top: calc(335 * var(--u)); width: calc(680 * var(--u)); height: calc(680 * var(--u)); }
-.apx__slide { position: absolute; inset: 0; visibility: hidden; }
-.apx__slide.active { visibility: visible; }
-.apx__card {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: 0; cursor: pointer;
-  background: var(--sq); color: var(--sq-ink); clip-path: inset(0%);
-}
-.apx__card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+
+
+
+
 /* лицевая сторона — проблема; текст во внутренней зоне 480, поэтому при сужении не режется */
-.apx__front { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: calc(120 * var(--u)); }
+
 /* подсказка «нажмите» — пилюля с пульсирующей точкой */
 /* кнопка «Нажмите» — ниже и длиннее: во всю ширину текста карточки */
-.apx__hint {
-  align-self: stretch; margin-top: auto;
-  display: flex; align-items: center; justify-content: center; gap: calc(14 * var(--u));
-  padding: calc(16 * var(--u)) calc(28 * var(--u)); border: 1px solid currentColor; border-radius: 99px;
-  background: transparent; color: inherit; font: inherit; cursor: pointer;
-  font-size: calc(19 * var(--u)); line-height: 1; letter-spacing: .01em; opacity: .95;
-  transition: background-color .35s, color .35s;
-}
-.apx__hint:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
-.apx__card:hover .apx__hint { background: var(--sq-ink); color: var(--sq); }
-.apx__hint-dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); border-radius: 50%; background: currentColor; animation: hint-pulse 1.6s ease-in-out infinite; }
+
+
+
+
 @keyframes hint-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.8); opacity: .35; } }
 /* обратная сторона — фото сцены и решение Людмилы (видна в суженной карточке 480) */
-.apx__back { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
-.apx__back img { position: absolute; inset: 14.7%; width: 70.6%; height: 70.6%; object-fit: cover; }
+
+
 /* «Итог»: вместо фото — часы в фирменных цветах на тёмной бирюзе (clock.js); над часами — подпись, под ними — текст */
 /* фон карточки с часами — чистый светло-бежевый, в тон лицевой стороне этой карточки (#C8BDAB), без серых и грязных оттенков */
-.apx__back--clock::before { content: ""; position: absolute; inset: 14.7%; background: radial-gradient(75% 70% at 50% 42%, #E3DACB 0%, #D3C8B6 55%, #C8BDAB 100%); }
-.apx__clock { position: absolute; inset: 14.7% 14.7% calc(14.7% + 28%) 14.7%; display: grid; place-items: center; }
-.apx__clock .clock__svg { width: auto; height: 84%; max-width: 84%; display: block; filter: drop-shadow(0 calc(12 * var(--u)) calc(20 * var(--u)) rgba(26, 44, 48, .35)); transform-origin: 50% 50%; }
+
+
+
 /* на компьютере — ровно посередине между подписью «Как решаю я» и текстом */
-@media (min-width: 1001px) and (min-aspect-ratio: 7/5) { .apx__clock { inset: calc(168 * var(--u)) 14.7% calc(262 * var(--u)) 14.7%; } }
 /* третья карточка: кубик Рубика из фирменных цветов (rubik.js) — в верхней части, под ним текст */
-.apx__rubik { position: absolute; inset: 14.7% 14.7% calc(14.7% + 28%) 14.7%; z-index: 0; }
+
 /* на компьютере — ровно посередине между подписью «Как решаю я» (низ ≈ 150) и текстом (верх ≈ 690) */
-@media (min-width: 1001px) and (min-aspect-ratio: 7/5) { .apx__rubik { inset: calc(168 * var(--u)) 14.7% calc(262 * var(--u)) 14.7%; } }
-.apx__back:has(.apx__rubik)::before { content: ""; position: absolute; inset: 14.7%; background: radial-gradient(70% 60% at 50% 36%, #33525A 0%, #1F363B 55%, #12221F 100%); }
-.rubik__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-.rubik__canvas.is-drag { cursor: grabbing; }
+
+
+
 /* вторая карточка: стеклянная прозрачная ёмкость со статуэткой внутри на тёмно-бежевом фоне (portal.js поворачивает её
    и собирает объём статуэтки из слоёв) */
-.apx__portal { --d: calc(110 * var(--u)); position: absolute; inset: 14.7%; overflow: hidden; display: grid; place-items: start center; padding: 9% 0 0;   /* ёмкость — в верхней части, под ней место для текста */
-  background: radial-gradient(70% 60% at 50% 38%, #857766 0%, #6A5F51 50%, #4A4238 100%); perspective: calc(1500 * var(--u)); }
-.portal__scene { width: 40%; aspect-ratio: 3 / 4.1; transform-style: preserve-3d; transform-origin: 50% 50%; }
-.portal__card { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; will-change: transform; --sheen: 50%; }
+
+
+
 /* стенки ёмкости: задняя — глубокая бирюза, боковые, верх и низ — прозрачное стекло */
-.portal__wall { position: absolute; background: rgba(200, 220, 222, .06); border: 1px solid rgba(232, 220, 200, .22); backface-visibility: visible; }
-.portal__wall--back { inset: 0; border-radius: calc(14 * var(--u)); transform: translateZ(calc(var(--d) * -1));
-  background: linear-gradient(165deg, #5C5246 0%, #463E35 70%, #3A332B 100%); border-color: rgba(232, 220, 200, .14); }
-.portal__wall--l, .portal__wall--r { top: 0; bottom: 0; width: var(--d); }
-.portal__wall--l { left: 0; transform-origin: 0 50%; transform: rotateY(90deg); }
-.portal__wall--r { right: 0; transform-origin: 100% 50%; transform: rotateY(-90deg); }
-.portal__wall--t, .portal__wall--b { left: 0; right: 0; height: var(--d); }
-.portal__wall--t { top: 0; transform-origin: 50% 0; transform: rotateX(-90deg); }
-.portal__wall--b { bottom: 0; transform-origin: 50% 100%; transform: rotateX(90deg); background: rgba(201, 162, 122, .10); }
+
+
+
+
+
+
+
+
 /* мягкое золотое свечение за статуэткой */
-.portal__glow { position: absolute; inset: 12% 8% 16%; border-radius: 50%; transform: translateZ(calc(var(--d) * -.85));
-  background: radial-gradient(closest-side, rgba(201, 162, 122, .45), rgba(201, 162, 122, 0)); }
+
 /* статуэтка — в середине ёмкости по глубине */
 /* статуэтка стоит на дне ёмкости; объём — из слоёв (portal.js): задние слои темнее, как боковая грань металла */
-.portal__award { position: absolute; left: 0; right: 0; margin: 0 auto; bottom: 1.5%; height: 93%; aspect-ratio: 371 / 872; transform-style: preserve-3d; transform: translateZ(calc(var(--d) * -.4)); }
-.portal__award img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; -webkit-user-drag: none; }
-.portal__award .is-front { filter: drop-shadow(0 0 calc(6 * var(--u)) rgba(255, 220, 150, .25)); }
+
+
+
 /* переднее стекло: тонкая кромка и блик, который скользит при повороте */
-.portal__glass { position: absolute; inset: 0; border-radius: calc(14 * var(--u)); border: 1px solid rgba(232, 220, 200, .45);
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .22) 46%, rgba(255, 255, 255, .05) 52%, rgba(255, 255, 255, 0) 64%) var(--sheen) 0 / 260% 100% no-repeat,
-    linear-gradient(180deg, rgba(232, 220, 200, .08), rgba(232, 220, 200, .02));
-  box-shadow: inset 0 0 calc(30 * var(--u)) rgba(232, 220, 200, .10); }
+
 /* первая карточка: светлый фон и слово «Цель» из частиц (goal.js); текст и кнопки — тёмные, чтобы читались */
-.apx__goal { position: absolute; inset: 14.7%; overflow: hidden; background: radial-gradient(80% 70% at 50% 42%, #F4F0EA 0%, #EDE8E1 55%, #E2D8CA 100%); }
-.apx__goal-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.apx__back--light::after { display: none; }
-.apx__back--light .apx__solution-label { color: #6A5F51; opacity: 1; }
-.apx__back--light .apx__solution { color: #1A2C30; }
-.apx__back--light .apx__back-btn { color: #1A2C30; }
-.apx__back--light .apx__back-btn:hover { color: #A9502C; }
-.apx__back--light .apx__back-btn:focus-visible { outline-color: #1A2C30; }
+
+
+
+
+
+
+
+
 /* на карточке с часами — затемнение мягче, фон светлее; текст ниже, не наплывает на часы */
-@media (min-width: 1001px) and (min-aspect-ratio: 7/5) { .apx__back--clock .apx__solution, .apx__back--portal .apx__solution { bottom: calc(176 * var(--u)); } }
-.apx__back::after { content: ""; position: absolute; inset: 14.7%; background: linear-gradient(180deg, rgba(14, 27, 30, .55) 0%, rgba(14, 27, 30, 0) 26%, rgba(14, 27, 30, 0) 40%, rgba(14, 27, 30, .85) 100%); }
-.apx__solution {
-  position: absolute; z-index: 1; left: calc(130 * var(--u)); right: calc(130 * var(--u)); bottom: calc(196 * var(--u)); margin: 0;
-  font-weight: 300; font-size: calc(27 * var(--u)); line-height: 1.25; color: #F6EFE5;
-}
+
+
 /* на обороте понятно, как вернуться и как листать дальше, не ища стрелки */
-.apx__back-nav {
-  position: absolute; z-index: 2; left: calc(130 * var(--u)); right: calc(130 * var(--u)); bottom: calc(130 * var(--u));
-  display: flex; gap: calc(10 * var(--u));
-}
-.apx__back-btn {
-  display: inline-flex; align-items: center; gap: calc(10 * var(--u));
-  padding: calc(6 * var(--u)) 0; border: 0; background: none; cursor: pointer; color: #F6EFE5;
-  font: inherit; font-weight: 300; font-size: calc(21 * var(--u)); line-height: 1.2;
-  transition: color .4s var(--ease);
-}
-.apx__back-btn--next { margin-left: auto; }
+
+
+
 /* живое подчёркивание, как у «Перейти»: при наведении линия убегает и возвращается */
-.apx__back-word { position: relative; padding-bottom: calc(3 * var(--u)); }
-.apx__back-word::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: max(1px, calc(1.5 * var(--u))); background: currentColor; transform-origin: right; }
-.apx__back-btn:hover { color: #E3A27F; }
-.apx__back-btn:hover .apx__back-word::after { animation: line-run .9s var(--ease); }
-.apx__back-btn:focus-visible { outline: 2px solid #F6EFE5; outline-offset: 3px; }
-.apx__solution-label { position: absolute; z-index: 2; left: calc(130 * var(--u)); top: calc(130 * var(--u)); font-weight: 300; font-size: calc(18 * var(--u)); letter-spacing: .12em; text-transform: uppercase; color: #F6EFE5; opacity: .85; }
+
+
+
+
+
+
 /* одна короткая фраза на сцену — крупно, с рукописной заглавной */
-.apx__phrase { margin: 0; font-weight: 500; font-size: calc(70 * var(--u)); line-height: 1.04; letter-spacing: -.03em; }
+
 /* заглавная стоит на базовой линии строки и не отрывается от своего слова */
-.apx__phrase .cap { width: auto; font-weight: 400; font-size: 1.4em; line-height: .5; letter-spacing: 0; margin-right: .02em; vertical-align: baseline; position: relative; top: -.04em; }
+
 .nw { white-space: nowrap; }
 /* уточнение под фразой: Inter Bold, как в макете */
 /* уточнение — тонкое, в полутоне, чуть ниже фразы */
-.apx__note { margin: calc(36 * var(--u)) 0 0; font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.3; opacity: .65; }
+
 /* фраза с уточнением — посередине свободного места, кнопка «Нажмите» — у нижнего поля */
-.apx__front .apx__phrase { margin-top: auto; }
+
 
 /* главная мысль и номер — проявляются вокруг суженного квадрата */
-.apx__over { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: var(--ink); }
-.apx__more {
-  position: absolute; top: 50%; left: calc(40 * var(--u));
-  font-size: calc(15 * var(--u)); letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
-  transform: rotate(-90deg); transform-origin: 0 100%; opacity: 0;
-}
-.apx__more + .apx__more { left: auto; right: calc(40 * var(--u)); transform: rotate(90deg); transform-origin: 100% 100%; }
-.apx__word {
-  position: absolute; left: 0; right: 0; top: calc(-6 * var(--u));
-  display: flex; justify-content: center;
-  font-family: var(--display); font-style: italic; font-weight: 500;
-  font-size: calc(96 * var(--u)); line-height: 1;
-}
-.apx__word span { display: block; opacity: 0; }
-.apx__num {
-  position: absolute; right: calc(20 * var(--u)); bottom: calc(-24 * var(--u));
-  display: flex; opacity: 0; transform: translateY(calc(60 * var(--u)));
-  font-family: var(--display); font-style: italic; font-weight: 500;
-  font-size: calc(130 * var(--u)); line-height: 1; perspective: 600px;
-}
-.apx__num span { display: block; transform: rotateY(90deg); }
-.apx__num span + span { transform: rotateY(-90deg); }
+
+
+
+
+
+
+
+
 
 /* итог — плашка 10% #182C31, текст по правому краю: Inter Medium 64 и Inter Bold 28 */
 .apx__answer {
@@ -645,13 +599,13 @@ a { color: inherit; text-decoration: none; }
   .approach__particles { left: -20px; top: -20px; }
   .approach__bg { display: none; }
   .apx { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: 1; }
-  .apx__word { font-size: clamp(40px, 12vw, 80px); top: 0; }
-  .apx__num { font-size: clamp(56px, 16vw, 110px); bottom: -8px; right: 10px; }
-  .apx__more { font-size: 10px; left: 14px; }
-  .apx__more + .apx__more { right: 14px; }
+  
+  
+  
+  
   .apx__answer { position: static; align-self: flex-start; gap: 12px; padding: 0; }
-  .apx__note { margin-top: 16px; font-size: clamp(13px, 3.6vw, 18px); }
-  .apx__phrase { font-size: clamp(30px, 9vw, 60px); }
+  
+  
   .apx__answer-head { font-size: clamp(30px, 8.4vw, 52px); }
   .apx__answer-sub { width: auto; font-size: clamp(15px, 4.2vw, 22px); }
   .apx__nav { position: relative; left: auto; top: auto; align-self: flex-start; width: 218px; height: 92px; }
@@ -659,14 +613,14 @@ a { color: inherit; text-decoration: none; }
   .apx__cur { font-size: 38px; }
   .apx__total { font-size: 18px; }
   .apx__sep { width: 22px; }
-  .apx__hint { margin-top: auto; padding: 12px 14px; font-size: 14px; gap: 8px; }
-  .apx__solution { bottom: calc(18% + 30px); }   /* над кнопками «Вернуться / Дальше», не под ними */
-  .apx__back-nav { left: 18%; right: 18%; bottom: 18%; gap: 6px; }
-  .apx__back-btn { padding: 4px 0; font-size: 14px; gap: 6px; }
-  .apx__solution-label { left: 18%; top: 18%; font-size: 10px; }
-  .apx__hint-dot { width: 7px; height: 7px; }
-  .apx__front { padding: 16%; }
-  .apx__solution { left: 18%; right: 18%; font-size: clamp(13px, 3.6vw, 20px); }
+  
+     /* над кнопками «Вернуться / Дальше», не под ними */
+  
+  
+  
+  
+  
+  
   .apx__arrow { bottom: 0; top: auto; width: 100px; height: 24px; }
   .apx__arrow.js-next { left: 117px; }
   .approach__photo { position: static; order: 9; align-self: flex-end; height: auto; width: calc(88% + 20px); margin-right: -20px; }
@@ -1423,4 +1377,44 @@ a { color: inherit; text-decoration: none; }
 /* «Заказать баннер или афишу» — короче по длине: текст чуть мельче, боковые отступы меньше; высота и скругление — как у остальных */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
   .btn-frame { padding: calc(25 * var(--u)) calc(28 * var(--u)); font-size: calc(20 * var(--u)); }
+}
+
+/* ===== «Мой подход»: блокнот на кольцах вместо квадрата (notebook.js) ===== */
+/* компьютер: блокнот на месте квадрата и правее; заголовок, «Я работаю иначе» и счётчик — узкой колонкой левее фото */
+@media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
+  .apx { width: calc(920 * var(--u)); height: calc(680 * var(--u)); }
+  .approach__title { left: calc(1010 * var(--u)); top: calc(350 * var(--u)); transform: none; width: calc(400 * var(--u)); white-space: normal; }
+  .apx__answer { left: calc(1010 * var(--u)); top: calc(600 * var(--u)); width: calc(320 * var(--u)); }
+  .apx__answer-head { white-space: normal; }
+  .apx__nav { left: calc(1010 * var(--u)); }
+  .apx__answer-sub { width: calc(300 * var(--u)); }
+  .apx__answer-sub .apx__line { display: inline; }
+  .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
+}
+.apx__book { position: absolute; z-index: 1; inset: 0; }
+.apx__book { pointer-events: none; }
+.apx__book [data-leafthrough-hit-area] { pointer-events: auto; cursor: pointer !important; }
+/* кольца на корешке — металл, как на образце блокнота; положение задаёт notebook.js по краю страниц */
+.apx__rings { position: absolute; z-index: 3; pointer-events: none; opacity: 0; transition: opacity .35s var(--ease); }
+.apx__rings.is-on { opacity: 1; }
+.apx__rings.is-on.is-turning { opacity: 0; transition-duration: .2s; }
+/* толща блокнота: стопки листов по внешним краям, растут и убывают по мере листания */
+.apx__stack { position: absolute; z-index: 0; pointer-events: none; }
+.apx__stack span { position: absolute; top: 0; bottom: 0; width: 50%; transition: box-shadow 1s var(--ease); }
+.apx__stack-l { left: 0; border-radius: 2px 0 0 2px; }
+.apx__stack-r { right: 0; border-radius: 0 2px 2px 0; }
+.apx__ring { position: absolute; left: 0; right: 0; height: calc(78 * var(--u)); transform: translateY(-58%); }
+.apx__ring::before, .apx__ring::after { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: 0; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+.apx__ring::after { border: calc(6 * var(--u)) solid transparent; border-bottom: 0;
+  background: linear-gradient(180deg, #F4F4F2 0%, #B9BCBE 38%, #7E8387 62%, #D9DBDC 100%) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box exclude, linear-gradient(#000 0 0); mask: linear-gradient(#000 0 0) padding-box exclude, linear-gradient(#000 0 0); }
+.apx__ring::before { top: calc(8 * var(--u)); border: calc(5 * var(--u)) solid rgba(26, 20, 14, .28); border-bottom: 0; filter: blur(calc(3 * var(--u))); }
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .apx { aspect-ratio: auto; height: auto; }
+  /* одна страница: слева библиотека оставляет место под переворачиваемый лист — уводим его за край экрана, страница крупнее */
+  .apx { overflow: visible; }
+  /* размеры — по раскладке библиотеки: страница занимает 1/1.56 ширины и 0.57 высоты области, остальное — пустые поля, их стягиваем */
+  .apx__book { --P: calc(100vw - 54px); position: relative; inset: auto; width: calc(var(--P) * 1.56); height: calc(var(--P) * 2.37);
+    margin: calc(var(--P) * -.4) 0 calc(var(--P) * -.46) calc(7px - var(--P) * .34); }
+  .apx__rings, .apx__stack { display: none; }
 }

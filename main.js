@@ -86,10 +86,22 @@ document.documentElement.classList.replace('no-js', 'js');
         }
         if (node.nodeType !== 3) return;
         var frag = document.createDocumentFragment();
+        var w = null, glue = false;                            // \u0441\u043b\u043e\u0432\u0430, \u0441\u0432\u044f\u0437\u0430\u043d\u043d\u044b\u0435 \u043d\u0435\u0440\u0430\u0437\u0440\u044b\u0432\u043d\u044b\u043c \u043f\u0440\u043e\u0431\u0435\u043b\u043e\u043c, \u2014 \u043e\u0434\u043d\u043e\u0439 \u0433\u0440\u0443\u043f\u043f\u043e\u0439: \u043f\u0440\u0435\u0434\u043b\u043e\u0433 \u043d\u0435 \u043f\u043e\u0432\u0438\u0441\u043d\u0435\u0442
         node.nodeValue.split(/(\s+)/).forEach(function (part) {
           if (!part) return;
-          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part.indexOf('\u00a0') > -1 ? '\u00a0' : ' ')); return; }
-          var w = document.createElement('span'); w.className = 'w';
+          if (/^\s+$/.test(part)) {
+            if (part.indexOf('\u00a0') > -1 && w) { w.appendChild(document.createTextNode('\u00a0')); glue = true; }
+            else { frag.appendChild(document.createTextNode(part.indexOf('\u00a0') > -1 ? '\u00a0' : ' ')); w = null; glue = false; }
+            return;
+          }
+          if (glue && w) {
+            Array.from(part).forEach(function (c) {
+              var s = document.createElement('span'); s.className = 'ch'; s.textContent = c;
+              s.style.setProperty('--i', i++); w.appendChild(s);
+            });
+            glue = false; return;
+          }
+          w = document.createElement('span'); w.className = 'w';
           Array.from(part).forEach(function (c) {
             var s = document.createElement('span'); s.className = 'ch'; s.textContent = c;
             s.style.setProperty('--i', i++); w.appendChild(s);
@@ -387,146 +399,102 @@ document.documentElement.classList.replace('no-js', 'js');
   } else { visible = true; start(); }
 })();
 
-/* Четвёртый блок «Мой подход» (макет «п-р 20»): квадрат с текстом сцены.
-   Анимация — из примера Animated clip-path slider Concept (jakewhiteleydev, CodePen):
-   • наведение: квадрат сужается маской с 680 до 480 (inset 14.7%), подписи «мой подход»
-     разъезжаются, буквы главной мысли слетаются, номер сцены переворачивается;
-   • смена сцены: новая раскрывается маской снизу вверх (назад — сверху вниз) и уменьшается с 1.2 до 1;
-   • автолистание каждые 6 секунд, пока блок на экране и курсор не над квадратом. */
+/* Четвёртый блок «Мой подход»: блокнот на кольцах (notebook.js). Каждая сцена — разворот блокнота;
+   сцены сменяются перелистыванием страниц. Вместе со сценой плавно меняются цвета блока, заголовок из частиц
+   и счётчик. Компьютер: блок закреплён, прокрутка листает развороты 01→04, клик по правой странице — дальше,
+   по левой — назад. Телефон: по одной странице (сначала что не так, потом как решаю я), автолистание каждые 6 секунд. */
 (function () {
   'use strict';
   var root = document.querySelector('[data-approach]');
   if (!root || !window.gsap) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var slides = Array.prototype.slice.call(root.querySelectorAll('.apx__slide'));
-  var total = slides.length;
+  var stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
   var frame = root.closest('.approach__frame');
-  var cur = frame.querySelector('.apx__cur');
-  var current = 0, busy = false, over = false, inView = false;
   var section = root.closest('.approach');
-  /* у каждой сцены своя пара цветов: фон блока и текст + цвет квадрата и его текста */
+  var cur = frame.querySelector('.apx__cur');
+  var bookEl = root.querySelector('[data-book]');
+  var SCENES = root.querySelectorAll('.apx__scene').length || 4;
+  var STEPS = stacked ? SCENES * 2 : SCENES;                 // телефон: две страницы на сцену
+  var sceneOf = function (s) { return stacked ? s >> 1 : s; };
+  /* у каждой сцены своя пара цветов: фон блока и текст */
   var THEMES = [
-    { bg: '#A1998F', ink: '#182C31', sq: '#182C31', sqInk: '#EDE8E1' },
-    { bg: '#C8BDAB', ink: '#182C31', sq: '#A9502C', sqInk: '#E8DCC8' },   // текст на медной плашке — слегка приглушённый, не чисто-белый
-    { bg: '#6F7B74', ink: '#F1ECE4', sq: '#EDE8E1', sqInk: '#1C3238' },
-    { bg: '#1A2C30', ink: '#E8DCC8', sq: '#C8BDAB', sqInk: '#1A2C30' }
+    { bg: '#A1998F', ink: '#182C31' },
+    { bg: '#C8BDAB', ink: '#182C31' },
+    { bg: '#6F7B74', ink: '#F1ECE4' },
+    { bg: '#1A2C30', ink: '#E8DCC8' }
   ];
   var theme = function (i) { return THEMES[i % THEMES.length]; };
-
+  var step = 0, busy = false, over = false, inView = false;
   gsap.set(section, { '--bg': theme(0).bg, '--ink': theme(0).ink });
-  slides.forEach(function (s, i) {
-    gsap.set(s, { autoAlpha: i === 0 ? 1 : 0, zIndex: i === 0 ? 2 : 1, '--sq': theme(i).sq, '--sq-ink': theme(i).sqInk });
-    var letters = s.querySelectorAll('.apx__word span');
-    var mid = (letters.length - 1) / 2;
-    letters.forEach(function (l, k) { gsap.set(l, { xPercent: (k - mid) * 150, y: '-2rem', opacity: 0 }); });
-  });
 
-  var hoverTl = slides.map(function (s) {
-    var more = s.querySelectorAll('.apx__more');
-    var num = s.querySelector('.apx__num');
-    return gsap.timeline({ paused: true, defaults: { duration: 1.1, ease: 'power2.inOut' } })
-      .to(s.querySelector('.apx__card'), { clipPath: 'inset(14.7%)', scale: 0.97 }, 0)
-      .to(s.querySelector('.apx__front'), { autoAlpha: 0, y: -20, duration: 0.5, ease: 'power2.in' }, 0)
-      .fromTo(s.querySelector('.apx__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: 'power2.out' }, 0.45)
-      .from(s.querySelector('.apx__back > img, .apx__back .apx__clock, .apx__back .apx__goal-canvas, .apx__back .portal__scene, .apx__back .apx__rubik'), { scale: 1.15, duration: 1.2, ease: 'power2.out' }, 0.45)
-      .from(s.querySelector('.apx__solution-label'), { y: 12, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 0.6)   // порядок на обороте:
-      .from(s.querySelector('.apx__solution'), { y: 24, autoAlpha: 0, duration: 0.8, ease: 'power2.out' }, 0.75)          // подпись → текст → кнопки
-      .from(s.querySelector('.apx__back-nav'), { y: 16, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, 1.0)
-      .to(more[0], { x: '1.5rem', opacity: 1 }, 0)
-      .to(more[1], { x: '-1.5rem', opacity: 1 }, 0)
-      .to(num, { y: 0, duration: 1 }, 0.3)
-      .to(num, { opacity: 1 }, 0.4)
-      .to(num.querySelectorAll('span'), { rotateY: 0, duration: 1.6 }, 0)
-      .to(s.querySelectorAll('.apx__word span'), { xPercent: 0, y: 0, opacity: 1, duration: 1.2 }, 0.2);
-  });
-
-  /* нажатие на карточку: она сужается и показывает фото и решение Людмилы; повторное — возвращает проблему */
-  var opened = false;
-  /* анимации на обороте (часы, «Цель», статуэтка, кубик) узнают об открытии и закрытии сразу — по событию карточки */
-  var tell = function (slide, open) { slide.dispatchEvent(new CustomEvent('apx:card', { detail: { open: open } })); };
-  var setOpen = function (v) {
-    if (busy || opened === v) return;                         // пока сцена меняется — не открываем и не закрываем
-    opened = v;
-    var card = slides[current].querySelector('.apx__card');
-    var hintBtn = card.querySelector('.js-open');
-    if (hintBtn) hintBtn.setAttribute('aria-expanded', v ? 'true' : 'false');
-    tell(slides[current], v);
-    if (v) hoverTl[current].timeScale(1).play(); else hoverTl[current].timeScale(1.4).reverse();
+  var book = function () { return window.approachBook; };
+  var go = function (dir) {
+    if (busy) return;
+    var next = stacked ? (step + dir + STEPS) % STEPS : Math.max(0, Math.min(STEPS - 1, step + dir));
+    if (next === step) return;
+    busy = true;
+    var was = sceneOf(step);
+    step = next;
+    var sc = sceneOf(step);
+    if (book()) book().show(step);
+    if (sc !== was) {
+      gsap.to(section, { '--bg': theme(sc).bg, '--ink': theme(sc).ink, duration: reduce ? 0.01 : 1.1, ease: 'power2.inOut' });
+      if (window.approachTitleReform) window.approachTitleReform(); /* заголовок из частиц пересобирается новым цветом */
+      if (window.approachBgReform) window.approachBgReform();
+      if (cur) cur.textContent = String(sc + 1).padStart(2, '0');
+    }
+    /* лист переворачивается около секунды — до этого новую смену не начинаем */
+    setTimeout(function () {
+      busy = false;
+      if (pinned && wanted !== step) go(wanted > step ? 1 : -1);   /* прокрутили дальше, пока лист переворачивался — догоняем */
+    }, reduce ? 50 : 1050);
   };
-  /* Esc закрывает открытую карточку */
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && opened) { setOpen(false); restart(); } });
-  var showMeaning = function () {};
-  slides.forEach(function (s) {
-    var card = s.querySelector('.apx__card');
-    /* клик по лицевой стороне открывает; на обороте — только кнопки, чтобы было ясно, что делать */
-    card.addEventListener('click', function (e) {
-      if (e.target.closest('.js-close')) { setOpen(false); restart(); return; }
-      if (e.target.closest('.js-card-next')) { go(1); restart(); return; }
-      if (!opened) { setOpen(true); restart(); }
+
+  var nav = function (dir) { go(dir); restart(); };
+  frame.querySelector('.js-next').addEventListener('click', function () { nav(1); });
+  frame.querySelector('.js-prev').addEventListener('click', function () { nav(-1); });
+  /* клик по блокноту: правая половина — дальше, левая — назад (на телефоне — всегда дальше) */
+  if (bookEl) {
+    bookEl.addEventListener('click', function (e) {
+      var hit = e.target.closest('[data-leafthrough-hit-area]');
+      if (!hit) return;                                        // только по самим страницам
+      var r = hit.getBoundingClientRect();
+      var dir = stacked || e.clientX > r.left + r.width / 2 ? 1 : -1;
+      if (pinned) jump(dir); else nav(dir);
     });
-  });
+  }
   root.addEventListener('mouseenter', function () { over = true; });
   root.addEventListener('mouseleave', function () { over = false; });
 
-  var go = function (dir) {
-    if (busy) return;
-    busy = true;
-    var next = (current + dir + total) % total;
-    var active = slides[current], incoming = slides[next];
-    if (opened) { opened = false; var hb = active.querySelector('.js-open'); if (hb) hb.setAttribute('aria-expanded', 'false'); tell(active, false); }
-    hoverTl[current].timeScale(1.4).reverse();
-    active.classList.remove('active');
-    incoming.classList.add('active');
-    gsap.set(active, { zIndex: 2 });
-    gsap.set(incoming, { autoAlpha: 1, zIndex: 3, scale: reduce ? 1 : 1.2,
-      clipPath: reduce ? 'inset(0% 0% 0%)' : (dir > 0 ? 'inset(100% 0% 0%)' : 'inset(0% 0% 100%)') });
-    gsap.to(section, { '--bg': theme(next).bg, '--ink': theme(next).ink, duration: reduce ? 0.01 : 1.1, ease: 'power2.inOut' });
-    if (window.approachTitleReform) window.approachTitleReform(); /* заголовок из частиц пересобирается новым цветом */
-    if (window.approachBgReform) window.approachBgReform();
-    gsap.to(incoming, { clipPath: 'inset(0% 0% 0%)', scale: 1, ease: 'power2.inOut', duration: reduce ? 0.01 : 1,
-      onComplete: function () {
-        gsap.set(active, { autoAlpha: 0, zIndex: 1 }); gsap.set(incoming, { zIndex: 2, clearProps: 'clipPath' });
-        busy = false; showMeaning();
-        if (pinned && wanted !== current) go(wanted > current ? 1 : -1); /* прокрутили дальше, пока шла смена — догоняем */
-      } });
-    current = next;
-    if (cur) cur.textContent = String(current + 1).padStart(2, '0');
-  };
-
-  frame.querySelector('.js-next').addEventListener('click', function () { go(1); restart(); });
-  frame.querySelector('.js-prev').addEventListener('click', function () { go(-1); restart(); });
-
   var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !opened && !reduce) go(1); }, 6000); };
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce) go(1); }, 6000); };
   if ('IntersectionObserver' in window) {
     var answer = frame.querySelector('.apx__answer');
     new IntersectionObserver(function (e) {
       inView = e[0].isIntersecting;
-      if (inView) { showMeaning(); if (answer) answer.classList.add('is-in'); }
-      else if (opened) setOpen(false);                          /* ушли из блока — карточка закрывается, вернёмся к лицевой стороне */
+      if (inView && answer) answer.classList.add('is-in');
     }, { threshold: 0.4 }).observe(root);
   }
   restart();
 
-  /* Компьютер: блок закрепляется на экране, и прокрутка колёсиком листает сцены 01→04;
-     после четвёртой страница едет дальше. Автолистание тогда не нужно — сцену задаёт прокрутка. */
-  var wanted = 0, pinned = false;
-  var stackedMq = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)');
-  if (window.ScrollTrigger && !stackedMq.matches && !reduce) {
+  /* Компьютер: блок закрепляется на экране, и прокрутка колёсиком листает развороты 01→04;
+     после четвёртого страница едет дальше. Автолистание тогда не нужно — разворот задаёт прокрутка. */
+  var wanted = 0, pinned = false, jump = function () {};
+  if (window.ScrollTrigger && !stacked && !reduce) {
     clearInterval(timer);
     restart = function () {}; pinned = true;
     ScrollTrigger.create({
-      trigger: section, start: 'top top', end: '+=' + (total - 1) * 100 + '%', pin: true, pinSpacing: true,
+      trigger: section, start: 'top top', end: '+=' + (STEPS - 1) * 100 + '%', pin: true, pinSpacing: true,
       onUpdate: function (self) {
-        wanted = Math.min(total - 1, Math.floor(self.progress * total * 0.999));
-        if (!busy && wanted !== current) go(wanted > current ? 1 : -1);
+        wanted = Math.min(STEPS - 1, Math.floor(self.progress * STEPS * 0.999));
+        if (!busy && wanted !== step) go(wanted > step ? 1 : -1);
       }
     });
-    /* стрелки и «Дальше» на обороте прокручивают страницу к нужной сцене — прокрутка и сцена не расходятся */
+    /* стрелки и клик по блокноту прокручивают страницу к нужному развороту — прокрутка и блокнот не расходятся */
     var st = ScrollTrigger.getAll().filter(function (t) { return t.trigger === section; })[0];
-    var jump = function (dir) {
-      var n = Math.max(0, Math.min(total - 1, current + dir));
-      var y = st.start + (st.end - st.start) * n / Math.max(1, total - 1);   // ровно на начало страницы — там же, куда доводит прокрутка
+    jump = function (dir) {
+      var n = Math.max(0, Math.min(STEPS - 1, step + dir));
+      var y = st.start + (st.end - st.start) * n / Math.max(1, STEPS - 1);
       if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
     };
     var swap = function (sel, dir) {
@@ -535,7 +503,7 @@ document.documentElement.classList.replace('no-js', 'js');
         clone.addEventListener('click', function (e) { e.stopPropagation(); jump(dir); });
       });
     };
-    swap('.js-next', 1); swap('.js-prev', -1); swap('.js-card-next', 1);
+    swap('.js-next', 1); swap('.js-prev', -1);
   }
 })();
 
@@ -931,7 +899,7 @@ document.documentElement.classList.replace('no-js', 'js');
   var snapping = false, timer = null, lastInput = 0;
   /* сколько «страниц» у закреплённого блока */
   var pagesOf = function (sec) {
-    if (sec.classList.contains('approach')) return sec.querySelectorAll('.apx__slide').length || 1;
+    if (sec.classList.contains('approach')) return sec.querySelectorAll('.apx__scene').length || 1;
     if (sec.classList.contains('case')) return sec.querySelectorAll('.case__page').length || 1;
     return 1;
   };
