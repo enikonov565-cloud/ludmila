@@ -8,6 +8,7 @@
    Сцену выбирает main.js (прокрутка, стрелки, клик по странице) через window.approachBook. */
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { LeafThrough } from './vendor/leafthrough/index.js?v=1';
 
 const section = document.querySelector('.approach');
@@ -143,7 +144,7 @@ function init() {
   const LAB_Y = stacked ? 0.17 : 0.14, SOL_Y = stacked ? 0.74 : 0.76, SOL_S = stacked ? 0.064 : 0.07;
   const rightStatic = (ctx, s, i) => {
     paper(ctx, SPINE_R);
-    tape(ctx, PW * 0.78, PH * 0.04, PW * 0.26, PW * 0.08, 0.12, TAPE[(i + 2) % 4], i + 7);
+    tape(ctx, PW * (stacked ? 0.62 : 0.78), PH * 0.04, PW * 0.26, PW * 0.08, 0.12, TAPE[(i + 2) % 4], i + 7);
     const size = PW * 0.08;
     ctx.font = `400 ${size}px ${FONT}`;
     const lw = ctx.measureText(s.label).width;
@@ -531,6 +532,33 @@ function init() {
     clearTimeout(flipT); flipT = setTimeout(finish, 950);
   };
 
+  /* настоящие металлические кольца — в самой сцене блокнота: тот же свет, что у бумаги, и тень на страницах.
+     В сцене страница шириной 1, корешок на x = 0, бумага лежит в плоскости XY, к зрителю — +Z.
+     Полукольцо проходит через отверстия обеих страниц и поднимается над корешком. */
+  let ringGroup = null;
+  const addRings = () => {
+    const view = book && book.view, renderer = book && book.renderer;
+    if (!view || !view.scene || !renderer || (ringGroup && ringGroup.parent === view.scene)) return;
+    if (!ringGroup) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      const mat = new THREE.MeshStandardMaterial({ color: 0xd7d9db, metalness: 0.9, roughness: 0.22, envMap: env, envMapIntensity: 1.1 });
+      const R = HOLE_X, tube = 0.011, over = 0.22;            // радиус — до отверстий; концы чуть уходят под бумагу
+      const geo = new THREE.TorusGeometry(R, tube, 18, 72, Math.PI + over * 2);
+      geo.rotateZ(-over);
+      ringGroup = new THREE.Group();
+      HOLE_Y.forEach((f) => {
+        const ring = new THREE.Mesh(geo, mat);
+        ring.rotation.x = Math.PI / 2;                           // дуга — вверх, к зрителю
+        ring.position.set(0, ASPECT * (0.5 - f), 0.004);
+        ring.castShadow = true;
+        ringGroup.add(ring);
+      });
+    }
+    view.scene.add(ringGroup);
+    book.needsRender = true;
+  };
+
   const start = () => {
     if (stacked) { flatStart(); return; }
     build();
@@ -549,7 +577,7 @@ function init() {
       interaction: { drag: false, click: false, hold: false, hover: false, keyboard: false },
       preload: Infinity,
     });
-    book.addEventListener('ready', () => { placeRings(); section.classList.add('is-book-ready'); });
+    book.addEventListener('ready', () => { addRings(); placeRings(); section.classList.add('is-book-ready'); });
     book.addEventListener('pagechange', placeRings);
     window.addEventListener('resize', () => setTimeout(placeRings, 60));
     new IntersectionObserver((en) => { inView = en[0].isIntersecting; if (inView) { placeRings(); wake(); } }, { threshold: 0 }).observe(host);
