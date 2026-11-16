@@ -1383,6 +1383,10 @@ a { color: inherit; text-decoration: none; }
 /* компьютер: блокнот на месте квадрата и правее; заголовок, «Я работаю иначе» и счётчик — узкой колонкой левее фото */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
   .apx { width: calc(920 * var(--u)); height: calc(680 * var(--u)); }
+  /* блокнот лежит под наклоном, правый край выше; чуть меньше, чтобы углы не выходили за левое поле и не задевали тексты справа */
+  .apx { transform: rotate(-9deg) scale(.92); transform-origin: 50% 50%; }
+  /* область рисования шире страниц на запас под переворачиваемый лист (27.975% с каждой стороны, как в библиотеке) — страницы совпадают с рамкой блокнота */
+  .apx .apx__book { inset: -27.975%; }
   .approach__title { left: calc(1010 * var(--u)); top: calc(350 * var(--u)); transform: none; width: calc(400 * var(--u)); white-space: normal; }
   .apx__answer { left: calc(1010 * var(--u)); top: calc(600 * var(--u)); width: calc(320 * var(--u)); }
   .apx__answer-head { white-space: normal; }

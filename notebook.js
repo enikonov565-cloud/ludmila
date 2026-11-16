@@ -438,7 +438,8 @@ function init() {
     if (!rings || !book) return;
     const hit = host.querySelector('[data-leafthrough-hit-area]');
     if (!hit || stacked) return;
-    const hr = hit.getBoundingClientRect(), pr = rings.parentElement.getBoundingClientRect();
+    /* по смещениям, а не по экранным рамкам: блокнот повёрнут, рамки на экране — уже не его стороны */
+    const hr = { left: host.offsetLeft + hit.offsetLeft, top: host.offsetTop + hit.offsetTop, width: hit.offsetWidth, height: hit.offsetHeight }, pr = { left: 0, top: 0 };
     if (!hr.width) return;
     const pageW = hr.width / 2;
     rings.style.cssText = `left:${hr.left - pr.left + pageW - pageW * HOLE_X - 2}px;top:${hr.top - pr.top}px;width:${pageW * HOLE_X * 2 + 4}px;height:${hr.height}px`;
@@ -491,6 +492,7 @@ function init() {
       pages,
       startPage: pageOfStep(step),
       layout: stacked ? 'single' : 'spread',
+      bleed: stacked,                                          // компьютер: всё внутри своей области — блокнот можно повернуть, геометрия не сбивается
       pageAspect: ASPECT,
       loop: false,
       label: 'Блокнот «Мой подход»',
@@ -498,7 +500,7 @@ function init() {
       paper: { backColor: PAPER, showThrough: 0.02, bulge: 0.6, wrinkles: 0.4 },
       lighting: { floorShadow: 0.22, ambient: { sky: '#ffffff', ground: '#d8cfc2', intensity: 2.05 }, sun: { intensity: 2.1 } },
       motion: { speed: 0.85, jitter: true },
-      interaction: { drag: false, click: false, hold: false, hover: !stacked, keyboard: false },
+      interaction: { drag: false, click: false, hold: false, hover: false, keyboard: false },
       preload: Infinity,
     });
     book.addEventListener('ready', () => { placeRings(); section.classList.add('is-book-ready'); });
