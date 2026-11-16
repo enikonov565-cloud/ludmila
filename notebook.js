@@ -502,6 +502,7 @@ function init() {
     cur = step;
     pad.top.appendChild(live[cur].L.canvas); pad.bottom.appendChild(live[cur].R.canvas);
     section.classList.add('is-book-ready');
+    if (window.ScrollTrigger) window.ScrollTrigger.refresh();   // высоты блоков ниже — пересчитать
     new IntersectionObserver((en) => { inView = en[0].isIntersecting; if (inView) wake(); }, { threshold: 0 }).observe(host);
   };
   const finish = () => {
