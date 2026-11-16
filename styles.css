@@ -1478,12 +1478,8 @@ a { color: inherit; text-decoration: none; }
   .apx__arrow { width: 72px; height: 18px; }
   .apx__arrow.js-next { left: 86px; }
 }
-/* телефон: закладки-стикеры выглядывают из-за краёв листов (часть под листом не видна) */
+/* телефон: у страниц прозрачная полоса под язычок стикера — тень по форме листа, а не прямоугольником */
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .nb-slot { z-index: 1; }
-  .nb-tab { position: absolute; z-index: 0; width: 44px; height: 28px; background: var(--c);
-    background-image: linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,.04) 55%, rgba(255,255,255,0));
-    box-shadow: 0 2px 4px rgba(26, 20, 14, .18); }
-  .nb-tab--r { right: -17px; border-radius: 0 5px 5px 0; }
-  .nb-tab--l { left: -17px; border-radius: 5px 0 0 5px; }
+  .nb-slot, .nb-face { box-shadow: none !important; background: none; }
+  .nb-slot canvas, .nb-face canvas { border-radius: 0; filter: drop-shadow(0 8px 12px rgba(26, 20, 14, .22)); }
 }

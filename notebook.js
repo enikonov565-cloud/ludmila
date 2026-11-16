@@ -43,7 +43,13 @@ function init() {
   const HOLE_Y = [0.2, 0.8], HOLE_X = 0.085;                 // отверстия под кольца: доля высоты и отступ от корешка
 
   /* ---------- бумага и текст ---------- */
+  /* внешний край листа: справа у правой (лицевой) страницы, слева у левой (оборот). Там — полоса под язычок стикера */
+  const MARG = 0.07;
+  const outerOf = (spine) => (stacked ? 'right' : spine === 'left' ? 'right' : 'left');   // телефон: лист переворачивается вверх — язычок у обеих страниц справа
   const paper = (ctx, spine) => {
+    ctx.clearRect(0, 0, PW, PH);
+    const outer = outerOf(spine), x0 = outer === 'left' ? PW * MARG : 0, w = PW * (1 - MARG);
+    ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, w, PH); ctx.clip();
     ctx.fillStyle = PAPER; ctx.fillRect(0, 0, PW, PH);
     /* чуть темнее у корешка — лист слегка уходит в переплёт */
     const vert = spine === 'top' || spine === 'bottom';
@@ -60,6 +66,7 @@ function init() {
       ctx.fillStyle = 'rgba(26, 20, 14, .55)'; ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = 'rgba(255, 255, 255, .7)'; ctx.lineWidth = PW * 0.003; ctx.beginPath(); ctx.arc(hx, hy + r * 0.12, r * 1.05, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
     });
+    ctx.restore();
   };
   /* перенос по словам; неразрывный пробел держит слова вместе (предлоги не висят) */
   const wrap = (ctx, text, maxW) => {
@@ -160,6 +167,33 @@ function init() {
     });
     const [tx, ty] = at(1);                                         // бутон на конце — медной точкой
     ctx.fillStyle = 'rgba(169, 80, 44, .75)'; ctx.beginPath(); ctx.arc(tx, ty, PW * 0.007, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
+  /* лист с номером n: лицевая страница — чётная (справа), оборот — нечётная (слева) */
+  const STICK_COL = ['#A9502C', '#6F7B74', '#C9A27A', '#2F4B52', '#C8BDAB'];
+  const STICK_Y = [0.14, 0.3, 0.46, 0.62, 0.78];
+  const stickerOf = (p) => {
+    const sheet = p >> 1, first = (1 + LEAD) >> 1, k = sheet - first;   // листы, на которых развороты сцен
+    if (k < 0 || k > scenes.length) return null;
+    return { y: STICK_Y[k % STICK_Y.length], color: STICK_COL[k % STICK_COL.length] };
+  };
+  /* язычок: на бумаге — полупрозрачная часть, за краем — плотная цветная, с глянцем (как стикеры-закладки) */
+  const sticker = (ctx, p, spine) => {
+    const st = stickerOf(p); if (!st) return;
+    const outer = outerOf(spine), h = PW * 0.08, y = PH * st.y - h / 2;
+    const edge = outer === 'right' ? PW * (1 - MARG) : PW * MARG;           // край бумаги
+    const inW = PW * 0.045, dir = outer === 'right' ? 1 : -1;   // на бумаге — узкая полоска, текст не задевает
+    ctx.save();
+    if (dir < 0) { ctx.translate(PW, 0); ctx.scale(-1, 1); }                   // оборот — зеркально
+    const e = dir < 0 ? PW - edge : edge;
+    ctx.shadowColor = 'rgba(26, 20, 14, .14)'; ctx.shadowBlur = h * 0.2; ctx.shadowOffsetY = h * 0.05;
+    ctx.globalAlpha = 0.42; ctx.fillStyle = st.color; ctx.fillRect(e - inW, y, inW, h);   // на бумаге — полупрозрачно
+    ctx.globalAlpha = 1; ctx.beginPath();                                       // за краем — плотно, внешние углы скруглены
+    const R = h * 0.22; ctx.moveTo(e, y); ctx.lineTo(PW - R, y); ctx.quadraticCurveTo(PW, y, PW, y + R); ctx.lineTo(PW, y + h - R); ctx.quadraticCurveTo(PW, y + h, PW - R, y + h); ctx.lineTo(e, y + h); ctx.closePath();
+    ctx.fill(); ctx.shadowColor = 'transparent';
+    const gl = ctx.createLinearGradient(0, y, 0, y + h);
+    gl.addColorStop(0, 'rgba(255,255,255,.34)'); gl.addColorStop(0.5, 'rgba(255,255,255,.05)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = gl; ctx.fillRect(e - inW, y, PW - e + inW, h);
     ctx.restore();
   };
   const leftPage = (ctx, s, i) => {
@@ -446,7 +480,7 @@ function init() {
   /* ---------- страницы ---------- */
   const mk = () => {
     const canvas = document.createElement('canvas'); canvas.width = PW; canvas.height = PH;
-    const tex = new THREE.CanvasTexture(canvas); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const tex = new THREE.CanvasTexture(canvas); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4; tex.premultiplyAlpha = true;   // у листа прозрачные поля — вырезаются
     return { canvas, ctx: canvas.getContext('2d'), tex };
   };
   let blank = null, pages = null, live = null, book = null;
@@ -455,11 +489,11 @@ function init() {
     blank = mk(); paper(blank.ctx, 'left');
     const blankL = mk(); paper(blankL.ctx, 'right');
     live = scenes.map((s, i) => {
-      const L = mk(); leftPage(L.ctx, s, i);
+      const L = mk(); leftPage(L.ctx, s, i); sticker(L.ctx, leftOf(i), SPINE_L);
       const R = mk(); const base = document.createElement('canvas'); base.width = PW; base.height = PH;
-      rightStatic(base.getContext('2d'), s, i);
+      const bctx = base.getContext('2d'); rightStatic(bctx, s, i); sticker(bctx, rightOf(i), SPINE_R);
       const anim = MAKERS[s.anim] ? MAKERS[s.anim]() : null;
-      const paint = () => { R.ctx.drawImage(base, 0, 0); if (anim) anim.draw(R.ctx); R.tex.needsUpdate = true; if (book) book.needsRender = true; };
+      const paint = () => { R.ctx.clearRect(0, 0, PW, PH); R.ctx.drawImage(base, 0, 0); if (anim) anim.draw(R.ctx); R.tex.needsUpdate = true; if (book) book.needsRender = true; };
       if (anim) anim.onReady = paint;
       paint();
       return { L, R, anim, paint };
@@ -473,6 +507,9 @@ function init() {
         pages.push(k % 2 === 0
           ? { src: e.L.tex, alt: 'Что не так', text: s.phrase + '\n\n' + s.note }
           : { src: e.R.tex, alt: s.label, text: s.solution });
+      } else if (stickerOf(p)) {                                 // чистая страница листа со стикером — свой холст
+        const c = mk(); paper(c.ctx, p % 2 ? 'right' : 'left'); sticker(c.ctx, p, p % 2 ? 'right' : 'left');
+        pages.push({ src: c.tex, alt: '' });
       } else pages.push({ src: p % 2 ? blankL.tex : blank.tex, alt: '' });
     }
   };
@@ -488,7 +525,7 @@ function init() {
     const pageW = hr.width / 2;
     rings.style.cssText = `left:${hr.left - pr.left + pageW - pageW * HOLE_X - 2}px;top:${hr.top - pr.top}px;width:${pageW * HOLE_X * 2 + 4}px;height:${hr.height}px`;
     rings.classList.add('is-on');
-    stack.style.cssText = `left:${hr.left - pr.left}px;top:${hr.top - pr.top}px;width:${hr.width}px;height:${hr.height}px`;
+    stack.style.cssText = `left:${hr.left - pr.left + pageW * MARG}px;top:${hr.top - pr.top}px;width:${hr.width - 2 * pageW * MARG}px;height:${hr.height}px`;   // по краю бумаги, без полосы под язычки
   };
   if (rings) rings.innerHTML = HOLE_Y.map((f) => `<span class="apx__ring" style="top:${f * 100}%"></span>`).join('');
   /* толща блокнота по внешним краям: слева — перелистанные листы, справа — ещё не прочитанные */
@@ -533,9 +570,7 @@ function init() {
     host.classList.add('is-flat');
     host.innerHTML = '<div class="nb-pad"><div class="nb-slot nb-top"></div><div class="nb-bind" aria-hidden="true"><i><svg viewBox="0 0 24 100" preserveAspectRatio="none"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#6E7478"/><stop offset=".38" stop-color="#F3F4F4"/><stop offset=".62" stop-color="#B5BABD"/><stop offset="1" stop-color="#5F6569"/></linearGradient></defs><path class="nb-ring-sh" d="M7 9 C 21 24, 21 76, 7 91"/><path class="nb-ring" d="M7 7 C 20 22, 20 78, 7 93"/><path class="nb-ring-hl" d="M9 12 C 17 26, 17 50, 16 56"/></svg></i><i><svg viewBox="0 0 24 100" preserveAspectRatio="none"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#6E7478"/><stop offset=".38" stop-color="#F3F4F4"/><stop offset=".62" stop-color="#B5BABD"/><stop offset="1" stop-color="#5F6569"/></linearGradient></defs><path class="nb-ring-sh" d="M7 9 C 21 24, 21 76, 7 91"/><path class="nb-ring" d="M7 7 C 20 22, 20 78, 7 93"/><path class="nb-ring-hl" d="M9 12 C 17 26, 17 50, 16 56"/></svg></i></div>'
       + '<div class="nb-slot nb-bottom"></div><div class="nb-leaf" aria-hidden="true"><div class="nb-face nb-front"></div><div class="nb-face nb-back"></div></div>'
-      /* закладки-стикеры выглядывают из-за краёв листов */
-      + [['r', 14, '#A9502C'], ['r', 24, '#C9A27A'], ['r', 62, '#6F7B74'], ['r', 74, '#2F4B52'], ['l', 36, '#6F7B74'], ['l', 86, '#A9502C']]
-        .map((t) => '<i class="nb-tab nb-tab--' + t[0] + '" style="top:' + t[1] + '%;--c:' + t[2] + '" aria-hidden="true"></i>').join('') + '</div>';
+      + '</div>';
     pad = {
       top: host.querySelector('.nb-top'), bottom: host.querySelector('.nb-bottom'), leaf: host.querySelector('.nb-leaf'),
       front: host.querySelector('.nb-front'), back: host.querySelector('.nb-back'), bind: host.querySelector('.nb-bind'),
@@ -596,8 +631,6 @@ function init() {
       });
     }
     view.scene.add(ringGroup);
-    if (!tabGroup) tabGroup = makeTabs();
-    view.scene.add(tabGroup);
     book.needsRender = true;
   };
   /* закладки-стикеры, как в настоящем блокноте: вклеены между листами и выглядывают из-за краёв стопок —
@@ -643,7 +676,7 @@ function init() {
       loop: false,
       label: 'Блокнот «Мой подход»',
       formatPageLabel: (d) => 'Сцена ' + (sceneOf(Math.max(0, Math.min(scenes.length * (stacked ? 2 : 1) - 1, stacked ? d.page - 1 - LEAD : (d.page - 1 - LEAD) >> 1))) + 1) + ' из ' + scenes.length,
-      paper: { backColor: PAPER, showThrough: 0.02, bulge: 0.6, wrinkles: 0.4 },
+      paper: { backColor: PAPER, showThrough: 0.02, bulge: 0.6, wrinkles: 0.4, cutout: true },
       lighting: { floorShadow: 0.22, ambient: { sky: '#ffffff', ground: '#d8cfc2', intensity: 2.05 }, sun: { intensity: 2.1 } },
       motion: { speed: 0.85, jitter: true },
       interaction: { drag: false, click: false, hold: false, hover: false, keyboard: false },
