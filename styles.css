@@ -1382,7 +1382,7 @@ a { color: inherit; text-decoration: none; }
 /* ===== «Мой подход»: блокнот на кольцах вместо квадрата (notebook.js) ===== */
 /* компьютер: блокнот на месте квадрата и правее; заголовок, «Я работаю иначе» и счётчик — узкой колонкой левее фото */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
-  .apx { left: calc(170 * var(--u)); top: calc(320 * var(--u)); width: calc(920 * var(--u)); height: calc(680 * var(--u)); }
+  .apx { left: calc(398 * var(--u)); top: calc(320 * var(--u)); width: calc(920 * var(--u)); height: calc(680 * var(--u)); }   /* правее — до линии 1300, где начинается портрет */
   /* блокнот лежит под наклоном, правый край выше; правее вертикального заголовка, углы не задевают тексты */
   .apx { transform: rotate(-9deg) scale(.88); transform-origin: 50% 50%; }
   /* область рисования шире страниц на запас под переворачиваемый лист (27.975% с каждой стороны, как в библиотеке) — страницы совпадают с рамкой блокнота */
@@ -1391,7 +1391,7 @@ a { color: inherit; text-decoration: none; }
   .approach__title { left: calc(60 * var(--u) + 1.1 * 77 * var(--u)); top: calc(1015 * var(--u) - 1.1 * 77 * var(--u)); width: auto; white-space: nowrap; transform: rotate(-90deg); transform-origin: 0 100%; }
   .apx__answer { left: calc(1090 * var(--u)); top: calc(350 * var(--u)); width: calc(320 * var(--u)); }   /* на месте заголовка */
   .apx__answer-head { white-space: normal; }
-  .apx__nav { left: calc(700 * var(--u)); top: calc(940 * var(--u)); }   /* счётчик и стрелки — под блокнотом */
+  .apx__nav { left: calc(900 * var(--u)); top: calc(945 * var(--u)); }   /* счётчик и стрелки — под блокнотом */
   .apx__answer-sub { width: calc(300 * var(--u)); }
 }
 .apx__book { position: absolute; z-index: 1; inset: 0; }
@@ -1439,11 +1439,12 @@ a { color: inherit; text-decoration: none; }
 .apx__answer-head .cap { width: auto; font-weight: 400; font-size: 1.247em; line-height: .5; letter-spacing: 0; margin-right: .42em; }   /* у рукописной «Я» длинный росчерк вправо — отступ, чтобы не слипалась со словом */
 /* компьютер: заголовком сверху слева, над блокнотом (крупно, рукописная «Я»), под ним — подпись одной строкой */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
-  .apx__answer { left: calc(170 * var(--u)); top: calc(130 * var(--u)); width: auto; gap: calc(18 * var(--u)); }
-  .apx__answer-head { font-size: calc(77 * var(--u)); white-space: nowrap; }
-  .apx__answer-sub { width: auto; white-space: nowrap; font-size: calc(28 * var(--u)); }
-  .apx__answer-sub .apx__line { display: inline; }
-  .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
+  /* размеры — как у «Клиент поймёт вас с первого экрана»: заголовок 60, подпись 20 приглушённо; ниже, слева от блокнота */
+  .apx__answer { left: calc(170 * var(--u)); top: calc(235 * var(--u)); width: auto; gap: calc(20 * var(--u)); }
+  .apx__br { display: inline; }
+  .apx__answer-head { font-size: calc(60 * var(--u)); line-height: 1.02; letter-spacing: -.035em; white-space: nowrap; }
+  .apx__answer-head .cap { font-size: 1.45em; }
+  .apx__answer-sub { width: auto; white-space: nowrap; font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.22; letter-spacing: -.02em; opacity: .78; }
 }
 /* телефон: «Мой подход» → портрет рядом с «Я работаю иначе» → блокнот → стрелки */
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
