@@ -401,8 +401,8 @@ document.documentElement.classList.replace('no-js', 'js');
 
 /* Четвёртый блок «Мой подход»: блокнот на кольцах (notebook.js). Каждая сцена — разворот блокнота;
    сцены сменяются перелистыванием страниц. Вместе со сценой плавно меняются цвета блока, заголовок из частиц
-   и счётчик. Компьютер: блок закреплён, прокрутка листает развороты 01→04, клик по правой странице — дальше,
-   по левой — назад. Телефон: разворот сверху вниз (что не так — на кольцах — как решаю я), листается стрелками и касанием. */
+   и счётчик. Развороты листаются сами каждые 6,5 секунды (курсор над блокнотом — пауза); стрелки и клик по правой странице — дальше,
+   по левой — назад. Телефон: разворот сверху вниз (что не так — на кольцах — как решаю я), листается сам, стрелками и касанием. */
 (function () {
   'use strict';
   var root = document.querySelector('[data-approach]');
@@ -430,7 +430,7 @@ document.documentElement.classList.replace('no-js', 'js');
   var book = function () { return window.approachBook; };
   var go = function (dir) {
     if (busy) return;
-    var next = stacked ? (step + dir + STEPS) % STEPS : Math.max(0, Math.min(STEPS - 1, step + dir));
+    var next = (step + dir + STEPS) % STEPS;                  // по кругу: после четвёртого — снова первый
     if (next === step) return;
     busy = true;
     var was = sceneOf(step);
@@ -468,8 +468,9 @@ document.documentElement.classList.replace('no-js', 'js');
   root.addEventListener('mouseleave', function () { over = false; });
 
   var timer = 0;
-  /* автолистания нет: разворот читают в своём темпе и листают сами (стрелки, касание, прокрутка) */
-  var restart = function () {};
+  /* развороты листаются сами — каждые 6,5 секунды, пока блок на экране; курсор над блокнотом — ждём.
+     Стрелки и клик по странице листают сразу, после них отсчёт начинается заново */
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce && !document.hidden) go(1); }, 6500); };
   if ('IntersectionObserver' in window) {
     var answer = frame.querySelector('.apx__answer');
     new IntersectionObserver(function (e) {
@@ -479,34 +480,7 @@ document.documentElement.classList.replace('no-js', 'js');
   }
   restart();
 
-  /* Компьютер: блок закрепляется на экране, и прокрутка колёсиком листает развороты 01→04;
-     после четвёртого страница едет дальше. Автолистание тогда не нужно — разворот задаёт прокрутка. */
-  var wanted = 0, pinned = false, jump = function () {};
-  if (window.ScrollTrigger && !stacked && !reduce) {
-    clearInterval(timer);
-    restart = function () {}; pinned = true;
-    ScrollTrigger.create({
-      trigger: section, start: 'top top', end: '+=' + (STEPS - 1) * 100 + '%', pin: true, pinSpacing: true,
-      onUpdate: function (self) {
-        wanted = Math.min(STEPS - 1, Math.floor(self.progress * STEPS * 0.999));
-        if (!busy && wanted !== step) go(wanted > step ? 1 : -1);
-      }
-    });
-    /* стрелки и клик по блокноту прокручивают страницу к нужному развороту — прокрутка и блокнот не расходятся */
-    var st = ScrollTrigger.getAll().filter(function (t) { return t.trigger === section; })[0];
-    jump = function (dir) {
-      var n = Math.max(0, Math.min(STEPS - 1, step + dir));
-      var y = st.start + (st.end - st.start) * n / Math.max(1, STEPS - 1);
-      if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
-    };
-    var swap = function (sel, dir) {
-      frame.querySelectorAll(sel).forEach(function (el) {
-        var clone = el.cloneNode(true); el.parentNode.replaceChild(clone, el);
-        clone.addEventListener('click', function (e) { e.stopPropagation(); jump(dir); });
-      });
-    };
-    swap('.js-next', 1); swap('.js-prev', -1);
-  }
+  var wanted = 0, pinned = false, jump = function () {};   /* закрепления по прокрутке больше нет — развороты листаются сами */
 })();
 
 /* Заголовок «Мой подход» из частиц — по примеру VoXelo (CodePen, p5.js), переписан на чистый canvas.

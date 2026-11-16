@@ -127,10 +127,46 @@ function init() {
     ctx.beginPath(); ctx.moveTo(x1 - Math.cos(a - 0.5) * L, y1 - Math.sin(a - 0.5) * L); ctx.lineTo(x1, y1); ctx.lineTo(x1 - Math.cos(a + 0.5) * L, y1 - Math.sin(a + 0.5) * L); ctx.stroke();
     ctx.restore();
   };
+  /* закладка-стикер, как в настоящем блокноте: глянцевый флажок-стрелка — цветная часть и полупрозрачный «хвост» */
+  const flag = (ctx, x, y, len, h, dir, color, tilt) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(tilt || 0); ctx.scale(dir, 1);
+    const solid = len * 0.42, tip = h * 0.55;
+    const shape = () => { ctx.beginPath(); ctx.moveTo(0, -h / 2); ctx.lineTo(len - tip, -h / 2); ctx.lineTo(len, 0); ctx.lineTo(len - tip, h / 2); ctx.lineTo(0, h / 2); ctx.closePath(); };
+    ctx.shadowColor = 'rgba(26, 20, 14, .14)'; ctx.shadowBlur = h * 0.25; ctx.shadowOffsetY = h * 0.06;
+    shape(); ctx.globalAlpha = 0.38; ctx.fillStyle = color; ctx.fill();          // полупрозрачная часть — сквозь неё видна бумага
+    ctx.shadowColor = 'transparent';
+    ctx.globalAlpha = 0.95; ctx.fillRect(0, -h / 2, solid, h);                    // цветная, плотная часть
+    const gl = ctx.createLinearGradient(0, -h / 2, 0, h / 2);                    // глянцевый блик сверху
+    gl.addColorStop(0, 'rgba(255,255,255,.38)'); gl.addColorStop(0.45, 'rgba(255,255,255,.06)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.globalAlpha = 1; shape(); ctx.fillStyle = gl; ctx.fill();
+    ctx.restore();
+  };
+  /* веточка с листиками — тонкий рисунок пером, как в скетчбуке; листья чуть подкрашены шалфеем */
+  const sprig = (ctx, x0, y0, x1, y1, k) => {
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const cx = (x0 + x1) / 2 + (y1 - y0) * 0.18, cy = (y0 + y1) / 2 - (x1 - x0) * 0.18;
+    const at = (t) => [(1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * x1, (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y1];
+    ctx.strokeStyle = 'rgba(26, 44, 48, .7)'; ctx.lineWidth = PW * 0.0026;
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(cx, cy, x1, y1); ctx.stroke();
+    const L = PW * 0.05 * k;
+    [0.22, 0.36, 0.5, 0.64, 0.78, 0.92].forEach((t, n) => {
+      const [px, py] = at(t), [qx, qy] = at(Math.min(1, t + 0.01));
+      const ang = Math.atan2(qy - py, qx - px) + (n % 2 ? 0.9 : -0.9), len = L * (1 - t * 0.35);
+      ctx.save(); ctx.translate(px, py); ctx.rotate(ang);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(len * 0.5, -len * 0.32, len, 0); ctx.quadraticCurveTo(len * 0.5, len * 0.32, 0, 0);
+      ctx.fillStyle = 'rgba(111, 123, 116, .45)'; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(len * 0.1, 0); ctx.lineTo(len * 0.8, 0); ctx.lineWidth = PW * 0.0016; ctx.stroke(); ctx.lineWidth = PW * 0.0026;
+      ctx.restore();
+    });
+    const [tx, ty] = at(1);                                         // бутон на конце — медной точкой
+    ctx.fillStyle = 'rgba(169, 80, 44, .75)'; ctx.beginPath(); ctx.arc(tx, ty, PW * 0.007, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
   const leftPage = (ctx, s, i) => {
     paper(ctx, SPINE_L);
     marginLine(ctx, M * 0.62);
-    tape(ctx, PW * 0.3, PH * 0.045, PW * 0.3, PW * 0.085, -0.09, TAPE[i % 4], i);
+    flag(ctx, PW * 0.012, PH * 0.1, PW * 0.3, PW * 0.075, 1, TAPE[i % 4], -0.02);        // закладка у внешнего края
+    if (stacked) sprig(ctx, PW * 0.64, PH * 0.9, PW * 0.88, PH * 0.73, 1.1); else sprig(ctx, PW * 0.56, PH * 0.9, PW * 0.84, PH * 0.68, 1.3);
     const maxW = PW - M * 2 - PW * 0.04, size = PW * 0.115;
     let y = PH * (stacked ? 0.27 : 0.3);
     y = text(ctx, s.phrase, { x: M, y, maxW, size, color: ACCENT, lh: 1.08 });
@@ -144,7 +180,7 @@ function init() {
   const LAB_Y = stacked ? 0.17 : 0.14, SOL_Y = stacked ? 0.74 : 0.76, SOL_S = stacked ? 0.064 : 0.07;
   const rightStatic = (ctx, s, i) => {
     paper(ctx, SPINE_R);
-    tape(ctx, PW * (stacked ? 0.62 : 0.78), PH * 0.04, PW * 0.26, PW * 0.08, 0.12, TAPE[(i + 2) % 4], i + 7);
+    flag(ctx, PW * 0.988, PH * (stacked ? 0.14 : 0.1), PW * 0.26, PW * 0.075, -1, TAPE[(i + 2) % 4], 0.02);   // закладка у внешнего края
     const size = PW * 0.08;
     ctx.font = `400 ${size}px ${FONT}`;
     const lw = ctx.measureText(s.label).width;
