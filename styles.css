@@ -1382,15 +1382,16 @@ a { color: inherit; text-decoration: none; }
 /* ===== «Мой подход»: блокнот на кольцах вместо квадрата (notebook.js) ===== */
 /* компьютер: блокнот на месте квадрата и правее; заголовок, «Я работаю иначе» и счётчик — узкой колонкой левее фото */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
-  .apx { width: calc(920 * var(--u)); height: calc(680 * var(--u)); }
-  /* блокнот лежит под наклоном, правый край выше; чуть меньше, чтобы углы не выходили за левое поле и не задевали тексты справа */
-  .apx { transform: rotate(-9deg) scale(.92); transform-origin: 50% 50%; }
+  .apx { left: calc(170 * var(--u)); top: calc(320 * var(--u)); width: calc(920 * var(--u)); height: calc(680 * var(--u)); }
+  /* блокнот лежит под наклоном, правый край выше; правее вертикального заголовка, углы не задевают тексты */
+  .apx { transform: rotate(-9deg) scale(.88); transform-origin: 50% 50%; }
   /* область рисования шире страниц на запас под переворачиваемый лист (27.975% с каждой стороны, как в библиотеке) — страницы совпадают с рамкой блокнота */
   .apx .apx__book { inset: -27.975%; }
-  .approach__title { left: calc(1010 * var(--u)); top: calc(350 * var(--u)); transform: none; width: calc(400 * var(--u)); white-space: normal; }
-  .apx__answer { left: calc(1010 * var(--u)); top: calc(600 * var(--u)); width: calc(320 * var(--u)); }
+  /* заголовок — по левому полю, снизу вверх: поворот вокруг нижнего левого угла, низ надписи на линии 1015 */
+  .approach__title { left: calc(60 * var(--u) + 1.1 * 77 * var(--u)); top: calc(1015 * var(--u) - 1.1 * 77 * var(--u)); width: auto; white-space: nowrap; transform: rotate(-90deg); transform-origin: 0 100%; }
+  .apx__answer { left: calc(1090 * var(--u)); top: calc(350 * var(--u)); width: calc(320 * var(--u)); }   /* на месте заголовка */
   .apx__answer-head { white-space: normal; }
-  .apx__nav { left: calc(1010 * var(--u)); }
+  .apx__nav { left: calc(700 * var(--u)); top: calc(940 * var(--u)); }   /* счётчик и стрелки — под блокнотом */
   .apx__answer-sub { width: calc(300 * var(--u)); }
   .apx__answer-sub .apx__line { display: inline; }
   .apx__answer-sub .apx__line + .apx__line::before { content: " "; }
