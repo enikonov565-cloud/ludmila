@@ -531,7 +531,7 @@ function init() {
   const flatStart = () => {
     build();
     host.classList.add('is-flat');
-    host.innerHTML = '<div class="nb-pad"><div class="nb-slot nb-top"></div><div class="nb-bind" aria-hidden="true"><i></i><i></i></div>'
+    host.innerHTML = '<div class="nb-pad"><div class="nb-slot nb-top"></div><div class="nb-bind" aria-hidden="true"><i><svg viewBox="0 0 24 100" preserveAspectRatio="none"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#6E7478"/><stop offset=".38" stop-color="#F3F4F4"/><stop offset=".62" stop-color="#B5BABD"/><stop offset="1" stop-color="#5F6569"/></linearGradient></defs><path class="nb-ring-sh" d="M7 9 C 21 24, 21 76, 7 91"/><path class="nb-ring" d="M7 7 C 20 22, 20 78, 7 93"/><path class="nb-ring-hl" d="M9 12 C 17 26, 17 50, 16 56"/></svg></i><i><svg viewBox="0 0 24 100" preserveAspectRatio="none"><defs><linearGradient id="nbm" x1="0" x2="1"><stop offset="0" stop-color="#6E7478"/><stop offset=".38" stop-color="#F3F4F4"/><stop offset=".62" stop-color="#B5BABD"/><stop offset="1" stop-color="#5F6569"/></linearGradient></defs><path class="nb-ring-sh" d="M7 9 C 21 24, 21 76, 7 91"/><path class="nb-ring" d="M7 7 C 20 22, 20 78, 7 93"/><path class="nb-ring-hl" d="M9 12 C 17 26, 17 50, 16 56"/></svg></i></div>'
       + '<div class="nb-slot nb-bottom"></div><div class="nb-leaf" aria-hidden="true"><div class="nb-face nb-front"></div><div class="nb-face nb-back"></div></div>'
       /* закладки-стикеры выглядывают из-за краёв листов */
       + [['r', 14, '#A9502C'], ['r', 24, '#C9A27A'], ['r', 62, '#6F7B74'], ['r', 74, '#2F4B52'], ['l', 36, '#6F7B74'], ['l', 86, '#A9502C']]

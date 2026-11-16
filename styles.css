@@ -1423,10 +1423,13 @@ a { color: inherit; text-decoration: none; }
   .nb-slot canvas, .nb-face canvas { display: block; width: 100%; height: auto; border-radius: 6px; }
   /* кольца между страницами — металл, как на компьютере */
   .nb-bind { position: relative; z-index: 3; height: 14px; }
-  /* металлическое кольцо: блик сверху, мягкая тень на бумаге */
-  /* от отверстия верхней страницы (у её нижнего края) до отверстия нижней — отверстия на 6% от края страницы */
-  .nb-bind i { position: absolute; top: calc(-6% * 0 - (100vw - 40px) * .06 - 6px); width: 20px; height: calc((100vw - 40px) * .12 + 14px + 12px); margin-left: -10px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 46' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%237A8084'/%3E%3Cstop offset='.32' stop-color='%23F4F5F5'/%3E%3Cstop offset='.55' stop-color='%23C4C8CB'/%3E%3Cstop offset='1' stop-color='%23686E72'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3.2' y='3.2' width='15.6' height='39.6' rx='7.8' fill='none' stroke='url(%23g)' stroke-width='3.4'/%3E%3Cpath d='M7 8.5 Q11 5.6 15 8.5' fill='none' stroke='%23fff' stroke-opacity='.7' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; filter: drop-shadow(1.5px 3px 2.5px rgba(26, 20, 14, .32)); }
+  /* кольцо переплёта: толстая металлическая дуга от отверстия верхней страницы к отверстию нижней,
+     чуть выгнута вбок; объём — градиентом по толщине, блик и мягкая тень на бумаге */
+  .nb-bind i { position: absolute; top: calc(-1 * (100vw - 40px) * .0595 - 4px); width: 18px; height: calc((100vw - 40px) * .119 + 14px + 8px); margin-left: -6px; }
+  .nb-bind svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .nb-ring { fill: none; stroke: url(#nbm); stroke-width: 4.6px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .nb-ring-sh { fill: none; stroke: rgba(26, 20, 14, .26); stroke-width: 5px; stroke-linecap: round; vector-effect: non-scaling-stroke; filter: blur(1.6px); transform: translate(2.5px, 2px); }
+  .nb-ring-hl { fill: none; stroke: rgba(255, 255, 255, .85); stroke-width: 1.1px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
   .nb-bind i:first-child { left: 20%; } .nb-bind i:last-child { left: 80%; }
   /* лист, который переворачивается через кольца */
   .nb-leaf { position: absolute; left: 0; right: 0; z-index: 2; display: none; transform-style: preserve-3d; }
