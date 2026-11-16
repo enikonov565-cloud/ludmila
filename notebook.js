@@ -28,8 +28,9 @@ function init() {
   if (!scenes.length) return;
 
   /* страница: высота ÷ ширина; на телефоне — по одной странице */
-  const ASPECT = 1.36;
+  const ASPECT = stacked ? 1 : 1.36;                          // телефон: квадратные страницы, разворот сверху вниз
   const PW = stacked ? 760 : 1024, PH = Math.round(PW * ASPECT);
+  const SPINE_L = stacked ? 'bottom' : 'right', SPINE_R = stacked ? 'top' : 'left';
   const LEAD = 12, TAIL = 18;                                   // чистые листы до и после — толща блокнота по краям
   const leftOf = (i) => 1 + LEAD + 2 * i, rightOf = (i) => 2 + LEAD + 2 * i;
   const pageOfStep = (s) => (stacked ? 1 + LEAD + s : leftOf(s));
@@ -44,13 +45,17 @@ function init() {
   const paper = (ctx, spine) => {
     ctx.fillStyle = PAPER; ctx.fillRect(0, 0, PW, PH);
     /* чуть темнее у корешка — лист слегка уходит в переплёт */
-    const g = ctx.createLinearGradient(spine === 'right' ? PW : 0, 0, spine === 'right' ? PW - PW * 0.12 : PW * 0.12, 0);
+    const vert = spine === 'top' || spine === 'bottom';
+    const g = vert
+      ? ctx.createLinearGradient(0, spine === 'bottom' ? PH : 0, 0, spine === 'bottom' ? PH - PH * 0.12 : PH * 0.12)
+      : ctx.createLinearGradient(spine === 'right' ? PW : 0, 0, spine === 'right' ? PW - PW * 0.12 : PW * 0.12, 0);
     g.addColorStop(0, 'rgba(106, 95, 81, .10)'); g.addColorStop(1, 'rgba(106, 95, 81, 0)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, PW, PH);
     /* отверстия под кольца */
-    const hx = spine === 'right' ? PW * (1 - HOLE_X) : PW * HOLE_X, r = PW * 0.016;
+    const r = PW * 0.016;
     HOLE_Y.forEach((f) => {
-      const hy = PH * f;
+      const hx = vert ? PW * f : (spine === 'right' ? PW * (1 - HOLE_X) : PW * HOLE_X);
+      const hy = vert ? (spine === 'bottom' ? PH * (1 - HOLE_X * 0.7) : PH * HOLE_X * 0.7) : PH * f;
       ctx.fillStyle = 'rgba(26, 20, 14, .55)'; ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = 'rgba(255, 255, 255, .7)'; ctx.lineWidth = PW * 0.003; ctx.beginPath(); ctx.arc(hx, hy + r * 0.12, r * 1.05, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
     });
@@ -122,11 +127,11 @@ function init() {
     ctx.restore();
   };
   const leftPage = (ctx, s, i) => {
-    paper(ctx, 'right');
+    paper(ctx, SPINE_L);
     marginLine(ctx, M * 0.62);
     tape(ctx, PW * 0.3, PH * 0.045, PW * 0.3, PW * 0.085, -0.09, TAPE[i % 4], i);
     const maxW = PW - M * 2 - PW * 0.04, size = PW * 0.115;
-    let y = PH * 0.3;
+    let y = PH * (stacked ? 0.27 : 0.3);
     y = text(ctx, s.phrase, { x: M, y, maxW, size, color: ACCENT, lh: 1.08 });
     ctx.font = `400 ${size}px ${FONT}`;
     const lines = wrap(ctx, s.phrase, maxW), lw = Math.min(maxW, ctx.measureText(lines[lines.length - 1]).width);
@@ -134,18 +139,19 @@ function init() {
     text(ctx, s.note, { x: M, y: y + PW * 0.18, maxW, size: PW * 0.072, color: INK, lh: 1.25 });
   };
   /* правая страница: подпись вверху, место под анимацию, решение внизу */
-  const AREA = { x: PW * 0.16, y: PH * 0.2, w: PW * 0.74, h: PH * 0.47 };
+  const AREA = stacked ? { x: PW * 0.16, y: PH * 0.21, w: PW * 0.74, h: PH * 0.44 } : { x: PW * 0.16, y: PH * 0.2, w: PW * 0.74, h: PH * 0.47 };
+  const LAB_Y = stacked ? 0.17 : 0.14, SOL_Y = stacked ? 0.74 : 0.76, SOL_S = stacked ? 0.064 : 0.07;
   const rightStatic = (ctx, s, i) => {
-    paper(ctx, 'left');
+    paper(ctx, SPINE_R);
     tape(ctx, PW * 0.78, PH * 0.04, PW * 0.26, PW * 0.08, 0.12, TAPE[(i + 2) % 4], i + 7);
     const size = PW * 0.08;
     ctx.font = `400 ${size}px ${FONT}`;
     const lw = ctx.measureText(s.label).width;
-    marker(ctx, PW * 0.15, PH * 0.14 - size * 0.62, lw + PW * 0.03, size * 0.72, MARK[i % 4]);
-    text(ctx, s.label, { x: PW * 0.16, y: PH * 0.14, maxW: PW * 0.74, size, color: ACCENT });
+    marker(ctx, PW * 0.15, PH * LAB_Y - size * 0.62, lw + PW * 0.03, size * 0.72, MARK[i % 4]);
+    text(ctx, s.label, { x: PW * 0.16, y: PH * LAB_Y, maxW: PW * 0.74, size, color: ACCENT });
     /* стрелка-пометка от рисунка к решению */
-    arrow(ctx, PW * 0.1, PH * 0.66, PW * 0.135, PH * 0.735, '#6F7B74');
-    text(ctx, s.solution, { x: PW * 0.16, y: PH * 0.76, maxW: PW * 0.72, size: PW * 0.07, color: INK, lh: 1.25 });
+    arrow(ctx, PW * 0.1, PH * (SOL_Y - 0.1), PW * 0.135, PH * (SOL_Y - 0.025), '#6F7B74');
+    text(ctx, s.solution, { x: PW * 0.16, y: PH * SOL_Y, maxW: PW * 0.72, size: PW * SOL_S, color: INK, lh: 1.25 });
   };
 
   /* ---------- анимации на правой странице ---------- */
@@ -463,13 +469,8 @@ function init() {
   /* ---------- блокнот ---------- */
   let ringT = 0;
   let step = 0, inView = false, raf = 0, lastT = 0, acc = 0, shown = -1;
-  const sceneOf = (st) => (stacked ? st >> 1 : st);
-  const animating = () => {
-    if (!book || reduce) return -1;
-    const st = step, sc = sceneOf(st);
-    if (stacked && st % 2 === 0) return -1;                    // на телефоне видна левая страница — анимация не нужна
-    return sc;
-  };
+  const sceneOf = (st) => st;
+  const animating = () => (!live || reduce ? -1 : step);
   const loop = (now) => {
     raf = 0;
     if (!inView || document.hidden) return;
@@ -482,11 +483,55 @@ function init() {
     if (shown !== sc) { shown = sc; e.anim.enter(); }
     e.anim.tick(acc); acc = 0;
     e.paint();
-    book.needsRender = true;                                   // библиотека рисует кадр, только если что-то сдвинулось — просим и сейчас
+    if (book) book.needsRender = true;                         // библиотека рисует кадр, только если что-то сдвинулось — просим и сейчас
   };
   const wake = () => { if (!raf && inView) { lastT = 0; raf = requestAnimationFrame(loop); } };
 
+  /* ---------- телефон: вертикальный разворот — сверху что не так, на кольцах, снизу как решаю я ----------
+     Перелистывание: нижний лист поднимается через кольца наверх, открывая следующий разворот (назад — наоборот). */
+  let pad = null, flipping = null, cur = 0, flipT = 0;
+  const flatStart = () => {
+    build();
+    host.classList.add('is-flat');
+    host.innerHTML = '<div class="nb-pad"><div class="nb-slot nb-top"></div><div class="nb-bind" aria-hidden="true"><i></i><i></i></div>'
+      + '<div class="nb-slot nb-bottom"></div><div class="nb-leaf" aria-hidden="true"><div class="nb-face nb-front"></div><div class="nb-face nb-back"></div></div></div>';
+    pad = {
+      top: host.querySelector('.nb-top'), bottom: host.querySelector('.nb-bottom'), leaf: host.querySelector('.nb-leaf'),
+      front: host.querySelector('.nb-front'), back: host.querySelector('.nb-back'), bind: host.querySelector('.nb-bind'),
+    };
+    cur = step;
+    pad.top.appendChild(live[cur].L.canvas); pad.bottom.appendChild(live[cur].R.canvas);
+    section.classList.add('is-book-ready');
+    new IntersectionObserver((en) => { inView = en[0].isIntersecting; if (inView) wake(); }, { threshold: 0 }).observe(host);
+  };
+  const finish = () => {
+    if (!flipping) return;
+    const b = flipping.b; flipping = null;
+    pad.leaf.classList.remove('is-on', 'is-turn'); pad.leaf.style.cssText = '';
+    pad.top.replaceChildren(live[b].L.canvas); pad.bottom.replaceChildren(live[b].R.canvas);
+    pad.front.textContent = ''; pad.back.textContent = '';
+  };
+  const flatShow = (b) => {
+    if (!pad) { cur = b; return; }
+    finish();
+    const a = cur; cur = b;
+    if (a === b) return;
+    const n = scenes.length, fwd = ((b - a + n) % n) <= n / 2;
+    flipping = { b };
+    if (reduce) { finish(); return; }
+    const gap = pad.bind.offsetHeight, slot = fwd ? pad.bottom : pad.top;
+    pad.leaf.style.cssText = 'top:' + slot.offsetTop + 'px;height:' + slot.offsetHeight + 'px;transform-origin:50% ' + (fwd ? -gap / 2 : slot.offsetHeight + gap / 2) + 'px';
+    if (fwd) { pad.front.appendChild(live[a].R.canvas); pad.back.appendChild(live[b].L.canvas); pad.bottom.replaceChildren(live[b].R.canvas); }
+    else { pad.front.appendChild(live[a].L.canvas); pad.back.appendChild(live[b].R.canvas); pad.top.replaceChildren(live[b].L.canvas); }
+    pad.leaf.classList.add('is-on');
+    void pad.leaf.offsetWidth;                                   // начало поворота — с ровного положения
+    pad.leaf.classList.add('is-turn');
+    pad.leaf.style.transform = 'rotateX(' + (fwd ? 180 : -180) + 'deg)';
+    clearTimeout(flipT); flipT = setTimeout(finish, 950);
+  };
+
   const start = () => {
+    if (stacked) { flatStart(); return; }
     build();
     book = new LeafThrough(host, {
       pages,
@@ -513,6 +558,7 @@ function init() {
   window.approachBook = {
     show(st) {
       step = st;
+      if (stacked) flatShow(st);
       if (book) book.goTo(pageOfStep(st), { animate: !reduce });
       setStack(sceneOf(st));
       /* пока лист переворачивается, кольца прячутся — лист проходит сквозь них */
@@ -520,7 +566,7 @@ function init() {
       const li = section.querySelectorAll('.apx__scene');
       li.forEach((el, k) => el.classList.toggle('is-current', k === sceneOf(st)));
     },
-    steps: () => (stacked ? scenes.length * 2 : scenes.length),
+    steps: () => scenes.length,
     sceneOf,
   };
 

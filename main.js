@@ -402,7 +402,7 @@ document.documentElement.classList.replace('no-js', 'js');
 /* Четвёртый блок «Мой подход»: блокнот на кольцах (notebook.js). Каждая сцена — разворот блокнота;
    сцены сменяются перелистыванием страниц. Вместе со сценой плавно меняются цвета блока, заголовок из частиц
    и счётчик. Компьютер: блок закреплён, прокрутка листает развороты 01→04, клик по правой странице — дальше,
-   по левой — назад. Телефон: по одной странице (сначала что не так, потом как решаю я), автолистание каждые 6 секунд. */
+   по левой — назад. Телефон: разворот сверху вниз (что не так — на кольцах — как решаю я), листается стрелками и касанием. */
 (function () {
   'use strict';
   var root = document.querySelector('[data-approach]');
@@ -414,8 +414,8 @@ document.documentElement.classList.replace('no-js', 'js');
   var cur = frame.querySelector('.apx__cur');
   var bookEl = root.querySelector('[data-book]');
   var SCENES = root.querySelectorAll('.apx__scene').length || 4;
-  var STEPS = stacked ? SCENES * 2 : SCENES;                 // телефон: две страницы на сцену
-  var sceneOf = function (s) { return stacked ? s >> 1 : s; };
+  var STEPS = SCENES;                                        // шаг — разворот (сцена) и на компьютере, и на телефоне
+  var sceneOf = function (s) { return s; };
   /* у каждой сцены своя пара цветов: фон блока и текст */
   var THEMES = [
     { bg: '#A1998F', ink: '#182C31' },
@@ -456,6 +456,7 @@ document.documentElement.classList.replace('no-js', 'js');
   /* клик по блокноту: правая половина — дальше, левая — назад (на телефоне — всегда дальше) */
   if (bookEl) {
     bookEl.addEventListener('click', function (e) {
+      if (stacked) { nav(1); return; }                         // телефон: касание блокнота — следующий разворот
       var hit = e.target.closest('[data-leafthrough-hit-area]');
       if (!hit) return;                                        // только по самим страницам
       var r = hit.getBoundingClientRect();
@@ -467,7 +468,8 @@ document.documentElement.classList.replace('no-js', 'js');
   root.addEventListener('mouseleave', function () { over = false; });
 
   var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce) go(1); }, 6000); };
+  /* автолистания нет: разворот читают в своём темпе и листают сами (стрелки, касание, прокрутка) */
+  var restart = function () {};
   if ('IntersectionObserver' in window) {
     var answer = frame.querySelector('.apx__answer');
     new IntersectionObserver(function (e) {

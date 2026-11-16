@@ -1416,10 +1416,22 @@ a { color: inherit; text-decoration: none; }
 .apx__ring::before { top: calc(8 * var(--u)); border: calc(5 * var(--u)) solid rgba(26, 20, 14, .28); border-bottom: 0; filter: blur(calc(3 * var(--u))); }
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .apx { aspect-ratio: auto; height: auto; }
-  /* одна страница: слева библиотека оставляет место под переворачиваемый лист — уводим его за край экрана, страница крупнее */
-  .apx { overflow: visible; }
-  /* размеры — по раскладке библиотеки: страница занимает 1/1.56 ширины и 0.57 высоты области, остальное — пустые поля, их стягиваем */
-  .apx__book { --P: calc(100vw - 54px); position: relative; inset: auto; width: calc(var(--P) * 1.56); height: calc(var(--P) * 2.37);
-    margin: calc(var(--P) * -.4) 0 calc(var(--P) * -.46) calc(7px - var(--P) * .34); }
   .apx__rings, .apx__stack { display: none; }
+  /* телефон: вертикальный разворот — сверху «что не так», кольца, снизу «как решаю я»; обе страницы видны целиком */
+  .apx__book { position: relative; inset: auto; width: 100%; height: auto; margin: 0; pointer-events: auto; cursor: pointer; }
+  .nb-pad { position: relative; perspective: 1600px; }
+  .nb-slot { position: relative; border-radius: 6px; box-shadow: 0 10px 24px -14px rgba(26, 20, 14, .45), 0 1px 0 rgba(26, 20, 14, .06); }
+  .nb-slot canvas, .nb-face canvas { display: block; width: 100%; height: auto; border-radius: 6px; }
+  /* кольца между страницами — металл, как на компьютере */
+  .nb-bind { position: relative; z-index: 3; height: 14px; }
+  .nb-bind i { position: absolute; top: -14px; width: 18px; height: 42px; margin-left: -9px; border-radius: 9px;
+    border: 3.5px solid #B9BCBE; border-left-color: #E9EAEA; border-right-color: #7E8387;
+    box-shadow: 2px 3px 4px rgba(26, 20, 14, .28); }
+  .nb-bind i:first-child { left: 20%; } .nb-bind i:last-child { left: 80%; }
+  /* лист, который переворачивается через кольца */
+  .nb-leaf { position: absolute; left: 0; right: 0; z-index: 2; display: none; transform-style: preserve-3d; }
+  .nb-leaf.is-on { display: block; }
+  .nb-leaf.is-turn { transition: transform .9s cubic-bezier(.45, 0, .2, 1); }
+  .nb-face { position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 6px; box-shadow: 0 12px 28px -12px rgba(26, 20, 14, .4); }
+  .nb-back { transform: rotateX(180deg); }
 }
