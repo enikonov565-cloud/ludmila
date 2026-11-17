@@ -1,4 +1,4 @@
-/* Блок 8 «Баннеры, наружка, соцсети» — по мотивам Amber (ismamz, Codrops «Parallel page transitions»).
+/* Блок 8 «Афиши, баннеры, реклама» — по мотивам Amber (ismamz, Codrops «Parallel page transitions»).
    Работы стоят в рамках на круглой вращающейся подставке (three.js). Подставка поворачивается и выводит вперёд
    следующую работу; подпись внизу по центру меняется как в Amber: название в медной плашке уходит буквами вниз
    и выезжает снизу, вид работы поднимается из-под маски, заметка печатается по буквам.
@@ -245,10 +245,10 @@ function init() {
     const strip = new THREE.Mesh(new THREE.BoxGeometry(plinthW * 0.999, 0.025, 0.012), copperMat);
     strip.position.set(0, 0.11, 0.311);
     lift.add(strip);
-    /* рамка чуть откинута назад, сзади — подпорка */
+    /* рамка стоит ровно (без наклона — работа не искажается), сзади — подпорка */
     const tilt = new THREE.Group();
     tilt.position.set(0, 0.16, 0.06);
-    tilt.rotation.x = -0.06;
+    tilt.rotation.x = 0;
     lift.add(tilt);
     const tex = new THREE.CanvasTexture(faceTexture(pw, null));
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = maxAniso;
@@ -265,7 +265,15 @@ function init() {
     frames.push({ item, lift, body, fw, fh });
     const im = new Image();
     im.decoding = 'async';
-    im.onload = () => { tex.image = faceTexture(pw, im); tex.needsUpdate = true; dirty = true; };
+    /* работа — отдельным слоем поверх паспарту: картинка без пересчёта, без света и тонировки — цвета и резкость как в файле */
+    im.onload = () => {
+      const pt = new THREE.Texture(im);
+      pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = maxAniso; pt.generateMipmaps = true; pt.minFilter = THREE.LinearMipmapLinearFilter; pt.magFilter = THREE.LinearFilter; pt.needsUpdate = true;
+      const pic = new THREE.Mesh(new THREE.PlaneGeometry(pw, PH), new THREE.MeshBasicMaterial({ map: pt, toneMapped: false }));
+      pic.position.set(0, fh / 2, DEPTH / 2 + 0.003);
+      tilt.add(pic);
+      dirty = true;
+    };
     im.src = wk.src;
   });
 
@@ -306,14 +314,14 @@ function init() {
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     phone = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
-    renderer.setPixelRatio(Math.min(phone ? 2 : 1.5, window.devicePixelRatio || 1));
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const fh = PH + 2 * MAT + 0.16;
     const vt = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const needH = fh * (phone ? 1.5 : 1.95), needW = (PH * 0.75 + 2 * MAT) * (phone ? 1.6 : 2.2);
     const dist = Math.max(needH / (2 * vt), needW / (2 * vt * camera.aspect));
-    const elev = THREE.MathUtils.degToRad(phone ? 11 : 13);
+    const elev = THREE.MathUtils.degToRad(phone ? 8 : 9);   // камера ниже — работы почти без перспективных искажений
     const target = new THREE.Vector3(0, fh * (phone ? 0.3 : 0.12), RAD * 0.55);
     camera.position.set(0, target.y + Math.sin(elev) * dist, target.z + Math.cos(elev) * dist);
     camera.lookAt(target);
