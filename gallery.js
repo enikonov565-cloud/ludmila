@@ -25,7 +25,7 @@
     var el = document.createElement('div'); el.className = 'dg__slide';
     var kind = strip(d.kind).replace(/:$/, ''), where = strip(d.where);
     el.innerHTML =
-      '<div class="dg__frame"><span class="dg__pic"><img class="dg__img" src="' + d.src + '" alt="' + strip(d.name) + ' — ' + kind.toLowerCase() + ' ' + where + '" decoding="async" loading="lazy" draggable="false"></span></div>' +
+      '<div class="dg__frame"><span class="dg__pic"><img class="dg__img" src="' + d.src + '" alt="' + strip(d.name) + ' — ' + kind.toLowerCase() + ' ' + where + '" decoding="async" draggable="false"></span></div>' +
       '<p class="dg__side" aria-hidden="true">' + kind + '</p>' +
       '<div class="dg__texts"><span class="dg__num">' + pad(i + 1) + '</span><p class="dg__title">' + strip(d.name) + '</p><p class="dg__sub">' + kind + ' ' + where + '</p></div>';
     stage.appendChild(el);
@@ -80,12 +80,13 @@
     }
   };
   var place = function (s, p) { var t = at(s, p); gsap.set(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, autoAlpha: 1 }); s.pos = p; };
+  var MOVE = 0.95, REST = 1.7;   // одно ровное движение без рывков и одинаковая пауза между сменами
   var move = function (s, p, opt) {
     opt = opt || {};
     var t = at(s, p);
     if (opt.from !== undefined) { var f = at(s, opt.from); gsap.set(s.el, { x: f.x, y: f.y, rotation: f.rotation, scale: f.scale, autoAlpha: 1 }); }
     s.pos = p;
-    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.5, delay: opt.delay || 0, ease: 'power2.inOut' });   // плавно и быстро — живой темп
+    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : MOVE, delay: opt.delay || 0, ease: 'sine.inOut', force3D: true });   // плавно и быстро — живой темп
   };
 
   /* буквы названия: «перебираются» и встают на место — русскими буквами */
@@ -114,7 +115,7 @@
   var current = 0, busy = false, open = false, over = false, inView = false;
   var idx = function (i) { return (i + N) % N; };
   var decoFit = function (s, animate) {
-    gsap.to(deco, { width: s.w * 1.08, height: s.h * 1.08, duration: animate && !reduce ? 0.72 : 0, ease: 'power2.inOut' });
+    gsap.to(deco, { width: s.w * 1.08, height: s.h * 1.08, duration: animate && !reduce ? MOVE : 0, ease: 'sine.inOut' });
   };
   var render = function () {
     slides.forEach(function (s, i) {
@@ -138,23 +139,21 @@
     hideTexts(now);
     if (dir > 0) {
       move(prev, -2);
-      move(now, -1, { delay: 0.05 });
-      move(next, 0, { delay: 0.1 });
-      move(upcoming, 1, { from: 2, delay: 0.15 }).then(done);
+      move(now, -1);
+      move(next, 0);
+      move(upcoming, 1, { from: 2 }).then(done);
       showTexts(next, true);
     } else {
       move(next, 2);
-      move(now, 1, { delay: 0.05 });
-      move(prev, 0, { delay: 0.1 });
-      move(upcoming, -1, { from: -2, delay: 0.15 }).then(done);
+      move(now, 1);
+      move(prev, 0);
+      move(upcoming, -1, { from: -2 }).then(done);
       showTexts(prev, true);
     }
-    /* прямоугольник за работой «отскакивает» и подстраивается под новую рамку */
-    gsap.timeline().to(deco, { x: dir > 0 ? -26 : 26, y: dir > 0 ? -26 : 26, duration: reduce ? 0 : 0.36, ease: 'sine.inOut', delay: 0.05 })
-      .to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.5, ease: 'sine.out' });
+    /* прямоугольник за работой плавно подстраивается под новую рамку — тем же движением */
     decoFit(slides[current], true);
     cur.textContent = pad(current + 1); mark();
-    function done() { busy = false; render(); }
+    function done() { busy = false; render(); schedule(); }
   };
 
   var showContent = function () {
@@ -284,14 +283,21 @@
   stage.addEventListener('mouseleave', function () { over = false; });
 
   /* листается сама, пока блок на экране, курсор не над работами и подробности закрыты */
-  var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 2600); };
+  /* ровный ритм: следующая смена — через одинаковую паузу после окончания предыдущей (по часам анимации, а не по таймеру) */
+  var timer = null;
+  var schedule = function () {
+    if (timer) timer.kill();
+    timer = gsap.delayedCall(REST, function tryGo() { if (inView && !over && !open && !reduce && !document.hidden && !busy) go(1); else timer = gsap.delayedCall(0.4, tryGo); });
+  };
+  var restart = schedule;
   new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.45 }).observe(sec);
 
   /* старт: размеры картинок известны заранее (в данных), раскладываем сразу */
   slides.forEach(function (s) { gsap.set(s.el, { xPercent: -50, yPercent: -50 }); });
   layout();
   showTexts(slides[current], false);
+  /* все работы раскодируются заранее — при появлении новой картинки нет подвисания */
+  slides.forEach(function (s) { if (s.img.decode) s.img.decode().catch(function () {}); });
   restart();
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 150); });

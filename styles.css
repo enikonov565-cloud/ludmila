@@ -1166,7 +1166,7 @@ a { color: inherit; text-decoration: none; }
 .dg__deco { opacity: 0; transition: opacity .6s ease; }   /* фон подробностей — виден, только когда они открыты */
 .dg--open .dg__deco { opacity: 1; }
 .dg__deco { position: absolute; left: 50%; top: 50%; translate: -50% -50%; background: #12221F; background: linear-gradient(160deg, #1A2C30, #102024); box-shadow: inset 0 0 0 1px rgba(201, 162, 122, .12); }
-.dg__slide { position: absolute; left: 50%; top: 50%; z-index: 2; visibility: hidden; }
+.dg__slide { position: absolute; left: 50%; top: 50%; z-index: 2; visibility: hidden; will-change: transform; backface-visibility: hidden; }
 .dg__slide.is-current { z-index: 3; }
 /* рамка — как в галерее nikonovphoto, в фирменных цветах и тоньше: тёмная кромка, светлое паспарту со светом сверху,
    скос к работе (работа утоплена), мягкая тень от верхнего края проёма; тень рамки падает вниз */
