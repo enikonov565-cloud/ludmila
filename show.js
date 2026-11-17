@@ -407,7 +407,7 @@ function init() {
     f.item.updateWorldMatrix(true, true);
     pt.set(-f.fw / 2, -f.fh * 0.25, DEPTH / 2);           // ниже боковых работ: линия идёт по подставке, не пересекая их
     f.body.localToWorld(pt).project(camera);
-    const sr = sec.getBoundingClientRect(), gr = stage.getBoundingClientRect(), nr = nameBlock.getBoundingClientRect();
+    const sr = sec.getBoundingClientRect(), gr = stage.getBoundingClientRect(), nr = nameEl.getBoundingClientRect();
     const dx = gr.left - sr.left + (pt.x + 1) / 2 * gr.width, dy = gr.top - sr.top + (1 - pt.y) / 2 * gr.height;
     const sx = nr.right - sr.left + 18, sy = nr.top - sr.top + nr.height / 2;
     let kx = dx - Math.abs(dy - sy);
