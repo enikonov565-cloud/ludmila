@@ -1,7 +1,7 @@
 /* Блок 8 «Баннеры, наружка, соцсети» — точно по макету Figma «Slide 4:3 - 1» (узел 1029:275).
    Справа от тонкой линии — фото работы, слева от линии — её описание.
-   Смена работы: описание рассеивается частицами влево, в зону точек (по мотивам codrops «Texture Projection»), фото уходит влево под линию, следующее фото подъезжает справа
-   к линии, и из-под линии с другой стороны выходит описание именно этого баннера. Идёт само, пока блок на экране. */
+   Смена работы — по мотивам Amber (ismamz, Codrops): всё на одной шкале времени, параллельно — название в медной плашке
+   уходит буквами вниз и приходит снизу, мелкие строки печатаются по буквам, фото открывается шторкой. Идёт само, пока блок на экране. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-show]');
@@ -12,7 +12,6 @@
   var descs = Array.prototype.slice.call(sec.querySelectorAll('.show__desc'));
   var stage = sec.querySelector('.show__right');
   var left = sec.querySelector('.show__left');
-  var dust = sec.querySelector('.show__dust');
   var total = photos.length, cur = 0, HOLD = 4.6;
 
   /* описание — по буквам (слова не рвутся): при смене буквы рассыпаются пылью */
@@ -30,145 +29,104 @@
     d._rows = Array.prototype.slice.call(d.querySelectorAll('.show__type, .show__name, .show__list li'));
   });
 
-  /* ---------- рассеивание текста (по мотивам codrops «Texture Projection», Marco Fugaro):
-     текст описания переводится в облако мелких частиц — каждая частица берёт пиксель букв —
-     и частицы с разбросом и лёгким завихрением уносятся влево, в зону точек-пылинок, и гаснут ---------- */
-  var ctx = dust.getContext('2d'), parts = [], dpr = Math.min(2, window.devicePixelRatio || 1), dustRaf = 0, t0 = 0;
-  var sizeDust = function () { dust.width = sec.clientWidth * dpr; dust.height = sec.clientHeight * dpr; };
-  var easeIO = function (p) { return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2; };
-  var tickDust = function () {
-    dustRaf = 0;
-    var now = (performance.now() - t0) / 1000;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, sec.clientWidth, sec.clientHeight);
-    ctx.fillStyle = '#E8DCC8';   // цвет текстов — как в шапке
-    var alive = 0;
-    for (var i = 0; i < parts.length; i++) {
-      var p = parts[i], q = (now - p.delay) / p.dur;
-      if (q >= 1) continue;
-      alive++;
-      if (q < 0) { ctx.globalAlpha = p.a; ctx.fillRect(p.x0, p.y0, p.sz, p.sz); continue; }   // ещё ждёт своей очереди — стоит буквой
-      var e = easeIO(q);
-      var x = p.x0 + (p.tx - p.x0) * e + Math.sin(p.ph + q * 5) * p.sw * q;
-      var y = p.y0 + (p.ty - p.y0) * e + Math.cos(p.ph + q * 4) * p.sw * 0.6 * q;
-      ctx.globalAlpha = p.a * (1 - Math.pow(q, 1.6));
-      var s = p.sz * (1 - 0.45 * q);
-      ctx.fillRect(x, y, s, s);
+  /* ---------- переход по мотивам Amber (ismamz, Codrops «Parallel page transitions»): всё на одной шкале времени,
+     уходящее и приходящее идут параллельно.
+     • название работы — в медной плашке: буквы уходят вниз, плашка схлопывается; новая плашка вытягивается, буквы выезжают снизу;
+     • мелкие строки (вид работы, пункты) стираются и печатаются по буквам, как на машинке;
+     • фото: прежнее мягко гаснет, новое открывается шторкой слева направо ---------- */
+  var QUINT = 'im-quint-inout', QUART = 'im-quart-inout';
+  if (window.CustomEase) { gsap.registerPlugin(window.CustomEase); CustomEase.create(QUINT, '.76, 0, .2, 1'); CustomEase.create(QUART, '0.65, 0.01, 0.05, 0.99'); }
+  else { QUINT = 'power4.inOut'; QUART = 'power3.inOut'; }
+  descs.forEach(function (d) {
+    var name = d.querySelector('.show__name');
+    var block = document.createElement('span'); block.className = 'show__name-block'; block.setAttribute('aria-hidden', 'true');
+    name.insertBefore(block, name.firstChild);
+    d._block = block;
+    d._nameChars = Array.prototype.slice.call(name.querySelectorAll('.dc'));
+    d._typeChars = Array.prototype.slice.call(d.querySelectorAll('.show__type .dc, .show__list .dc'));
+    d._bullets = Array.prototype.slice.call(d.querySelectorAll('.show__list li'));
+  });
+  var timing = function (entering) {
+    var pace = reduce ? 0 : entering ? 1 : 0.6;
+    return { duration: 0.85 * pace, offset: 0.3 * pace, spread: 0.22 * pace, ease: entering ? QUART : QUINT };
+  };
+  /* название: плашка + буквы (как animateMask в Amber) */
+  var mask = function (tl, d, entering, at) {
+    var t = timing(entering);
+    if (entering) {
+      tl.fromTo(d._block, { scaleX: 0 }, { scaleX: 1, duration: t.duration, ease: t.ease }, at);
+      tl.fromTo(d._nameChars, { yPercent: 105 }, { yPercent: 0, duration: t.duration, ease: t.ease, stagger: { amount: t.spread } }, at + t.offset);
+      return at + t.offset + t.spread + t.duration;
     }
-    ctx.globalAlpha = 1;
-    if (alive) dustRaf = requestAnimationFrame(tickDust); else { parts = []; ctx.clearRect(0, 0, sec.clientWidth, sec.clientHeight); }
+    tl.to(d._nameChars, { yPercent: 105, duration: t.duration, ease: t.ease, stagger: { amount: t.spread, from: 'end' } }, at);
+    tl.to(d._block, { scaleX: 0, duration: t.duration, ease: t.ease }, at + t.offset + t.spread);
+    return at + t.offset + t.spread + t.duration;
   };
-  /* снимок текста описания в частицы */
-  var sample = function (d) {
-    var box = sec.getBoundingClientRect(), db = d.getBoundingClientRect();
-    var pad = 20, W = Math.ceil(db.width + 2 * pad), H = Math.ceil(db.height + 2 * pad);
-    var ox = db.left - box.left - pad, oy = db.top - box.top - pad;
-    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    var cx = cv.getContext('2d', { willReadFrequently: true });
-    cx.fillStyle = '#fff'; cx.textBaseline = 'middle'; cx.textAlign = 'left';
-    d._chars.forEach(function (ch) {
-      var r = ch.getBoundingClientRect(), cs = getComputedStyle(ch);
-      cx.globalAlpha = parseFloat(getComputedStyle(ch.parentNode.parentNode).color.split(',')[3]) || 1;
-      cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
-      cx.fillText(ch.textContent, r.left - db.left + pad, r.top + r.height / 2 - db.top + pad);
-    });
-    d.querySelectorAll('.show__list li').forEach(function (li) {   // точки списка
-      var r = li.getBoundingClientRect(), fs = parseFloat(getComputedStyle(li).fontSize);
-      cx.globalAlpha = 0.7; cx.beginPath(); cx.arc(r.left - db.left + pad - fs * 0.85, r.top - db.top + pad + fs * 0.62, fs * 0.13, 0, 6.2832); cx.fill();
-    });
-    var data = cx.getImageData(0, 0, W, H).data, k = Math.max(0.55, Math.min(1, sec.clientWidth / 1920));
-    var step = sec.clientWidth < 700 ? 1.5 : Math.max(1.5, 2 * k), pts = [];
-    for (var y = 0; y < H; y += step) for (var x = 0; x < W; x += step) {
-      var a = data[((y | 0) * W + (x | 0)) * 4 + 3] / 255;
-      if (a > 0.25) pts.push([x, y, a]);
+  /* мелкие строки — печатная машинка (как useTypewriter в Amber) */
+  var type = function (tl, d, entering, at) {
+    if (entering) {
+      tl.set(d._bullets, { '--dot': 1 }, at);
+      tl.fromTo(d._typeChars, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, stagger: { each: reduce ? 0 : 0.022 } }, at);
+    } else {
+      tl.to(d._typeChars, { autoAlpha: 0, duration: 0, stagger: { each: reduce ? 0 : 0.009, from: 'end' } }, at);
+      tl.set(d._bullets, { '--dot': 0 }, at + (reduce ? 0 : d._typeChars.length * 0.009));
     }
-    /* куда уносит: в зону точек слева от описания */
-    var zoneR = Math.max(40, db.left - box.left - 30 * k), spanY = 260 * k;
-    var minX = 1e9, maxX = -1e9;
-    pts.forEach(function (p) { minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]); });
-    var dw = Math.max(1, maxX - minX);
-    pts.forEach(function (p) {
-      var xn = (p[0] - minX) / dw;                                       // левые частицы срываются первыми
-      parts.push({ x0: ox + p[0], y0: oy + p[1], a: Math.min(1, p[2]) * 0.95, sz: step * (0.7 + Math.random() * 0.6),
-        tx: Math.random() * zoneR * 0.95 - 20 * k, ty: oy + p[1] + (Math.random() - 0.5) * spanY,
-        delay: xn * 0.4 + Math.random() * 0.25, dur: 1.05 + Math.random() * 0.8, ph: Math.random() * 6.28, sw: (10 + Math.random() * 40) * k });
-    });
   };
-
-  /* ---------- описание: выходит из-под линии / рассыпается пылью ---------- */
-  var descIn = function (d, delay) {
-    gsap.killTweensOf(d._chars); gsap.killTweensOf(d._rows);
-    gsap.set(d, { autoAlpha: 1 });
-    gsap.set(d._chars, { clearProps: 'all' });
-    gsap.set(d._rows, { x: 0, autoAlpha: 1 });
-    if (reduce) return;
-    var edge = left.getBoundingClientRect().right;                    // правый край левой части — линия
-    gsap.fromTo(d._rows, { x: function (i, el) { return edge - el.getBoundingClientRect().left + 2; }, autoAlpha: 1 },   // строки выходят из-под линии влево
-      { x: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out', stagger: 0.1, delay: delay || 0 });
+  var descIn = function (tl, d, at) {
+    tl.set(d, { autoAlpha: 1 }, at);
+    var nameEnd = mask(tl, d, true, at);
+    type(tl, d, true, at + (reduce ? 0 : 0.45));
+    return nameEnd;
   };
-  var descOut = function (d) {
-    if (reduce) { gsap.set(d, { autoAlpha: 0 }); return; }
-    sizeDust();
-    if (!parts.length) t0 = performance.now();
-    var base = (performance.now() - t0) / 1000, n0 = parts.length;
-    sample(d);
-    for (var i = n0; i < parts.length; i++) parts[i].delay += base;   // новые частицы — от текущего момента
-    gsap.set(d, { autoAlpha: 0 });                                     // текст целиком перешёл в частицы
-    if (!dustRaf) dustRaf = requestAnimationFrame(tickDust);
+  var descOut = function (tl, d, at) {
+    type(tl, d, false, at);
+    var end = mask(tl, d, false, at);
+    tl.set(d, { autoAlpha: 0 }, end);
+    return end;
   };
-
-  /* ---------- фото: подъезжает к линии / уходит под линию ---------- */
-  /* следующее фото: медленно и плавно скользит справа к линии и постепенно проявляется — из едва видного в яркое */
-  var farX = function () { return Math.min(stage.clientWidth * 0.5, stage.clientWidth - 40); };
-  var photoIn = function (p) {
-    gsap.killTweensOf(p);
-    gsap.set(p, { zIndex: 2 });
-    if (reduce) { gsap.set(p, { x: 0, autoAlpha: 1, filter: 'brightness(1)' }); return; }
-    gsap.fromTo(p, { x: farX(), autoAlpha: 0, filter: 'brightness(.35)' },
-      { x: 0, autoAlpha: 1, filter: 'brightness(1)', duration: 2.3, ease: 'power2.out' });
+  /* фото: новое — шторкой слева направо, прежнее гаснет под ним */
+  var photoIn = function (tl, p, at) {
+    tl.set(p, { zIndex: 2, autoAlpha: 1, x: 0 }, at);
+    tl.fromTo(p, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: reduce ? 0 : 1.05, ease: QUART }, at);
+    tl.fromTo(p.querySelector('img'), { scale: 1.12 }, { scale: 1, duration: reduce ? 0 : 1.4, ease: QUART }, at);
   };
-  /* прежнее фото спокойно уходит влево под линию — раньше, чем подъедет следующее: без толкотни */
-  var photoOut = function (p) {
-    gsap.killTweensOf(p);
-    gsap.set(p, { zIndex: 1 });
-    if (reduce) { gsap.set(p, { autoAlpha: 0 }); return; }
-    gsap.to(p, { x: function () { return -(p.offsetLeft + p.offsetWidth + 10); }, duration: 1.2, ease: 'sine.inOut',
-      onComplete: function () { gsap.set(p, { autoAlpha: 0, x: 0 }); } });
+  var photoOut = function (tl, p, at) {
+    tl.set(p, { zIndex: 1 }, at);
+    tl.to(p, { autoAlpha: 0, duration: reduce ? 0 : 0.6, ease: QUINT }, at + (reduce ? 0 : 0.35));
   };
 
   /* ---------- круг работ ---------- */
   gsap.set(photos.slice(1), { autoAlpha: 0 });
-  gsap.set(descs.slice(1), { autoAlpha: 0 });
-  var timer = null, started = false;
+  gsap.set(descs, { autoAlpha: 0 });
+  var timer = null, started = false, run = null;
   /* точки внизу: сколько работ и какая сейчас; по клику — к нужной */
   var dots = Array.prototype.slice.call(sec.querySelectorAll('.show__dot'));
   var mark = function () { dots.forEach(function (b, i) { b.classList.toggle('is-on', i === cur); b.setAttribute('aria-current', i === cur ? 'true' : 'false'); }); };
-  var busy = false;
   var next = function (to) {
-    if (busy) return;
-    var from = cur; cur = typeof to === 'number' ? to : (cur + 1) % total;
-    if (cur === from) return;
-    busy = true; gsap.delayedCall(reduce ? 0 : 2.5, function () { busy = false; });
+    var from = cur, target = typeof to === 'number' ? to : (cur + 1) % total;
+    if (target === from) return;
+    if (run && run.isActive()) run.progress(1);                       // прошлая смена доигрывается мгновенно — без наложений
+    cur = target;
     if (timer) timer.kill();
     mark();
-    descOut(descs[from]);
-    gsap.delayedCall(reduce ? 0 : 0.3, function () { photoOut(photos[from]); });
-    gsap.delayedCall(reduce ? 0 : 1.1, function () { photoIn(photos[cur]); });   // когда прежнее почти ушло
-    gsap.delayedCall(reduce ? 0 : 2.45, function () {   // фото почти у линии — описание выходит из-под неё; прежнее к этому времени уже рассыпалось
-      descs.forEach(function (d) { if (d !== descs[cur]) { gsap.killTweensOf(d._chars); gsap.set(d, { autoAlpha: 0 }); } });
-      descIn(descs[cur]);
-    });
-    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 2.5), function () { next(); });
+    run = gsap.timeline();
+    var outEnd = descOut(run, descs[from], 0);
+    photoOut(run, photos[from], 0);
+    photoIn(run, photos[cur], reduce ? 0 : 0.25);
+    /* новое название ждёт, пока прежнее освободит место, — как заголовки в Amber */
+    descIn(run, descs[cur], reduce ? 0 : Math.max(0.45, outEnd - 0.2));
+    timer = gsap.delayedCall(HOLD + (reduce ? 0 : 1.8), function () { next(); });
   };
   dots.forEach(function (b, i) { b.addEventListener('click', function () { if (started) next(i); }); });
   var begin = function () {
     started = true;
-    photoIn(photos[0]);
-    descIn(descs[0], reduce ? 0 : 1.9);
-    timer = gsap.delayedCall(HOLD + 2.3, function () { next(); });
+    run = gsap.timeline();
+    photoIn(run, photos[0], 0.2);
+    descIn(run, descs[0], reduce ? 0 : 0.9);
+    timer = gsap.delayedCall(HOLD + 2, function () { next(); });
     mark();
   };
-  window.addEventListener('resize', sizeDust);
+
 
   /* заход в блок: заголовок выезжает из-под строки; работы крутятся, только пока блок на экране */
   gsap.set(photos[0], { autoAlpha: 0 });
@@ -177,7 +135,9 @@
       if (!started) {
         if (!reduce) {
           gsap.from(sec.querySelector('.show__sub'), { autoAlpha: 0, y: 14, duration: 0.7, ease: 'power3.out' });
-          gsap.from(sec.querySelectorAll('.show__head .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, delay: 0.1, ease: 'power3.out' });
+          var hb = sec.querySelector('.show__title-block');
+          if (hb) gsap.fromTo(hb, { scaleX: 0 }, { scaleX: 1, duration: 0.85, ease: QUART, delay: 0.05 });
+          gsap.from(sec.querySelectorAll('.show__head .story__reveal'), { yPercent: 110, duration: 0.85, delay: 0.35, ease: QUART });
           gsap.from(sec.querySelectorAll('.show__kicker, .show__tag'), { autoAlpha: 0, y: 14, duration: 0.7, delay: 0.35, stagger: 0.06, ease: 'power3.out' });
         }
         begin();
