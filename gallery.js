@@ -1,131 +1,220 @@
-/* Блок 9 «Галерея» — по мотивам «Atmospheric Depth Gallery» (codrops, Houmahani Kane):
-   баннеры стоят друг за другом в глубину, камера сама, без прокрутки, плавно летит сквозь них —
-   у каждого баннера замедляется, между ними ускоряется; ближний баннер проявляется, прошедший растворяется.
-   Показ идёт один раз, без повторов: на последнем баннере камера останавливается.
-   Фон — спокойный фирменный (CSS), без пятен и зерна; лишние тяжёлые эффекты убраны, чтобы ничего не тормозило.
-   Подпись — название и вид работы текущего баннера. */
-import * as THREE from 'three';
+/* Блок «Баннеры, наружка, соцсети» — продолжение: галерея работ по диагонали.
+   По мотивам «Diagonal Slideshow» (Codrops, MIT), переписано на GSAP сайта и в его стилях:
+   текущая работа — в центре, предыдущая выглядывает слева сверху, следующая — справа снизу.
+   Клик по боковой — листает по диагонали (буквы названия «перебираются», как в оригинале);
+   клик по центральной — раскрывает подробности: работа уходит влево, справа — крупное название, вид работы и что она даёт.
+   Работы показаны целиком: рамка слайда — по пропорциям картинки. Галерея листается сама, пока на неё не навели. */
+(function () {
+  'use strict';
+  var sec = document.querySelector('[data-gallery]');
+  if (!sec || !window.gsap) return;
+  var gsap = window.gsap;
+  var DATA = JSON.parse(sec.querySelector('.gal__data').textContent);
+  var N = DATA.length;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var phone = function () { return window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches; };
+  var strip = function (s) { var d = document.createElement('div'); d.innerHTML = s; return d.textContent; };
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  var ARROW = '<svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg>';
 
-const sec = document.querySelector('[data-gallery]');
-if (sec) init();
+  /* ---------- разметка ---------- */
+  var stage = document.createElement('div'); stage.className = 'dg__stage';
+  var deco = document.createElement('div'); deco.className = 'dg__deco'; deco.setAttribute('aria-hidden', 'true');
+  stage.appendChild(deco);
+  var slides = DATA.map(function (d, i) {
+    var el = document.createElement('div'); el.className = 'dg__slide';
+    var kind = strip(d.kind).replace(/:$/, ''), where = strip(d.where);
+    el.innerHTML =
+      '<div class="dg__frame" style="--ar:' + (d.ratio || 1) + '"><img class="dg__img" src="' + d.src + '" alt="' + strip(d.name) + ' — ' + kind.toLowerCase() + ' ' + where + '" decoding="async" loading="lazy" draggable="false"></div>' +
+      '<p class="dg__side" aria-hidden="true">' + kind + '</p>' +
+      '<div class="dg__texts"><span class="dg__num">' + pad(i + 1) + '</span><p class="dg__title">' + strip(d.name) + '</p><p class="dg__sub">' + kind + ' ' + where + '</p></div>';
+    stage.appendChild(el);
+    return { el: el, frame: el.querySelector('.dg__frame'), img: el.querySelector('.dg__img'), texts: el.querySelector('.dg__texts'), title: el.querySelector('.dg__title'), side: el.querySelector('.dg__side'), d: d };
+  });
+  /* подробности (открываются кликом по текущей работе) */
+  var content = document.createElement('div'); content.className = 'dg__content';
+  content.innerHTML = '<button class="dg__close" type="button" aria-label="Назад к галерее">' + ARROW + '</button>' +
+    DATA.map(function (d, i) {
+      var kind = strip(d.kind).replace(/:$/, '');
+      return '<div class="dg__item"><p class="dg__item-title">' + strip(d.name) + '</p><p class="dg__item-sub">' + kind + ' ' + strip(d.where) + '</p>' +
+        '<p class="dg__item-text">' + strip(d.note).replace(/^./, function (c) { return c.toUpperCase(); }) + '</p><span class="dg__item-num">' + pad(i + 1) + '</span></div>';
+    }).join('');
+  var nav = document.createElement('div'); nav.className = 'dg__nav';
+  nav.innerHTML = '<p class="dg__count"><span class="dg__cur">01</span><span class="dg__sep" aria-hidden="true"></span><span class="dg__total">' + pad(N) + '</span></p>' +
+    '<button class="dg__arrow dg__arrow--prev" type="button" aria-label="Предыдущая работа">' + ARROW + '</button>' +
+    '<button class="dg__arrow dg__arrow--next" type="button" aria-label="Следующая работа">' + ARROW + '</button>';
+  var label = sec.querySelector('.gal__label'); if (label) label.remove();
+  var oldCanvas = sec.querySelector('.gal__canvas'); if (oldCanvas) oldCanvas.remove();
+  sec.appendChild(stage); sec.appendChild(content); sec.appendChild(nav);
+  var items = Array.prototype.slice.call(content.querySelectorAll('.dg__item'));
+  var closeBtn = content.querySelector('.dg__close');
+  var cur = nav.querySelector('.dg__cur');
 
-function init() {
-  const canvas = sec.querySelector('.gal__canvas');
-  const DATA = JSON.parse(sec.querySelector('.gal__data').textContent);
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isMobile = () => window.innerWidth <= 768;
-
-  let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
-  catch (e) { sec.classList.add('gal--nogl'); return; }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor(0x000000, 0);
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-
-  /* ---------- баннеры в глубину ---------- */
-  const GAP = 5, VIEW = 5;                 // расстояние между баннерами и от камеры до текущего
-  const planes = [];
-  const geometry = new THREE.PlaneGeometry(3, 3);
-  const pointer = new THREE.Vector2(), pointerNow = new THREE.Vector2();
-  const xSpread = () => (isMobile() ? 0.25 : 1);
-  const baseScale = () => (isMobile() ? 0.65 : 1);
-  window.addEventListener('pointermove', (e) => { pointer.set((e.clientX / window.innerWidth) * 2 - 1, -((e.clientY / window.innerHeight) * 2 - 1)); }, { passive: true });
-
-  /* ---------- плавное автоматическое движение ---------- */
-  const PER = 4.6;                          // секунд на один баннер
-  const last = DATA.length - 1;
-  const ease = (u) => u - Math.sin(2 * Math.PI * u) / (2 * Math.PI) * 0.9;   // у баннера медленно, между — быстрее; без остановок и рывков
-  let t = 0, done = false;
-  const progressAt = (time) => {
-    const raw = Math.min(time / PER, last);
-    const i = Math.floor(raw), u = raw - i;
-    return i >= last ? last : i + ease(u);
+  /* размеры слайда: работа целиком, в пределах «коробки» */
+  var size = function (s) {
+    var W = stage.clientWidth, H = stage.clientHeight, ar = (s.d.h || 1) / (s.d.w || 1);
+    var maxW = phone() ? W * 0.66 : Math.min(W * 0.4, H * 0.8), maxH = phone() ? H * 0.5 : H * 0.66;   // горизонтальные баннеры — шире, вертикальные — по высоте
+    var w = maxW, h = w * ar; if (h > maxH) { h = maxH; w = h / ar; }
+    s.w = w; s.h = h;
+    gsap.set(s.frame, { width: w, height: h });
+  };
+  /* положения: -2 за кадром слева сверху, -1 слева сверху, 0 центр, 1 справа снизу, 2 за кадром справа снизу, 3 — влево при подробностях */
+  var at = function (s, p) {
+    var W = stage.clientWidth, H = stage.clientHeight, sm = phone() ? 0.5 : 1;   // телефон: соседние работы меньше и уходят в углы — не закрывают подписи
+    var w = s.w * (p === 0 || p === 3 ? 1 : sm), h = s.h * (p === 0 || p === 3 ? 1 : sm), k = phone() ? 0.28 : 1 / 3, sc = p === 0 || p === 3 ? 1 : sm;
+    switch (p) {
+      case -2: return { x: -(W / 2 + w), y: -(H / 2 + h), rotation: -30, scale: sc };
+      case -1: return { x: -(W / 2 - w * k), y: -(H / 2 - h * k), rotation: 0, scale: sc };
+      case 1: return { x: W / 2 - w * k, y: H / 2 - h * k, rotation: 0, scale: sc };
+      case 2: return { x: W / 2 + w, y: H / 2 + h, rotation: 30, scale: sc };
+      case 3: return { x: -(W / 2 - w / 2 - W * 0.075), y: 0, rotation: 0, scale: 1 };
+      default: return { x: 0, y: 0, rotation: 0, scale: 1 };
+    }
+  };
+  var place = function (s, p) { var t = at(s, p); gsap.set(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, autoAlpha: 1 }); s.pos = p; };
+  var move = function (s, p, opt) {
+    opt = opt || {};
+    var t = at(s, p);
+    if (opt.from !== undefined) { var f = at(s, opt.from); gsap.set(s.el, { x: f.x, y: f.y, rotation: f.rotation, scale: f.scale, autoAlpha: 1 }); }
+    s.pos = p;
+    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.9, delay: opt.delay || 0, ease: 'power4.inOut' });
   };
 
-  /* ---------- подпись ---------- */
-  const label = sec.querySelector('.gal__label'), lName = label.querySelector('.gal__name'), lDesc = label.querySelector('.gal__desc'), lChip = label.querySelector('.gal__chip');
-  let labelIndex = 0;
-  const setLabel = (i) => {
-    if (i === labelIndex) return;
-    labelIndex = i;
-    label.classList.add('is-swap');
-    setTimeout(() => { lName.textContent = DATA[i].name; lDesc.innerHTML = '<span class="gal__type"><span class="gal__t1">' + DATA[i].kind + '</span> <span class="gal__t2">' + DATA[i].where + '</span></span><span class="gal__note">' + DATA[i].note + '</span>'; lChip.style.backgroundColor = DATA[i].accentColor; label.classList.remove('is-swap'); }, 220);
+  /* буквы названия: «перебираются» и встают на место — русскими буквами */
+  var CH = 'абвгдежзиклмнопрстуфхцчшэюя*#&%'.split('');
+  var letters = function (el) {
+    if (!el._chars) {
+      var t = el.textContent; el.textContent = '';
+      el._chars = Array.from(t).map(function (c) { var sp = document.createElement('span'); sp.textContent = c; sp.dataset.c = c; el.appendChild(sp); return sp; });
+    }
+    return el._chars;
   };
-
-  /* ---------- кадр ---------- */
-  let ready = false, running = false, visible = false, raf = 0, lastT = 0;
-  const layout = () => planes.forEach((p) => { p.userData.x = p.userData.base.x * xSpread(); });
-  const resize = () => {
-    const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
-    camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false);
-    if (ready) layout();
-  };
-  const render = (dt) => {
-    if (!done) { t += reduce ? PER * dt / 0.4 : dt; if (t >= PER * last) { t = PER * last; done = true; } }
-    const p = progressAt(t);
-    camera.position.z = VIEW - p * GAP;
-    pointerNow.lerp(pointer, 0.06);
-    const s0 = baseScale();
-    planes.forEach((pl, i) => {
-      const d = p - i;                                   // 0 — баннер перед камерой; <0 — впереди; >0 — пройден
-      /* следующий проявляется только на подлёте, прошедший быстро гаснет — баннеры не сливаются друг с другом */
-      const op = d <= 0 ? THREE.MathUtils.smoothstep(d, -0.6, -0.12) : 1 - THREE.MathUtils.smoothstep(d, 0.04, 0.38);
-      pl.material.opacity = op;
-      pl.visible = op > 0.002;
-      pl.position.set(pl.userData.x + pointerNow.x * 0.12 * op, pl.userData.base.y + pointerNow.y * 0.06 * op, -i * GAP);
-      pl.rotation.set(-pointerNow.y * 0.03 * op, pointerNow.x * 0.03 * op, 0);
-      const k = pl.userData.k;
-      pl.scale.set(s0 * k * pl.userData.aspect, s0 * k, 1);
+  var scramble = function (el) {
+    if (reduce) return;
+    letters(el).forEach(function (sp, k) {
+      if (/\s/.test(sp.dataset.c)) return;
+      var n = 0, loop = setInterval(function () { sp.textContent = CH[(Math.random() * CH.length) | 0]; if (++n > 4 + k % 5) { clearInterval(loop); sp.textContent = sp.dataset.c; } }, 55);
     });
-    setLabel(Math.round(p));
-    renderer.render(scene, camera);
   };
-  const frame = (now) => {
-    raf = requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - (lastT || now)) / 1000); lastT = now;
-    render(dt);
+  var showTexts = function (s, anim) {
+    gsap.set([s.texts, s.side], { autoAlpha: 1 });
+    if (anim) { scramble(s.title); gsap.fromTo(s.texts.querySelector('.dg__num'), { x: -12, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.7, ease: 'elastic.out(1, .5)' }); }
   };
-  const start = () => { if (running || !ready || !visible) return; running = true; lastT = 0; raf = requestAnimationFrame(frame); };
-  const stop = () => { running = false; cancelAnimationFrame(raf); };
+  var hideTexts = function (s) { gsap.to([s.texts, s.side], { autoAlpha: 0, duration: 0.25 }); };
 
-  const build = (textures) => {
-    DATA.forEach((d, i) => {
-      const tex = textures[i], img = tex && tex.image;
-      const aspect = img && img.width > 0 ? img.width / img.height : 1;
-      const mat = new THREE.MeshBasicMaterial({ map: tex || null, color: tex ? '#ffffff' : '#2F4B52', transparent: true, depthWrite: false, opacity: i === 0 ? 1 : 0 });
-      const mesh = new THREE.Mesh(geometry, mat);
-      const wide = aspect > 1.2;                          // широкий баннер — по центру и чуть меньше, не наезжает на подписи
-      mesh.userData.base = wide ? { x: 0, y: 0 } : d.position;
-      mesh.userData.aspect = aspect; mesh.userData.k = wide ? 0.6 : 1;
-      scene.add(mesh); planes.push(mesh);
+  /* ---------- слайдшоу ---------- */
+  var current = 0, busy = false, open = false, over = false, inView = false;
+  var idx = function (i) { return (i + N) % N; };
+  var decoFit = function (s, animate) {
+    gsap.to(deco, { width: s.w * 1.08, height: s.h * 1.08, duration: animate && !reduce ? 0.8 : 0, ease: 'power3.inOut' });
+  };
+  var render = function () {
+    slides.forEach(function (s, i) {
+      s.el.classList.remove('is-current', 'is-prev', 'is-next');
+      if (i === current) { place(s, open ? 3 : 0); s.el.classList.add('is-current'); }
+      else if (i === idx(current - 1)) { place(s, open ? -2 : -1); s.el.classList.add('is-prev'); }
+      else if (i === idx(current + 1)) { place(s, open ? 2 : 1); s.el.classList.add('is-next'); }
+      else { gsap.set(s.el, { autoAlpha: 0 }); s.pos = null; }
+      if (i !== current) gsap.set([s.texts, s.side], { autoAlpha: 0 });
     });
-    layout();
-    ready = true;
-    render(0);
+    cur.textContent = pad(current + 1);
+  };
+  var layout = function () { slides.forEach(size); render(); decoFit(slides[current], false); if (open) gsap.set(deco, { width: stage.clientWidth, height: stage.clientHeight }); };
+
+  var go = function (dir) {
+    if (busy || open) return;
+    busy = true;
+    var prev = slides[idx(current - 1)], now = slides[current], next = slides[idx(current + 1)];
+    var upcoming = slides[idx(current + 2 * dir)];
+    current = idx(current + dir);
+    hideTexts(now);
+    if (dir > 0) {
+      move(prev, -2);
+      move(now, -1, { delay: 0.07 });
+      move(next, 0, { delay: 0.14 });
+      move(upcoming, 1, { from: 2, delay: 0.21 }).then(done);
+      showTexts(next, true);
+    } else {
+      move(next, 2);
+      move(now, 1, { delay: 0.07 });
+      move(prev, 0, { delay: 0.14 });
+      move(upcoming, -1, { from: -2, delay: 0.21 }).then(done);
+      showTexts(prev, true);
+    }
+    /* прямоугольник за работой «отскакивает» и подстраивается под новую рамку */
+    gsap.timeline().to(deco, { x: dir > 0 ? -40 : 40, y: dir > 0 ? -40 : 40, duration: reduce ? 0 : 0.4, ease: 'power2.in', delay: 0.08 })
+      .to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.6, ease: 'power2.out' });
+    decoFit(slides[current], true);
+    cur.textContent = pad(current + 1);
+    function done() { busy = false; render(); }
   };
 
-  resize();
-  window.addEventListener('resize', resize);
-  /* фото грузятся заранее, когда до блока остаётся экран прокрутки */
-  const loader = new THREE.TextureLoader();
-  let loading = false;
-  new IntersectionObserver((en) => {
-    if (!en[0].isIntersecting || loading) return;
-    loading = true;
-    Promise.all(DATA.map((d) => loader.loadAsync(d.src).then((tx) => { tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx; }).catch(() => null)))
-      .then(async (tex) => {
-        /* баннеры — на видеокарту по одному, в свободные минуты браузера: раньше все разом в первом кадре, и прокрутка подлагивала */
-        const idle = () => new Promise((r) => (window.requestIdleCallback ? window.requestIdleCallback(r, { timeout: 300 }) : setTimeout(r, 30)));
-        for (const t of tex) { if (t) { await idle(); renderer.initTexture(t); } }
-        build(tex); resize(); start();
-      });
-  }, { rootMargin: '100% 0px' }).observe(sec);
-  /* идёт, только пока блок на экране; досмотрели до конца и вернулись — заново с первого */
-  new IntersectionObserver((en) => {
-    visible = en[0].isIntersecting;
-    if (visible) { if (done) { done = false; t = 0; } start(); } else stop();
-  }, { threshold: 0.35 }).observe(sec);
-}
+  var showContent = function () {
+    if (open || busy || phone()) return;
+    open = true; sec.classList.add('dg--open');
+    var s = slides[current];
+    gsap.to(deco, { width: stage.clientWidth, height: stage.clientHeight, x: -20, y: 20, duration: reduce ? 0 : 0.8, ease: 'power4.inOut' });
+    move(slides[idx(current - 1)], -2); move(slides[idx(current + 1)], 2); move(s, 3);
+    gsap.to(s.img, { scale: 1, duration: 0.8 });
+    hideTexts(s);
+    var it = items[current]; it.classList.add('is-on');
+    gsap.fromTo([closeBtn].concat(Array.prototype.slice.call(it.children)), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power4.out', stagger: 0.05, delay: 0.4 });
+  };
+  var hideContent = function () {
+    if (!open || busy) return;
+    var it = items[current];
+    gsap.to([closeBtn].concat(Array.prototype.slice.call(it.children)).reverse(), { y: 10, autoAlpha: 0, duration: 0.3, stagger: 0.01, ease: 'power3.in', onComplete: function () { it.classList.remove('is-on'); } });
+    sec.classList.remove('dg--open');
+    gsap.to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.8, ease: 'power4.inOut' });
+    decoFit(slides[current], true);
+    move(slides[idx(current - 1)], -1); move(slides[idx(current + 1)], 1);
+    move(slides[current], 0).then(function () { open = false; });
+    showTexts(slides[current], true);
+  };
+
+  /* клики: боковая работа — листаем; текущая — подробности */
+  slides.forEach(function (s, i) {
+    s.frame.addEventListener('click', function () {
+      if (s.pos === 1) { go(1); restart(); } else if (s.pos === -1) { go(-1); restart(); } else if (s.pos === 0) showContent();
+    });
+    /* лёгкий наклон текущей работы за курсором */
+    s.frame.addEventListener('pointermove', function (e) {
+      if (s.pos !== 0 || open || busy || reduce || phone()) return;
+      var r = s.frame.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+      gsap.to(s.frame, { rotationY: px * 16, rotationX: -py * 16, x: px * 24, y: py * 24, duration: 1.2, ease: 'power1.out' });
+      gsap.to(s.texts, { x: -px * 24, y: -py * 24, duration: 1.2, ease: 'power1.out' });
+      gsap.to(s.img, { scale: 1.06, duration: 0.8, ease: 'power3.out' });
+    });
+    s.frame.addEventListener('pointerleave', function () {
+      gsap.to(s.frame, { rotationY: 0, rotationX: 0, x: 0, y: 0, duration: 1.6, ease: 'power4.out' });
+      gsap.to(s.texts, { x: 0, y: 0, duration: 1.6, ease: 'power4.out' });
+      gsap.to(s.img, { scale: 1, duration: 1.6, ease: 'power4.out' });
+    });
+  });
+  closeBtn.addEventListener('click', hideContent);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) hideContent(); });
+  nav.querySelector('.dg__arrow--prev').addEventListener('click', function () { if (open) hideContent(); else { go(-1); restart(); } });
+  nav.querySelector('.dg__arrow--next').addEventListener('click', function () { if (open) hideContent(); else { go(1); restart(); } });
+  /* телефон: листание пальцем */
+  var sx = 0, sy = 0;
+  stage.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); restart(); }
+  }, { passive: true });
+  stage.addEventListener('mouseenter', function () { over = true; });
+  stage.addEventListener('mouseleave', function () { over = false; });
+
+  /* листается сама, пока блок на экране, курсор не над работами и подробности закрыты */
+  var timer = 0;
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 5200); };
+  new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.45 }).observe(sec);
+
+  /* старт: размеры картинок известны заранее (в данных), раскладываем сразу */
+  slides.forEach(function (s) { gsap.set(s.el, { xPercent: -50, yPercent: -50 }); });
+  layout();
+  showTexts(slides[current], false);
+  restart();
+  var rt = 0;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 150); });
+})();
