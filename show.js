@@ -56,8 +56,8 @@ function init() {
   const after = () => { busy = false; if (pending >= 0 && pending !== shown) { const p = pending; pending = -1; showCaption(p); } else pending = -1; };
   const enterCaption = () => {
     const tl = gsap.timeline({ onComplete: after });
-    const d = reduce ? 0 : 0.85;
-    tl.to(cap.name, { yPercent: 0, duration: d, ease: QUART, stagger: { amount: reduce ? 0 : 0.22 } }, reduce ? 0 : 0.3);
+    const d = reduce ? 0 : 0.5;
+    tl.to(cap.name, { yPercent: 0, duration: d, ease: QUART, stagger: { amount: reduce ? 0 : 0.14 } }, reduce ? 0 : 0.12);
     tl.to(cap.type, { yPercent: 0, duration: reduce ? 0 : 0.55, ease: QUART, stagger: { amount: reduce ? 0 : 0.16 } }, reduce ? 0 : 0.2);
     if (leadLine) {
       tl.fromTo(leadLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: reduce ? 0 : 0.7, ease: QUART }, reduce ? 0 : 0.35);
@@ -73,7 +73,7 @@ function init() {
     mark(i);
     if (first) { fill(i); enterCaption(); return; }
     const tl = gsap.timeline({ onComplete: () => { fill(shown); enterCaption(); } });
-    const d = reduce ? 0 : 0.51;
+    const d = reduce ? 0 : 0.3;
     tl.to(cap.name, { yPercent: 105, duration: d, ease: QUINT, stagger: { amount: reduce ? 0 : 0.13, from: 'end' } }, 0);
     tl.to(cap.type, { yPercent: -160, duration: reduce ? 0 : 0.3, ease: QUINT, stagger: { amount: reduce ? 0 : 0.1 } }, reduce ? 0 : 0.06);
     if (leadLine) {
@@ -283,7 +283,7 @@ function init() {
       f.item.visible = Math.abs(wa) < 2.5;                       // та, что точно сзади, не выглядывает из-за передней
     });
   };
-  const HOLD = 5.2;
+  const HOLD = 2.4;   // работа стоит впереди ~2,5 с — живой темп, клиент видит все работы за полминуты
   let timer = null, visible = false, started = false, drag = null;
   const schedule = () => {
     if (timer) timer.kill();
@@ -297,7 +297,7 @@ function init() {
     if (timer) timer.kill();
     showCaption(i);
     active = i;
-    spin = gsap.to(st, { rot: target, duration: reduce ? 0 : (opts && opts.fast ? 0.9 : 1.6), ease: QUART, onUpdate: () => { dirty = true; }, onComplete: () => { spin = null; schedule(); } });
+    spin = gsap.to(st, { rot: target, duration: reduce ? 0 : (opts && opts.fast ? 0.6 : 0.95), ease: QUART, onUpdate: () => { dirty = true; }, onComplete: () => { spin = null; schedule(); } });
   };
 
   /* ---------- камера: передняя работа целиком, подпись — на переднем крае подставки ---------- */
@@ -387,10 +387,10 @@ function init() {
     const tl = gsap.timeline({ onUpdate: () => { dirty = true; }, onComplete: schedule });
     if (!reduce) {
       st.rot = 1.4;
-      tl.fromTo(world.position, { y: -2.2 }, { y: 0, duration: 1.6, ease: QUART }, 0);
-      tl.fromTo(world.scale, { x: 0.7, y: 0.7, z: 0.7 }, { x: 1, y: 1, z: 1, duration: 1.6, ease: QUART }, 0);
-      tl.to(st, { rot: 0, duration: 2, ease: QUART }, 0);
-      frames.forEach((f, k) => tl.fromTo(f.lift.scale, { y: 0.001 }, { y: 1, duration: 0.9, ease: QUART }, 0.5 + k * 0.1));
+      tl.fromTo(world.position, { y: -2.2 }, { y: 0, duration: 1, ease: QUART }, 0);
+      tl.fromTo(world.scale, { x: 0.7, y: 0.7, z: 0.7 }, { x: 1, y: 1, z: 1, duration: 1, ease: QUART }, 0);
+      tl.to(st, { rot: 0, duration: 1.2, ease: QUART }, 0);
+      frames.forEach((f, k) => tl.fromTo(f.lift.scale, { y: 0.001 }, { y: 1, duration: 0.6, ease: QUART }, 0.3 + k * 0.07));
       tl.fromTo(canvas, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0);
     }
     showCaption(0);

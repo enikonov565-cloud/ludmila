@@ -85,7 +85,7 @@
     var t = at(s, p);
     if (opt.from !== undefined) { var f = at(s, opt.from); gsap.set(s.el, { x: f.x, y: f.y, rotation: f.rotation, scale: f.scale, autoAlpha: 1 }); }
     s.pos = p;
-    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.72, delay: opt.delay || 0, ease: 'power2.inOut' });   // плавно и чуть быстрее
+    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.5, delay: opt.delay || 0, ease: 'power2.inOut' });   // плавно и быстро — живой темп
   };
 
   /* буквы названия: «перебираются» и встают на место — русскими буквами */
@@ -285,7 +285,7 @@
 
   /* листается сама, пока блок на экране, курсор не над работами и подробности закрыты */
   var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 4600); };
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 2600); };
   new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.45 }).observe(sec);
 
   /* старт: размеры картинок известны заранее (в данных), раскладываем сразу */
