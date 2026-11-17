@@ -282,7 +282,7 @@ async function init() {
     const dist = camFar.length(); scene.fog.near = dist + 1; scene.fog.far = dist + 16; // дальний правый край стола мягко уходит в фон
     camNear.set(screenTarget.x, screenTarget.y, screenTarget.z + 0.62);
     camera.position.lerpVectors(camFar, camNear, state.zoom);
-    look.set(0, portrait ? 0.95 : 1.02, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
+    look.set(0, portrait ? 1.22 : 1.1, 0).lerp(screenTarget, Math.min(1, Math.max(0, state.zoom) * 1.4)); // ноутбук ниже заголовка
     /* slide: камера уезжает вправо — стол, ваза и развёрнутый ноутбук вместе уходят влево */
     const pan = state.slide * (portrait ? 4.5 : 7);
     camera.position.x += pan; look.x += pan;
@@ -296,7 +296,11 @@ async function init() {
 
   /* сцена идёт сама, по времени — с паузами на чтение; запускается, когда блок почти целиком на экране */
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
-  const grid = nowGrid(section, { reduce });
+  /* три страницы идут сами: «Тогда» → «Сейчас» → сетка работ; стрелка в сетке ведёт обратно до «Тогда» */
+  const HOLD_THEN = 2.5, HOLD_NOW = 3;
+  let autoNext = null, inView = false;
+  const later = (sec, fn) => { if (autoNext) autoNext.kill(); autoNext = gsap.delayedCall(sec, () => { if (inView && !document.hidden) fn(); else later(1, fn); }); };
+  const grid = nowGrid(section, { reduce, onBack: () => back() });
   const noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
   [noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
@@ -312,13 +316,13 @@ async function init() {
   let drift;
   const hint = q('.story__scroll');
   let wantGo = false, bob = [];
-  const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render, onComplete: () => later(HOLD_NOW, () => grid.show()) });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
     .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
     .fromTo(hint, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.6)
-    .addPause(2.4, () => { if (wantGo) gsap.delayedCall(0.05, () => tl.play()); }) // «Тогда» ждёт прокрутки
+    .addPause(2.4, () => { if (wantGo) gsap.delayedCall(0.05, () => tl.play()); else if (!tl.reversed()) later(HOLD_THEN, go); }) // «Тогда» — пауза, дальше само (или прокруткой)
     .to(hint, { autoAlpha: 0, y: 12, duration: 0.4, ease: 'power2.in' }, 2.4)
     .to(state, { spin: 0.5, duration: 1.5, ease: 'sine.inOut' }, 2.4)          // поворот на 180°, надписи остаются
     .to(ghostThen.children, { yPercent: -12, duration: 0.7, ease: 'sine.inOut', stagger: { each: 0.05, yoyo: true, repeat: 1 } }, '<')
@@ -351,7 +355,19 @@ async function init() {
   let ty = 0; section.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
   section.addEventListener('touchmove', e => { if (ty - e.touches[0].clientY > 12) go(); }, { passive: true });
   window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
+  /* назад: «Сейчас» уходит вправо, «Тогда» возвращается — тот же переход в обратную сторону */
+  const back = () => {
+    if (autoNext) autoNext.kill();
+    wantGo = false; bob.forEach(t => t.kill()); bob = []; gsap.to(ghostNow, { y: 0, rotate: 0, duration: 0.4 });
+    tl.tweenTo(2.4, { duration: 2, ease: 'power2.inOut', onComplete: () => {
+      section.classList.remove('is-now');
+      drift && drift.kill(); drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+      gsap.to(hint, { autoAlpha: 1, y: 0, duration: 0.5 });
+      later(HOLD_THEN + 1, go);
+    } });
+  };
   const reset = () => {                                                            // снова «Тогда»
+    if (autoNext) autoNext.kill();
     wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
     grid.close(true);
     tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
@@ -361,9 +377,10 @@ async function init() {
   /* «Тогда» стартует, когда блок почти целиком на экране; ушли выше блока — сцена сбрасывается */
   new IntersectionObserver((e) => {
     const en = e[0];
+    inView = en.isIntersecting && en.intersectionRatio >= 0.5;
     if (en.isIntersecting && en.intersectionRatio >= 0.65 && tl.time() === 0) tl.play();
     if (!en.isIntersecting && en.boundingClientRect.top > 0) reset();
-  }, { threshold: [0, 0.65] }).observe(section);
+  }, { threshold: [0, 0.5, 0.65] }).observe(section);
   /* блок закреплён: первые шаги прокрутки — переход к «Сейчас», дальше страница едет как обычно */
   /* при пересчёте закрепления (смена размера окна) страница сама сдвигается — это не прокрутка пользователя */
   let quietUntil = 0;
@@ -381,17 +398,17 @@ async function init() {
 /* «Сейчас» → сетка работ (по мотивам Codrops «Image To Grid Transition», MIT; на GSAP Flip):
    портрет переезжает в свою ячейку, остальные работы слетаются к центру из-за краёв, подписи выезжают из-под строки,
    большая надпись уходит вверх и вниз, маленькая — въезжает. «Назад» — всё в обратном порядке */
-function nowGrid(section, { reduce }) {
+function nowGrid(section, { reduce, onBack }) {
   const gsap = window.gsap, Flip = window.Flip;
   const q = s => section.querySelector(s), qa = s => Array.from(section.querySelectorAll(s));
   const back = q('.nowg__back'), gridEl = q('.nowg__grid'), item = q('.nowg__item');
   const home = q('.story__now-photo'), target = q('.nowg__cell--target'), panel = home;
   const big = qa('.story__now-text .story__reveal'), small = qa('.nowg__gtitle > span');
   const cells = qa('.nowg__cell:not(.nowg__cell--target)');
-  if (!gridEl || !item || !target) return { close() {} };
+  if (!gridEl || !item || !target) return { close() {}, show() {}, isOpen: () => false };
   if (Flip) gsap.registerPlugin(Flip);
   const D = reduce ? 0 : 1, EASE = 'expo.inOut';
-  let open = false, busy = false;
+  let open = false, busy = false, pendingClose = false;
   /* откуда слетается работа: на 400 точек дальше от центра, чем её место */
   const outward = (el, dist = 400) => {
     const r = el.getBoundingClientRect(), p = panel.getBoundingClientRect();
@@ -411,7 +428,7 @@ function nowGrid(section, { reduce }) {
     section.classList.add('is-grid', 'is-now');   // шапка — тёмными буквами на светлом
     gridEl.classList.add('is-open'); gridEl.setAttribute('aria-hidden', 'false'); back.tabIndex = 0;
     item.tabIndex = -1;
-    const tl = gsap.timeline({ onComplete: () => { busy = false; back.focus({ preventScroll: true }); } });
+    const tl = gsap.timeline({ onComplete: () => { busy = false; if (pendingClose) { pendingClose = false; close(false); } else back.focus({ preventScroll: true }); } });
     tl.add(() => move(target), 0)
       .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
@@ -433,12 +450,13 @@ function nowGrid(section, { reduce }) {
       gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true'); back.tabIndex = -1;
       section.classList.remove('is-grid', 'is-now'); open = false; busy = false; return;
     }
-    if (busy) return;
+    if (busy) { pendingClose = true; return; }               // «назад», пока сетка ещё раскладывается, — сработает сразу после
     busy = true;
     back.tabIndex = -1;
     const tl = gsap.timeline({ onComplete: () => {
       gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true');
-      open = false; busy = false; item.tabIndex = 0; item.focus({ preventScroll: true });
+      open = false; busy = false; item.tabIndex = 0;
+      if (onBack) onBack();
     } });
     tl.to(panel, { backgroundColor: '#050606', duration: D, ease: EASE }, 0)
       .to(target.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D, ease: EASE }, 0)
@@ -457,5 +475,5 @@ function nowGrid(section, { reduce }) {
   item.addEventListener('keydown', (e) => { if (!open && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(); } });
   back.addEventListener('click', () => close(false));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) close(false); });
-  return { close };
+  return { close, show, isOpen: () => open };
 }
