@@ -54,7 +54,7 @@ function init() {
   const fill = (i) => {
     cap.name = split(nameEl, works[i].name, 'nc');
     cap.type = typeHtml(typeEl, works[i].type);
-    cap.note = split(noteEl, works[i].note, 'tw');
+    cap.note = noteEl ? split(noteEl, works[i].note, 'tw') : [];
     if (countEl) countEl.textContent = pad(i + 1) + ' / ' + pad(total);
     gsap.set(cap.name, { yPercent: 105 }); gsap.set(cap.type, { yPercent: 140 }); gsap.set(cap.note, { autoAlpha: 0 });
   };
@@ -91,14 +91,29 @@ function init() {
     }
   };
 
-  /* ---------- указатель: полоски, бегунок переезжает к текущей ---------- */
-  const runner = sec.querySelector('.show__ind-run');
-  const btns = Array.from(sec.querySelectorAll('.show__ind-btn'));
-  const bars = Array.from(sec.querySelectorAll('.show__ind-bar'));
-  function mark(i) {
-    btns.forEach((b, k) => b.setAttribute('aria-current', k === i ? 'true' : 'false'));
-    if (bars[i] && runner) gsap.to(runner, { x: bars[i].offsetLeft, duration: reduce ? 0 : 0.32, ease: 'power2.inOut' });
-  }
+  /* ---------- стрелки и точки — как в галерее ниже: стрелки внизу справа, точки справа вертикально ---------- */
+  const ARROW = '<svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg>';
+  const nav = document.createElement('div'); nav.className = 'dg__nav show__nav';
+  nav.innerHTML = '<button class="dg__arrow dg__arrow--prev" type="button" aria-label="Предыдущая работа">' + ARROW + '</button>' +
+    '<button class="dg__arrow dg__arrow--next" type="button" aria-label="Следующая работа">' + ARROW + '</button>';
+  const dotsBox = document.createElement('div'); dotsBox.className = 'dg__dots show__dots'; dotsBox.setAttribute('aria-label', 'Работы');
+  dotsBox.innerHTML = works.map((w) => '<button class="dg__dot" type="button" aria-label="' + w.name.replace(/"/g, '') + '"></button>').join('');
+  const capBox = sec.querySelector('.show__caption');
+  capBox.after(nav);
+  sec.querySelector('.show__stage').appendChild(dotsBox);
+  const dotEls = Array.from(dotsBox.children);
+  function mark(i) { dotEls.forEach((b, k) => { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); }); }
+
+  /* ---------- подробности — в карточке галереи ниже: прокрутка к ней и раскрытие этой работы ---------- */
+  const openCard = (i) => {
+    const gal = document.getElementById('gallery');
+    if (!gal) return;
+    const key = works[i].src.split('/').pop().split('?')[0].split('.')[0];
+    if (window.lenis) window.lenis.scrollTo(gal, { duration: 1 }); else gal.scrollIntoView({ behavior: 'smooth' });
+    if (window.galleryOpen) window.galleryOpen(key);
+  };
+  const nameP = sec.querySelector('.show__name');
+  if (nameP) { nameP.style.cursor = 'pointer'; nameP.addEventListener('click', () => { if (shown >= 0) openCard(shown); }); }
 
   /* ---------- сцена ---------- */
   const stage = sec.querySelector('.show__stage');
@@ -324,7 +339,7 @@ function init() {
   });
   window.addEventListener('pointermove', (e) => {
     if (!drag) {
-      if (e.target === canvas && started && e.pointerType === 'mouse') { const i = pick(e); canvas.style.cursor = i >= 0 && i !== active ? 'pointer' : 'grab'; }
+      if (e.target === canvas && started && e.pointerType === 'mouse') { const i = pick(e); canvas.style.cursor = i >= 0 ? 'pointer' : 'grab'; }
       return;
     }
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
@@ -352,7 +367,7 @@ function init() {
       goTo(indexAt(st.rot + fling), { fast: true });
       return;
     }
-    if (e.target === canvas) { const i = pick(e); if (i >= 0 && i !== active) goTo(i); }
+    if (e.target === canvas) { const i = pick(e); if (i === active) openCard(i); else if (i >= 0) goTo(i); }
   });
   window.addEventListener('pointercancel', () => {
     if (!drag) return;
@@ -360,7 +375,9 @@ function init() {
     canvas.classList.remove('is-drag');
     if (d.moved) goTo(indexAt(st.rot), { fast: true });
   });
-  btns.forEach((b, i) => b.addEventListener('click', () => { if (started && i !== active) goTo(i); }));
+  dotEls.forEach((b, i) => b.addEventListener('click', () => { if (started && i !== active) goTo(i); }));
+  nav.querySelector('.dg__arrow--prev').addEventListener('click', () => { if (started) goTo((active - 1 + total) % total); });
+  nav.querySelector('.dg__arrow--next').addEventListener('click', () => { if (started) goTo((active + 1) % total); });
 
   /* ---------- заход в блок: подставка выезжает снизу с поворотом, работы встают по очереди ---------- */
   const intro = () => {

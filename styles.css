@@ -1093,10 +1093,9 @@ a { color: inherit; text-decoration: none; }
 .show__canvas.is-drag { cursor: grabbing; }
 .show__flat { display: block; height: 70%; margin: 0 auto; }
 /* подпись — как в Amber: название в медной плашке, ниже вид работы, заметка и полоски-указатель */
-.show__caption { position: absolute; z-index: 4; left: calc(60 * var(--u)); top: calc(740 * var(--u)); width: max-content; max-width: calc(470 * var(--u));
+.show__caption { position: absolute; z-index: 4; left: calc(60 * var(--u)); top: calc(760 * var(--u)); width: max-content; max-width: calc(470 * var(--u));
   display: flex; flex-direction: column; align-items: flex-start; text-align: left; pointer-events: none; color: #E8DCC8; }
-.show__count { margin: 0 0 calc(12 * var(--u)); font-size: calc(14 * var(--u)); letter-spacing: .2em; color: rgba(232, 220, 200, .6); }
-.show__name { position: relative; isolation: isolate; margin: 0; font-weight: 500; font-size: calc(36 * var(--u)); line-height: 1; letter-spacing: -.01em; color: #F6EFE5; }
+.show__name { position: relative; isolation: isolate; margin: 0; font-weight: 500; font-size: calc(26 * var(--u)); line-height: 1.1; letter-spacing: -.01em; color: #F6EFE5; white-space: nowrap; }
 .show__name-block { display: none; }   /* без медной плашки — название просто текстом */
 .show__name-mask { padding-left: 0 !important; padding-right: 0 !important; }
 .show__name { color: #E8DCC8; }
@@ -1108,18 +1107,11 @@ a { color: inherit; text-decoration: none; }
 .show__cta { position: absolute; z-index: 4; left: calc(60 * var(--u)); bottom: calc(70 * var(--u)); min-width: calc(470 * var(--u)); justify-content: center; }
 .show__name-block { position: absolute; z-index: -1; inset: 0; background: #A9502C; transform: scaleX(0); transform-origin: 0 50%; }
 .show__name-mask { display: block; overflow: hidden; padding: .2em .34em .14em; }
-.show__type { margin: calc(14 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
-.show__type-head { font-weight: 500; }
+.show__type { margin: calc(8 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-weight: 300; color: rgba(232, 220, 200, .72); font-size: calc(18 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
+.show__type-head { font-weight: 400; }
 .show__note { margin: calc(8 * var(--u)) 0 0; font-size: calc(14 * var(--u)); line-height: 1.35; letter-spacing: .04em; color: rgba(232, 220, 200, .72); }
 .show__caption .sw { display: inline-block; white-space: nowrap; }
 .show__caption .nc, .show__caption .tc { display: inline-block; white-space: pre; vertical-align: top; }
-.show__ind { position: relative; margin-top: calc(18 * var(--u)); pointer-events: auto; }
-.show__ind-track { position: relative; display: flex; gap: calc(8 * var(--u)); overflow: hidden; }
-.show__ind-bar { width: calc(30 * var(--u)); height: 2px; flex-shrink: 0; background: rgba(232, 220, 200, .25); }
-.show__ind-run { position: absolute; left: 0; top: 0; width: calc(30 * var(--u)); height: 2px; background: #E8DCC8; }
-.show__ind-hits { position: absolute; inset: calc(-12 * var(--u)) 0; display: flex; gap: calc(8 * var(--u)); }
-.show__ind-btn { width: calc(30 * var(--u)); flex-shrink: 0; padding: 0; border: 0; background: transparent; cursor: pointer; }
-.show__ind-btn:focus-visible { outline: 2px solid #A9502C; outline-offset: 2px; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .show { --u: 1px; height: auto; min-height: 0; padding: 96px 20px 44px; display: flex; flex-direction: column; }
@@ -1133,15 +1125,21 @@ a { color: inherit; text-decoration: none; }
   .show__stage { position: relative; top: auto; bottom: auto; margin: 14px -20px 0; height: min(96vw, 470px); }
   .show__caption { position: relative; left: auto; top: auto; margin: -30px auto 0; max-width: 100%; align-items: center; text-align: center; }
   .show__lead { display: none; }
-  .show__count { margin-bottom: 10px; font-size: 12px; }
   .show__cta { position: static; align-self: center; width: min(340px, 100%); min-width: 0; margin-top: 28px; padding: 18px 24px; white-space: nowrap; font-size: 17px; letter-spacing: .01em; line-height: 1.2; }
   .show__name { font-size: clamp(20px, 5.6vw, 34px); }
   .show__type { margin-top: 10px; font-size: 15px; }
   .show__note { font-size: 12px; letter-spacing: .02em; }
-  .show__ind { margin-top: 16px; }
-  .show__ind-track, .show__ind-hits { gap: 8px; }
-  .show__ind-bar, .show__ind-run, .show__ind-btn { width: 26px; }
-  .show__ind-hits { inset: -14px 0; }
+        }
+
+
+/* стрелки — внизу справа, точки — справа, вертикально (вид — как в галерее ниже) */
+.show .show__nav { left: auto; right: calc(60 * var(--u)); translate: none; bottom: calc(80 * var(--u)); height: calc(30 * var(--u)); }
+.show .show__dots { top: calc(50 * var(--u)); }
+@media (max-width: 1000px), (max-aspect-ratio: 7/5) {
+  .show .show__nav { position: relative; right: auto; left: auto; bottom: auto; margin: 22px auto 0; width: 160px; height: 18px; }
+  .show .show__dots { right: 14px; top: 50%; translate: 0 -50%; }
+  .show__name { font-size: clamp(17px, 4.8vw, 22px); white-space: normal; }
+  .show__type { font-size: 14px; margin-top: 6px; }
 }
 
 /* ===== Блок 9 — продолжение «Баннеры, наружка, соцсети»: галерея по диагонали (по мотивам «Diagonal Slideshow», codrops) ===== */

@@ -200,6 +200,25 @@
     });
   });
   closeBtn.addEventListener('click', hideContent);
+  /* снаружи (блок с подставкой выше): показать работу и раскрыть её подробности — та же карточка галереи */
+  var fileOf = function (src) { return String(src).split('/').pop().split('?')[0].split('.')[0]; };
+  window.galleryOpen = function (key) {
+    var i = DATA.findIndex(function (d) { return fileOf(d.src) === key; });
+    if (i < 0) return;
+    var reveal = function () { if (!phone()) showContent(); };
+    if (open) { if (i === current) return; hideContent(); }
+    if (i === current) { setTimeout(reveal, 900); return; }
+    var wait = function () {
+      if (busy || open) { setTimeout(wait, 120); return; }
+      restart();
+      current = i; render(); decoFit(slides[current], false);
+      slides.forEach(function (q) { if (q.pos !== null && q.pos !== undefined) gsap.set(q.el, { autoAlpha: 1 }); });
+      showTexts(slides[current], true);
+      cur.textContent = pad(current + 1); mark();
+      setTimeout(reveal, 900);
+    };
+    wait();
+  };
   /* переход к работе по точке: соседняя — обычным листанием, дальняя — мягкой сменой */
   dotEls.forEach(function (b, i) {
     b.addEventListener('click', function () {
