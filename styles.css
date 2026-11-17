@@ -1087,83 +1087,49 @@ a { color: inherit; text-decoration: none; }
   display: flex; flex-wrap: wrap; justify-content: flex-end; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); }
 .show__tag { display: flex; align-items: center; justify-content: center; padding: calc(9 * var(--u)) calc(15 * var(--u)); border-radius: calc(27.89 * var(--u));
   background: rgba(200, 189, 171, .1); color: #BDB7B1; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap; }
-/* лучи от линии влево — очень слабые, под текстом (show.js, «Star Burst») */
-.show__burst { position: absolute; z-index: 1; left: 0; top: 0; width: var(--lx); height: 100%; pointer-events: none; }
-
-/* слева — описание; правый край этой части — линия: строки выходят из-под неё */
-.show__left { position: absolute; z-index: 2; left: 0; top: var(--gt); width: var(--lx); height: calc(746 * var(--u)); overflow: hidden; }
-/* правый край описания — в 55 от линии, как в макете; длинное описание растёт влево, каждая строка — в одну строку */
-.show__desc { position: absolute; right: calc(55 * var(--u)); top: 0; width: max-content; min-width: calc(347 * var(--u)); height: 100%;
-  display: flex; flex-direction: column; justify-content: center; gap: calc(22 * var(--u)); color: #E8DCC8; }
-.show__type { height: calc(190 * var(--u)); display: flex; align-items: baseline; gap: calc(7 * var(--u)); white-space: nowrap; }
-.show__t1 { font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; }
-.show__t2 { font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; }
-.show__name { margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; white-space: nowrap; }
-.show__list li { white-space: nowrap; }
-/* верхняя строка опущена, нижняя поднята ближе к названию (правка Людмилы); нижний текст крупнее — читается */
-.show__list { height: calc(230 * var(--u)); margin: 0; padding: 0 0 0 calc(24 * var(--u)); list-style: disc; display: flex; flex-direction: column; justify-content: flex-end; gap: calc(8 * var(--u));
-  font-weight: 400; font-size: calc(19 * var(--u)); line-height: normal; letter-spacing: -.02em; color: rgba(232, 220, 200, .8); }
-.show__list li { display: list-item; }
-.show__desc .dw { display: inline-block; white-space: nowrap; }
-.show__desc .dc { display: inline-block; white-space: pre; }
-/* линия — белая, 1px, высота 741 */
-.show__line { position: absolute; z-index: 3; left: var(--lx); top: calc(var(--gt) + 2.5 * var(--u)); width: 1px; height: calc(741 * var(--u)); background: #fff; }
-/* справа — фото целиком, в 40 от линии; уходя влево, скрывается под линией */
-.show__right { position: absolute; z-index: 2; left: var(--lx); right: 0; top: var(--gt); height: calc(746 * var(--u)); overflow: hidden; }
-.show__photo { position: absolute; left: calc(40 * var(--u)); top: calc(2 * var(--u)); height: calc(742 * var(--u)); margin: 0; will-change: transform; }
-.show__photo img { display: block; height: 100%; width: auto; }
-/* точки внизу по центру: сколько работ, текущая — вытянута */
-.show__dots { position: absolute; z-index: 5; left: 50%; translate: -50% 0; top: calc(var(--gt) + 768 * var(--u)); display: flex; align-items: center; gap: calc(12 * var(--u)); }
-.show__dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); padding: 0; border: 1px solid rgba(232, 220, 200, .7); border-radius: 99px; background: transparent; cursor: pointer;
-  transition: width .5s ease, background-color .5s ease, border-color .5s ease; }
-.show__dot:hover { border-color: #E8DCC8; }
-.show__dot.is-on { width: calc(30 * var(--u)); background: #E8DCC8; border-color: #E8DCC8; }
-.show__dot:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
+/* сцена: работы в рамках на вращающейся подставке (show.js) — от шапки до низа блока */
+.show__stage { position: absolute; z-index: 2; left: 0; right: 0; top: calc(250 * var(--u)); bottom: 0; }
+.show__canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.show__canvas.is-drag { cursor: grabbing; }
+.show__flat { display: block; height: 70%; margin: 0 auto; }
+/* подпись — как в Amber: название в медной плашке, ниже вид работы, заметка и полоски-указатель */
+.show__caption { position: absolute; z-index: 4; left: 50%; bottom: calc(44 * var(--u)); translate: -50% 0; width: max-content; max-width: calc(100% - 40px);
+  display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: none; color: #E8DCC8; }
+.show__name { position: relative; isolation: isolate; margin: 0; font-weight: 500; font-size: calc(50 * var(--u)); line-height: 1; letter-spacing: -.01em; color: #F6EFE5; }
+.show__name-block { position: absolute; z-index: -1; inset: 0; background: #A9502C; transform: scaleX(0); transform-origin: 0 50%; }
+.show__name-mask { display: block; overflow: hidden; padding: .2em .34em .14em; }
+.show__type { margin: calc(16 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-size: calc(24 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
+.show__type-head { font-weight: 500; }
+.show__note { margin: calc(8 * var(--u)) 0 0; font-size: calc(16 * var(--u)); line-height: 1.35; letter-spacing: .04em; color: rgba(232, 220, 200, .72); }
+.show__caption .sw { display: inline-block; white-space: nowrap; }
+.show__caption .nc, .show__caption .tc { display: inline-block; white-space: pre; vertical-align: top; }
+.show__ind { position: relative; margin-top: calc(18 * var(--u)); pointer-events: auto; }
+.show__ind-track { position: relative; display: flex; gap: calc(8 * var(--u)); overflow: hidden; }
+.show__ind-bar { width: calc(30 * var(--u)); height: 2px; flex-shrink: 0; background: rgba(232, 220, 200, .25); }
+.show__ind-run { position: absolute; left: 0; top: 0; width: calc(30 * var(--u)); height: 2px; background: #E8DCC8; }
+.show__ind-hits { position: absolute; inset: calc(-12 * var(--u)) 0; display: flex; gap: calc(8 * var(--u)); }
+.show__ind-btn { width: calc(30 * var(--u)); flex-shrink: 0; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.show__ind-btn:focus-visible { outline: 2px solid #A9502C; outline-offset: 2px; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .show { --u: 1px; --lx: 54%; height: auto; min-height: 0; padding: 96px 20px 56px; display: flex; flex-direction: column; }
+  .show { --u: 1px; height: auto; min-height: 0; padding: 96px 20px 44px; display: flex; flex-direction: column; }
   .show__sub, .show__head, .show__tags { position: static; }
   .show__sub { font-size: 18px; }
   .show__head { margin-top: 10px; gap: 12px; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { font-size: 15px; }
-  .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .show__tags { justify-content: flex-start; }
+  .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
   .show__tag { padding: 7px 14px; border-radius: 20px; font-size: 14px; }
-  .show__left, .show__right, .show__line { top: auto; }
-  .show__left { position: relative; width: 100%; height: 330px; margin: 36px -20px 0; width: calc(100% + 40px); overflow: visible; }
-  .show__right { position: absolute; left: var(--lx); right: 0; bottom: 56px; height: 330px; }
-  .show__line { left: var(--lx); bottom: 58px; height: 326px; }
-  .show__left { clip-path: inset(0 calc(100% - var(--lx)) 0 0); }
-  .show__dots { top: auto; bottom: 22px; gap: 10px; }
-  .show__dot { width: 9px; height: 9px; }
-  .show__dot.is-on { width: 24px; }
-  /* описание на телефоне: аккуратная колонка по центру высоты, ровные отступы */
-  .show__desc { left: 20px; right: auto; width: calc(var(--lx) - 40px); min-width: 0; gap: 14px; }
-  .show__type { height: auto; display: block; white-space: normal; line-height: 1.25; }
-  .show__t1 { font-size: 17px; }
-  .show__t2 { font-size: 13px; color: rgba(232, 220, 200, .8); }
-  .show__name { font-size: 15px; line-height: 1.25; white-space: normal; }
-  .show__list { height: auto; padding-left: 14px; gap: 5px; font-size: 12px; line-height: 1.35; }
-  .show__list li { white-space: normal; }
-  .show__desc .dw { white-space: nowrap; }
-  /* фото на телефоне — целиком, без обрезки: по ширине правой части, по центру высоты */
-  .show__photo { left: 14px; top: 50%; height: auto; translate: 0 -50%; }
-  .show__photo img { width: calc(46vw - 24px); height: auto; max-height: 330px; object-fit: contain; }
+  .show__stage { position: relative; top: auto; bottom: auto; margin: 14px -20px 0; height: min(96vw, 470px); }
+  .show__caption { position: relative; left: auto; bottom: auto; translate: none; margin: -30px auto 0; max-width: 100%; }
+  .show__name { font-size: clamp(22px, 6.4vw, 40px); }
+  .show__type { margin-top: 12px; font-size: 16px; }
+  .show__note { font-size: 13px; letter-spacing: .02em; }
+  .show__ind { margin-top: 16px; }
+  .show__ind-track, .show__ind-hits { gap: 8px; }
+  .show__ind-bar, .show__ind-run, .show__ind-btn { width: 26px; }
+  .show__ind-hits { inset: -14px 0; }
 }
-
-/* смена работ — по мотивам Amber: название в медной плашке (буквы выезжают из-под маски),
-   заголовок блока — на тёмной плашке, мелкие строки печатаются; фото открывается шторкой */
-.show__title { position: relative; }
-.show__title-block { position: absolute; z-index: 2; left: -.12em; right: -.18em; top: .08em; bottom: .02em; background: #E8DCC8; transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
-.show__shutter { position: absolute; z-index: 4; left: 0; top: 0; width: 0; height: 0; background: #A9502C; transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
-.show__shutter--milk { z-index: 5; background: #E8DCC8; }
-.show__t1 { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .06em; }
-.show__sub .tc, .show__kicker .tc { white-space: pre; }
-.show__name { position: relative; isolation: isolate; display: inline-block; overflow: hidden; padding: .14em .4em .08em; color: #F6EFE5; }
-.show__name-block { position: absolute; z-index: -1; inset: 0; background: #A9502C; transform-origin: 0 50%; }
-.show__list li::marker { color: rgba(232, 220, 200, calc(.7 * var(--dot, 1))); }
-.show__photo { overflow: hidden; }
 
 /* ===== Блок 9 — продолжение «Баннеры, наружка, соцсети»: галерея по диагонали (по мотивам «Diagonal Slideshow», codrops) ===== */
 /* фон — продолжение блока 8 без шва: #070F10, к низу едва светлеет в фирменный бирюзовый */
