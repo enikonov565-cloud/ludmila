@@ -1093,14 +1093,21 @@ a { color: inherit; text-decoration: none; }
 .show__canvas.is-drag { cursor: grabbing; }
 .show__flat { display: block; height: 70%; margin: 0 auto; }
 /* подпись — как в Amber: название в медной плашке, ниже вид работы, заметка и полоски-указатель */
-.show__caption { position: absolute; z-index: 4; left: 50%; bottom: calc(44 * var(--u)); translate: -50% 0; width: max-content; max-width: calc(100% - 40px);
-  display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: none; color: #E8DCC8; }
-.show__name { position: relative; isolation: isolate; margin: 0; font-weight: 500; font-size: calc(50 * var(--u)); line-height: 1; letter-spacing: -.01em; color: #F6EFE5; }
+.show__caption { position: absolute; z-index: 4; left: calc(60 * var(--u)); top: calc(740 * var(--u)); width: max-content; max-width: calc(470 * var(--u));
+  display: flex; flex-direction: column; align-items: flex-start; text-align: left; pointer-events: none; color: #E8DCC8; }
+.show__count { margin: 0 0 calc(12 * var(--u)); font-size: calc(14 * var(--u)); letter-spacing: .2em; color: rgba(232, 220, 200, .6); }
+.show__name { position: relative; isolation: isolate; margin: 0; font-weight: 500; font-size: calc(36 * var(--u)); line-height: 1; letter-spacing: -.01em; color: #F6EFE5; }
+/* направляющая — тонкая молочная линия с точкой на работе */
+.show__lead { position: absolute; z-index: 3; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.show__lead-line { fill: none; stroke: rgba(232, 220, 200, .75); stroke-width: 1.5; }
+.show__lead-dot { fill: #E8DCC8; }
+/* кнопка — слева внизу */
+.show__cta { position: absolute; z-index: 4; left: calc(60 * var(--u)); bottom: calc(70 * var(--u)); }
 .show__name-block { position: absolute; z-index: -1; inset: 0; background: #A9502C; transform: scaleX(0); transform-origin: 0 50%; }
 .show__name-mask { display: block; overflow: hidden; padding: .2em .34em .14em; }
-.show__type { margin: calc(16 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-size: calc(24 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
+.show__type { margin: calc(14 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
 .show__type-head { font-weight: 500; }
-.show__note { margin: calc(8 * var(--u)) 0 0; font-size: calc(16 * var(--u)); line-height: 1.35; letter-spacing: .04em; color: rgba(232, 220, 200, .72); }
+.show__note { margin: calc(8 * var(--u)) 0 0; font-size: calc(14 * var(--u)); line-height: 1.35; letter-spacing: .04em; color: rgba(232, 220, 200, .72); }
 .show__caption .sw { display: inline-block; white-space: nowrap; }
 .show__caption .nc, .show__caption .tc { display: inline-block; white-space: pre; vertical-align: top; }
 .show__ind { position: relative; margin-top: calc(18 * var(--u)); pointer-events: auto; }
@@ -1121,10 +1128,13 @@ a { color: inherit; text-decoration: none; }
   .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
   .show__tag { padding: 7px 14px; border-radius: 20px; font-size: 14px; }
   .show__stage { position: relative; top: auto; bottom: auto; margin: 14px -20px 0; height: min(96vw, 470px); }
-  .show__caption { position: relative; left: auto; bottom: auto; translate: none; margin: -30px auto 0; max-width: 100%; }
-  .show__name { font-size: clamp(22px, 6.4vw, 40px); }
-  .show__type { margin-top: 12px; font-size: 16px; }
-  .show__note { font-size: 13px; letter-spacing: .02em; }
+  .show__caption { position: relative; left: auto; top: auto; margin: -30px auto 0; max-width: 100%; align-items: center; text-align: center; }
+  .show__lead { display: none; }
+  .show__count { margin-bottom: 10px; font-size: 12px; }
+  .show__cta { position: static; align-self: flex-start; margin-top: 28px; }
+  .show__name { font-size: clamp(20px, 5.6vw, 34px); }
+  .show__type { margin-top: 10px; font-size: 15px; }
+  .show__note { font-size: 12px; letter-spacing: .02em; }
   .show__ind { margin-top: 16px; }
   .show__ind-track, .show__ind-hits { gap: 8px; }
   .show__ind-bar, .show__ind-run, .show__ind-btn { width: 26px; }

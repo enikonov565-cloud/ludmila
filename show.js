@@ -33,6 +33,8 @@ function init() {
   const nameBlock = sec.querySelector('.show__name-block');
   const typeEl = sec.querySelector('.show__type-text');
   const noteEl = sec.querySelector('.show__note');
+  const countEl = sec.querySelector('.show__count');
+  const pad = (n) => (n < 10 ? '0' : '') + n;
   const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const words = (text, cls) => text.split(' ').map((w) => '<span class="sw">' + Array.from(w).map((c) => '<span class="' + cls + '">' + esc(c) + '</span>').join('') + '</span>').join(' ');
   const split = (el, text, cls) => { el.innerHTML = words(text, cls); return Array.from(el.querySelectorAll('.' + cls)); };
@@ -42,12 +44,18 @@ function init() {
     el.innerHTML = (head ? '<b class="show__type-head">' + words(head, 'tc') + '</b> ' : '') + words(rest, 'tc');
     return Array.from(el.querySelectorAll('.tc'));
   };
+  const leadSvg = sec.querySelector('.show__lead');
+  const leadLine = sec.querySelector('.show__lead-line');
+  const leadDot = sec.querySelector('.show__lead-dot');
+  if (leadLine) gsap.set(leadLine, { strokeDasharray: 1, strokeDashoffset: 1 });
+  if (leadDot) gsap.set(leadDot, { attr: { r: 0 } });
   let shown = -1, busy = false, pending = -1;
   const cap = { name: [], type: [], note: [] };
   const fill = (i) => {
     cap.name = split(nameEl, works[i].name, 'nc');
     cap.type = typeHtml(typeEl, works[i].type);
     cap.note = split(noteEl, works[i].note, 'tw');
+    if (countEl) countEl.textContent = pad(i + 1) + ' / ' + pad(total);
     gsap.set(cap.name, { yPercent: 105 }); gsap.set(cap.type, { yPercent: 140 }); gsap.set(cap.note, { autoAlpha: 0 });
   };
   const after = () => { busy = false; if (pending >= 0 && pending !== shown) { const p = pending; pending = -1; showCaption(p); } else pending = -1; };
@@ -58,6 +66,10 @@ function init() {
     tl.to(cap.name, { yPercent: 0, duration: d, ease: QUART, stagger: { amount: reduce ? 0 : 0.22 } }, reduce ? 0 : 0.3);
     tl.to(cap.type, { yPercent: 0, duration: reduce ? 0 : 0.55, ease: QUART, stagger: { amount: reduce ? 0 : 0.16 } }, reduce ? 0 : 0.2);
     tl.to(cap.note, { autoAlpha: 1, duration: 0, stagger: { each: reduce ? 0 : 0.018 } }, reduce ? 0 : 0.45);
+    if (leadLine) {
+      tl.fromTo(leadLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: reduce ? 0 : 0.7, ease: QUART }, reduce ? 0 : 0.35);
+      tl.fromTo(leadDot, { attr: { r: 0 } }, { attr: { r: 5 }, duration: reduce ? 0 : 0.35, ease: 'back.out(2)' }, reduce ? 0 : 0.9);
+    }
   };
   const showCaption = (i) => {
     if (i === shown) return;
@@ -73,6 +85,10 @@ function init() {
     tl.to(nameBlock, { scaleX: 0, duration: d, ease: QUINT }, reduce ? 0 : 0.31);
     tl.to(cap.type, { yPercent: -160, duration: reduce ? 0 : 0.3, ease: QUINT, stagger: { amount: reduce ? 0 : 0.1 } }, reduce ? 0 : 0.06);
     tl.to(cap.note, { autoAlpha: 0, duration: 0, stagger: { each: reduce ? 0 : 0.007, from: 'end' } }, 0);
+    if (leadLine) {
+      tl.to(leadDot, { attr: { r: 0 }, duration: reduce ? 0 : 0.2, ease: QUINT }, 0);
+      tl.to(leadLine, { strokeDashoffset: -1, duration: reduce ? 0 : 0.45, ease: QUINT }, 0);
+    }
   };
 
   /* ---------- указатель: полоски, бегунок переезжает к текущей ---------- */
@@ -229,7 +245,7 @@ function init() {
     strut.position.set(0, fh * 0.25, -0.2); strut.rotation.x = 0.36; strut.castShadow = true;
     lift.add(strut);
     platform.add(item);
-    frames.push({ item, lift, body });
+    frames.push({ item, lift, body, fw, fh });
     const im = new Image();
     im.decoding = 'async';
     im.onload = () => { tex.image = faceTexture(pw, im); tex.needsUpdate = true; dirty = true; };
@@ -284,6 +300,8 @@ function init() {
     const target = new THREE.Vector3(0, fh * (phone ? 0.3 : 0.12), RAD * 0.55);
     camera.position.set(0, target.y + Math.sin(elev) * dist, target.z + Math.cos(elev) * dist);
     camera.lookAt(target);
+    if (phone) camera.clearViewOffset();
+    else camera.setViewOffset(w, h, -w * 0.07, -h * 0.07, w, h);   // подставка — ниже и правее: слева место подписи
     camera.updateProjectionMatrix();
     dirty = true;
   };
@@ -365,7 +383,7 @@ function init() {
         const ch = split(el, el.textContent, 'hc');
         gsap.fromTo(ch, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, stagger: 0.025, delay: k ? 0.7 : 0 });
       });
-      sec.querySelectorAll('.show__tag, .show__head .btn-frame').forEach((el, k) => {
+      sec.querySelectorAll('.show__tag, .show__cta').forEach((el, k) => {
         gsap.fromTo(el, { autoAlpha: 0 }, { keyframes: { autoAlpha: [0, 1, 0.15, 1, 0.4, 1], easeEach: 'steps(1)' }, duration: 0.32, ease: 'none', delay: 0.5 + k * 0.08 });
       });
     }
@@ -379,7 +397,25 @@ function init() {
     dirty = false;
     place();
     renderer.render(scene, camera);
+    lead();
   };
+  const pt = new THREE.Vector3();
+  function lead() {
+    if (!leadSvg || phone) return;
+    const f = frames[active];
+    if (!f) return;
+    f.item.updateWorldMatrix(true, true);
+    pt.set(-f.fw / 2, -f.fh * 0.25, DEPTH / 2);           // ниже боковых работ: линия идёт по подставке, не пересекая их
+    f.body.localToWorld(pt).project(camera);
+    const sr = sec.getBoundingClientRect(), gr = stage.getBoundingClientRect(), nr = nameBlock.getBoundingClientRect();
+    const dx = gr.left - sr.left + (pt.x + 1) / 2 * gr.width, dy = gr.top - sr.top + (1 - pt.y) / 2 * gr.height;
+    const sx = nr.right - sr.left + 18, sy = nr.top - sr.top + nr.height / 2;
+    let kx = dx - Math.abs(dy - sy);
+    if (kx < sx) kx = sx;
+    leadLine.setAttribute('points', sx.toFixed(1) + ',' + sy.toFixed(1) + ' ' + kx.toFixed(1) + ',' + sy.toFixed(1) + ' ' + dx.toFixed(1) + ',' + dy.toFixed(1));
+    leadDot.setAttribute('cx', dx.toFixed(1)); leadDot.setAttribute('cy', dy.toFixed(1));
+  }
+  gsap.ticker.add(() => { if (raf && (busy || spin)) lead(); });   // пока меняется подпись — линия держится за плашку
   if (!reduce) gsap.set(canvas, { autoAlpha: 0 });
   new IntersectionObserver((en) => {
     visible = en[0].isIntersecting;
