@@ -315,7 +315,7 @@ async function init() {
   const away = () => -(window.innerWidth * 1.15);
   let drift;
   const hint = q('.story__scroll');
-  let wantGo = false, bob = [];
+  let wantGo = false, bob = [], goingBack = false;
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render, onComplete: () => later(HOLD_NOW, () => grid.show()) });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
@@ -344,6 +344,7 @@ async function init() {
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
+      if (goingBack) return;
       bob.forEach(t => t.kill());
       bob = [gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
              gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 })];
@@ -358,10 +359,10 @@ async function init() {
   window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
   /* назад: «Сейчас» уходит вправо, «Тогда» возвращается — тот же переход в обратную сторону */
   const back = () => {
-    auto = false; if (autoNext) autoNext.kill();
+    auto = false; if (autoNext) autoNext.kill(); goingBack = true;
     gsap.to(backBtn, { autoAlpha: 0, duration: 0.3 });
     wantGo = false; bob.forEach(t => t.kill()); bob = []; gsap.to(ghostNow, { y: 0, rotate: 0, duration: 0.4 });
-    tl.tweenTo(2.4, { duration: 2, ease: 'power2.inOut', onComplete: () => {
+    tl.tweenTo(2.4, { duration: Math.max(3, (tl.time() - 2.4) * 1.1), ease: 'sine.inOut', onComplete: () => { goingBack = false;   // назад — медленно и плавно, весь путь одним движением
       section.classList.remove('is-now');
       drift && drift.kill(); drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
       gsap.to(hint, { autoAlpha: 1, y: 0, duration: 0.5 });
@@ -376,7 +377,7 @@ async function init() {
   };
   const backBtn = q('.story__back');
   hint && hint.addEventListener('click', go);
-  backBtn && backBtn.addEventListener('click', () => { if (tl.progress() === 1 && !grid.isOpen()) back(); });
+  backBtn && backBtn.addEventListener('click', () => { if (tl.time() >= tl.labels.now && !goingBack && !grid.isOpen()) { tl.pause(); back(); } });
   /* «Тогда» стартует, когда блок почти целиком на экране; ушли выше блока — сцена сбрасывается */
   new IntersectionObserver((e) => {
     const en = e[0];

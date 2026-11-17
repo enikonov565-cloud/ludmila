@@ -817,7 +817,7 @@ a { color: inherit; text-decoration: none; }
   .story__num { font-size: 1.28em; }
   .story__scroll { right: 20px; bottom: 28px; }
   .story__arrow { width: 72px; height: 18px; }
-  .story__back { position: relative; left: auto; top: auto; margin: 6px 0 0; align-self: flex-start; }
+  .story__back { position: absolute; left: 20px; top: auto; bottom: 28px; margin: 0; }   /* в самом низу страницы, напротив стрелки «дальше» */
   .story__tap { width: 58px; height: 58px; }
   .story__tap .hint-arrow { width: 24px; }
   .story__scroll .hint-arrow::after { width: 7px; height: 7px; }
