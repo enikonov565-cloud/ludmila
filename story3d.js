@@ -408,7 +408,7 @@ function nowGrid(section, { reduce }) {
   const show = () => {
     if (open || busy) return;
     busy = true; open = true;
-    section.classList.add('is-grid');
+    section.classList.add('is-grid', 'is-now');   // шапка — тёмными буквами на светлом
     gridEl.classList.add('is-open'); gridEl.setAttribute('aria-hidden', 'false'); back.tabIndex = 0;
     item.tabIndex = -1;
     const tl = gsap.timeline({ onComplete: () => { busy = false; back.focus({ preventScroll: true }); } });
@@ -416,7 +416,7 @@ function nowGrid(section, { reduce }) {
       .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
       .fromTo(back, { xPercent: -40, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
-      .to(panel, { backgroundColor: '#13242A', duration: D, ease: EASE }, 0)
+      .to(panel, { backgroundColor: '#E8DCC8', duration: D, ease: EASE }, 0)   // сетка — на светлом фирменном фоне
       .fromTo(target.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE }, 0);
     cells.forEach((c) => {
       const o = outward(c), delay = reduce ? 0 : Math.min(0.4, o.d / 1000 * 0.4);
@@ -431,7 +431,7 @@ function nowGrid(section, { reduce }) {
       home.prepend(item); gsap.set(item, { clearProps: 'all' }); item.tabIndex = 0;
       gsap.set(big, { yPercent: 0, autoAlpha: 1 }); gsap.set(panel, { clearProps: 'backgroundColor' });
       gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true'); back.tabIndex = -1;
-      section.classList.remove('is-grid'); open = false; busy = false; return;
+      section.classList.remove('is-grid', 'is-now'); open = false; busy = false; return;
     }
     if (busy) return;
     busy = true;
@@ -444,7 +444,7 @@ function nowGrid(section, { reduce }) {
       .to(target.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D, ease: EASE }, 0)
       .to(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .to(back, { xPercent: -20, autoAlpha: 0, duration: D, ease: EASE }, 0)
-      .call(() => section.classList.remove('is-grid'), null, reduce ? 0 : 0.4)
+      .call(() => section.classList.remove('is-grid', 'is-now'), null, reduce ? 0 : 0.4)
       .to(big, { yPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, reduce ? 0 : 0.4)
       .add(() => move(home), reduce ? 0 : 0.4);
     cells.forEach((c) => {
