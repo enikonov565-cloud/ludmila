@@ -1081,9 +1081,10 @@ a { color: inherit; text-decoration: none; }
 .show__head { position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(150 * var(--u)); display: flex; flex-direction: column; gap: calc(26 * var(--u)); }
 .show__title { margin: 0; white-space: nowrap; font-weight: 500; font-size: calc(77 * var(--u)); line-height: 1.1; letter-spacing: -.02em; color: #E8DCC8; }
 .show__title .cap { font-size: 1em; line-height: 1.1; }
+.show__kicker-2 { display: block; }   /* компьютер: вторая строка подписи — с левого края */
 .show__kicker { margin: 0; font-weight: 400; font-size: calc(22.31 * var(--u)); letter-spacing: -.02em; color: #E8DCC8; }
 /* плашки справа вверху — того же вида, что во втором блоке «Обо мне» */
-.show__tags { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(110 * var(--u)); width: calc(469 * var(--u)); margin: 0; padding: 0; list-style: none;
+.show__tags { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(118 * var(--u));   /* верх плашек — по верху «Что умею:», низ — по линии заголовка */ width: calc(469 * var(--u)); margin: 0; padding: 0; list-style: none;
   display: flex; flex-wrap: wrap; justify-content: flex-end; gap: calc(6 * var(--u)) calc(2.789 * var(--u)); }
 .show__tag { display: flex; align-items: center; justify-content: center; padding: calc(9 * var(--u)) calc(15 * var(--u)); border-radius: calc(27.89 * var(--u));
   background: rgba(200, 189, 171, .1); color: #BDB7B1; font-size: calc(22.312 * var(--u)); letter-spacing: -.02em; line-height: normal; white-space: nowrap; }
@@ -1120,6 +1121,7 @@ a { color: inherit; text-decoration: none; }
   .show__head { margin-top: 10px; gap: 12px; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { font-size: 15px; }
+  .show__kicker-2 { display: inline; }   /* телефон — как было, одной строкой с переносом */
   .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 0 8px; justify-content: flex-start; }
   /* плашки — по размеру слов; две строки по две: невидимый разрыв строки после второй */
   .show__tags::before { content: ""; flex-basis: 100%; height: 0; order: 1; }

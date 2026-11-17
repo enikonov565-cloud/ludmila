@@ -133,20 +133,20 @@ function init() {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.VSMShadowMap;   // мягкие, размытые тени — как от рассеянного света
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 100);
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  scene.add(new THREE.HemisphereLight(0xf3ece0, 0x0b1517, 1.1));
-  const key = new THREE.DirectionalLight(0xfff4e6, 2.6);
-  key.position.set(-6, 11, 8);
+  scene.add(new THREE.HemisphereLight(0xf3ece0, 0x0b1517, 1.45));
+  const key = new THREE.DirectionalLight(0xfff4e6, 2.0);
+  key.position.set(-2.5, 14, 7);   // свет сверху-спереди: тени короткие, под рамками, а не длинными полосами
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 });
   key.shadow.normalBias = 0.03;
-  key.shadow.radius = 4;
+  key.shadow.radius = 14; key.shadow.blurSamples = 24;
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xc9a27a, 1.1);   // тёплый контровой — медь по краям рамок
   rim.position.set(6, 4, -7);
@@ -405,7 +405,7 @@ function init() {
     if (!reduce) {
       /* шапка: заголовок встаёт из-под строки, мелкие подписи печатаются, плашки вспыхивают как табло */
       gsap.fromTo(sec.querySelectorAll('.show__head .story__reveal'), { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: QUART, delay: 0.1 });
-      [sec.querySelector('.show__sub'), sec.querySelector('.show__kicker')].forEach((el, k) => {
+      [sec.querySelector('.show__sub')].forEach((el, k) => {
         if (!el) return;
         const ch = split(el, el.textContent, 'hc');
         gsap.fromTo(ch, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, stagger: 0.025, delay: k ? 0.7 : 0 });
