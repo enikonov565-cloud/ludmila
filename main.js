@@ -1,6 +1,14 @@
 /* Сайт всегда открывается с главного экрана: без восстановления прокрутки и без перехода по #якорю из адреса */
 (function () {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  /* ScrollTrigger при обновлении возвращает браузеру прежнее «восстанавливать прокрутку» — закрепляем «вручную» и у него */
+  if (window.ScrollTrigger && window.ScrollTrigger.clearScrollMemory) window.ScrollTrigger.clearScrollMemory('manual');
+  /* перед перезагрузкой — наверх: браузер точно не вернёт в середину страницы */
+  window.addEventListener('beforeunload', function () { history.scrollRestoration = 'manual'; window.scrollTo(0, 0); });
+  /* идёт ли сейчас прокрутка: фоновые анимации на это время замирают — прокрутка остаётся плавной */
+  window.__scrollT = 0;
+  window.addEventListener('scroll', function () { window.__scrollT = performance.now(); }, { passive: true });
+  window.isScrolling = function () { return performance.now() - window.__scrollT < 200; };
   if (location.hash) history.replaceState(null, '', location.pathname + location.search);
   var toTop = function () { window.scrollTo(0, 0); if (window.lenis) window.lenis.scrollTo(0, { immediate: true, force: true }); };
   toTop();
@@ -701,8 +709,8 @@ document.documentElement.classList.replace('no-js', 'js');
 
   var frame = function () {
     raf = visible ? requestAnimationFrame(frame) : 0;
-    /* фон рисуем через кадр (~30 кадров в секунду) — глазу незаметно, процессору вдвое легче */
-    if ((tick++ & 1) === 1) return;
+    /* фон рисуем каждый третий кадр — глазу незаметно, процессору втрое легче */
+    if (tick++ % 3 !== 0 || window.isScrolling()) return;   // ~20 кадров в секунду и пауза на время прокрутки
     if (tick % 40 === 0 || !color) color = getComputedStyle(section).color;
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = 'rgba(0,0,0,0.35)';

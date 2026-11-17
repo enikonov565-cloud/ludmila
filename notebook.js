@@ -459,7 +459,8 @@ function init() {
     const blankL = mk(); paper(blankL.ctx, 'right');
     live = scenes.map((s, i) => {
       const L = mk(); leftPage(L.ctx, s, i); sticker(L.ctx, leftOf(i), SPINE_L);
-      const R = mk(); const base = document.createElement('canvas'); base.width = PW; base.height = PH;
+      const R = mk(); R.tex.generateMipmaps = false; R.tex.minFilter = THREE.LinearFilter;   /* живая страница обновляется часто — без пересчёта уменьшенных копий */
+      const base = document.createElement('canvas'); base.width = PW; base.height = PH;
       const bctx = base.getContext('2d'); rightStatic(bctx, s, i); sticker(bctx, rightOf(i), SPINE_R);
       const anim = MAKERS[s.anim] ? MAKERS[s.anim]() : null;
       const paint = () => { R.ctx.clearRect(0, 0, PW, PH); R.ctx.drawImage(base, 0, 0); if (anim) anim.draw(R.ctx); R.tex.needsUpdate = true; if (book) book.needsRender = true; };
@@ -521,7 +522,7 @@ function init() {
     raf = requestAnimationFrame(loop);
     const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0; lastT = now;
     acc += dt;
-    if (acc < 1 / 30) return;                                  // 30 кадров в секунду — глазу незаметно, видеокарте легче
+    if (acc < 1 / 12 || window.isScrolling && window.isScrolling()) return;   // живые страницы — 12 кадров в секунду и пауза при прокрутке: каждое обновление листа дорого для видеокарты
     const sc = animating(); const e = sc >= 0 ? live[sc] : null;
     if (!e || !e.anim) { acc = 0; return; }
     if (shown !== sc) { shown = sc; e.anim.enter(); }
