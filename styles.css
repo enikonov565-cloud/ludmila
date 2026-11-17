@@ -830,6 +830,8 @@ a { color: inherit; text-decoration: none; }
   .nowg__grid { overflow-y: auto; overscroll-behavior: contain; }
   .nowg__grid-in { width: auto; height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 14px; align-items: start; padding: 88px 20px 40px; }
   .nowg__cell, .nowg__gtitle, .nowg__back { position: relative; left: auto; top: auto; width: auto; }
+  .nowg__cell { order: var(--o); }   /* телефон: первым — портрет, сайты — на всю ширину */
+  .nowg__cell--wide { grid-column: 1 / -1; }
   .nowg__gtitle { grid-column: 1 / -1; font-size: clamp(26px, 7.4vw, 40px); }
   .nowg__back { grid-column: 1 / -1; width: 72px; height: 18px; margin-top: -8px; }
   .nowg__cap { font-size: 13px; white-space: normal; }
