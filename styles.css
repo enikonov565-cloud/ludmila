@@ -1128,7 +1128,7 @@ a { color: inherit; text-decoration: none; }
   .show__head { margin-top: 10px; gap: 12px; }
   .show__title { white-space: normal; font-size: clamp(32px, 8.6vw, 60px); }
   .show__kicker { font-size: 15px; }
-  .show__tags { width: auto; height: auto; margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+  .show__tags { width: auto; height: auto; margin-top: 22px; display: grid; grid-template-columns: repeat(2, max-content); gap: 8px; justify-content: start; }   /* две ровные строки по две плашки — без одинокой последней */
   .show__tag { padding: 7px 14px; border-radius: 20px; font-size: 14px; }
   .show__stage { position: relative; top: auto; bottom: auto; margin: 14px -20px 0; height: min(96vw, 470px); }
   .show__caption { position: relative; left: auto; top: auto; margin: -30px auto 0; max-width: 100%; align-items: center; text-align: center; }
