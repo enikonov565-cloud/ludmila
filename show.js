@@ -1,7 +1,7 @@
 /* Блок 8 «Баннеры, наружка, соцсети» — точно по макету Figma «Slide 4:3 - 1» (узел 1029:275).
    Справа от тонкой линии — фото работы, слева от линии — её описание.
    Смена работы — по мотивам Amber (ismamz, Codrops): всё на одной шкале времени, параллельно — название в медной плашке
-   уходит буквами вниз и приходит снизу, мелкие строки печатаются по буквам, фото открывается шторкой. Идёт само, пока блок на экране. */
+   уходит буквами вниз и приходит снизу, мелкие строки печатаются по буквам, фото закрывают и открывают шторки, линия перерисовывается. Идёт само, пока блок на экране. */
 (function () {
   'use strict';
   var sec = document.querySelector('[data-show]');
@@ -10,8 +10,6 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var photos = Array.prototype.slice.call(sec.querySelectorAll('.show__photo'));
   var descs = Array.prototype.slice.call(sec.querySelectorAll('.show__desc'));
-  var stage = sec.querySelector('.show__right');
-  var left = sec.querySelector('.show__left');
   var total = photos.length, cur = 0, HOLD = 4.6;
 
   /* описание — по буквам (слова не рвутся): при смене буквы рассыпаются пылью */
@@ -43,7 +41,8 @@
     name.insertBefore(block, name.firstChild);
     d._block = block;
     d._nameChars = Array.prototype.slice.call(name.querySelectorAll('.dc'));
-    d._typeChars = Array.prototype.slice.call(d.querySelectorAll('.show__type .dc, .show__list .dc'));
+    d._t1Chars = Array.prototype.slice.call(d.querySelectorAll('.show__t1 .dc'));
+    d._typeChars = Array.prototype.slice.call(d.querySelectorAll('.show__t2 .dc, .show__list .dc'));
     d._bullets = Array.prototype.slice.call(d.querySelectorAll('.show__list li'));
   });
   var timing = function (entering) {
@@ -56,9 +55,11 @@
     if (entering) {
       tl.fromTo(d._block, { scaleX: 0 }, { scaleX: 1, duration: t.duration, ease: t.ease }, at);
       tl.fromTo(d._nameChars, { yPercent: 105 }, { yPercent: 0, duration: t.duration, ease: t.ease, stagger: { amount: t.spread } }, at + t.offset);
+      tl.fromTo(d._t1Chars, { yPercent: 110 }, { yPercent: 0, duration: t.duration, ease: t.ease, stagger: { amount: t.spread * 0.6 } }, at);
       return at + t.offset + t.spread + t.duration;
     }
     tl.to(d._nameChars, { yPercent: 105, duration: t.duration, ease: t.ease, stagger: { amount: t.spread, from: 'end' } }, at);
+    tl.to(d._t1Chars, { yPercent: -110, duration: t.duration, ease: t.ease, stagger: { amount: t.spread * 0.6, from: 'end' } }, at);
     tl.to(d._block, { scaleX: 0, duration: t.duration, ease: t.ease }, at + t.offset + t.spread);
     return at + t.offset + t.spread + t.duration;
   };
@@ -84,15 +85,43 @@
     tl.set(d, { autoAlpha: 0 }, end);
     return end;
   };
-  /* фото: новое — шторкой слева направо, прежнее гаснет под ним */
+  /* фото: две шторки (медная, за ней молочная) наезжают слева и закрывают прежнюю работу;
+     под ними работа меняется, шторки уезжают вправо — новая открывается и чуть «оседает» из крупного плана.
+     Линия-разделитель в это время стирается вниз и прорисовывается заново сверху */
+  var right = sec.querySelector('.show__right'), line = sec.querySelector('.show__line');
+  var shutters = ['show__shutter', 'show__shutter show__shutter--milk'].map(function (c) {
+    var el = document.createElement('div'); el.className = c; el.setAttribute('aria-hidden', 'true'); right.appendChild(el); return el;
+  });
+  var fitShutters = function (p) {                                   // шторки — ровно по размеру работы
+    var r = p.getBoundingClientRect(), rr = right.getBoundingClientRect();
+    gsap.set(shutters, { left: r.left - rr.left, top: r.top - rr.top, width: r.width, height: r.height });
+  };
+  var swapPhoto = function (tl, from, to, at) {
+    if (reduce) { tl.set(from, { autoAlpha: 0 }, at); tl.set(to, { autoAlpha: 1, zIndex: 2 }, at); return; }
+    tl.call(function () { fitShutters(from); }, null, at);
+    tl.set(shutters, { transformOrigin: '0% 50%' }, at);
+    tl.fromTo(shutters, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: QUART, stagger: 0.09 }, at);
+    tl.to(from.querySelector('img'), { scale: 1.06, duration: 0.6, ease: QUART }, at);
+    tl.set(from, { autoAlpha: 0, zIndex: 1 }, at + 0.7);
+    tl.set(from.querySelector('img'), { scale: 1 }, at + 0.7);
+    tl.set(to, { autoAlpha: 1, zIndex: 2, x: 0 }, at + 0.7);
+    tl.call(function () { fitShutters(to); }, null, at + 0.7);
+    tl.set(shutters, { transformOrigin: '100% 50%' }, at + 0.7);
+    tl.to(shutters.slice().reverse(), { scaleX: 0, duration: 0.7, ease: QUART, stagger: 0.09 }, at + 0.72);
+    tl.fromTo(to.querySelector('img'), { scale: 1.14 }, { scale: 1, duration: 1.3, ease: QUART }, at + 0.72);
+    if (line) {
+      tl.to(line, { scaleY: 0, transformOrigin: '50% 100%', duration: 0.55, ease: QUINT }, at);
+      tl.fromTo(line, { scaleY: 0 }, { scaleY: 1, transformOrigin: '50% 0%', duration: 0.9, ease: QUART, immediateRender: false }, at + 0.7);
+    }
+  };
   var photoIn = function (tl, p, at) {
     tl.set(p, { zIndex: 2, autoAlpha: 1, x: 0 }, at);
-    tl.fromTo(p, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: reduce ? 0 : 1.05, ease: QUART }, at);
-    tl.fromTo(p.querySelector('img'), { scale: 1.12 }, { scale: 1, duration: reduce ? 0 : 1.4, ease: QUART }, at);
-  };
-  var photoOut = function (tl, p, at) {
-    tl.set(p, { zIndex: 1 }, at);
-    tl.to(p, { autoAlpha: 0, duration: reduce ? 0 : 0.6, ease: QUINT }, at + (reduce ? 0 : 0.35));
+    if (reduce) return;
+    tl.call(function () { fitShutters(p); }, null, at);
+    tl.set(shutters, { transformOrigin: '100% 50%', scaleX: 1 }, at);
+    tl.to(shutters.slice().reverse(), { scaleX: 0, duration: 0.8, ease: QUART, stagger: 0.1 }, at + 0.05);
+    tl.fromTo(p.querySelector('img'), { scale: 1.14 }, { scale: 1, duration: 1.4, ease: QUART }, at);
+    if (line) tl.fromTo(line, { scaleY: 0 }, { scaleY: 1, transformOrigin: '50% 0%', duration: 1, ease: QUART }, at);
   };
 
   /* ---------- круг работ ---------- */
@@ -111,8 +140,7 @@
     mark();
     run = gsap.timeline();
     var outEnd = descOut(run, descs[from], 0);
-    photoOut(run, photos[from], 0);
-    photoIn(run, photos[cur], reduce ? 0 : 0.25);
+    swapPhoto(run, photos[from], photos[cur], 0);
     /* новое название ждёт, пока прежнее освободит место, — как заголовки в Amber */
     descIn(run, descs[cur], reduce ? 0 : Math.max(0.45, outEnd - 0.2));
     timer = gsap.delayedCall(HOLD + (reduce ? 0 : 1.8), function () { next(); });
@@ -121,8 +149,8 @@
   var begin = function () {
     started = true;
     run = gsap.timeline();
-    photoIn(run, photos[0], 0.2);
-    descIn(run, descs[0], reduce ? 0 : 0.9);
+    photoIn(run, photos[0], reduce ? 0 : 0.6);
+    descIn(run, descs[0], reduce ? 0 : 1.1);
     timer = gsap.delayedCall(HOLD + 2, function () { next(); });
     mark();
   };
@@ -134,11 +162,26 @@
     if (en[0].isIntersecting) {
       if (!started) {
         if (!reduce) {
-          gsap.from(sec.querySelector('.show__sub'), { autoAlpha: 0, y: 14, duration: 0.7, ease: 'power3.out' });
-          var hb = sec.querySelector('.show__title-block');
-          if (hb) gsap.fromTo(hb, { scaleX: 0 }, { scaleX: 1, duration: 0.85, ease: QUART, delay: 0.05 });
-          gsap.from(sec.querySelectorAll('.show__head .story__reveal'), { yPercent: 110, duration: 0.85, delay: 0.35, ease: QUART });
-          gsap.from(sec.querySelectorAll('.show__kicker, .show__tag'), { autoAlpha: 0, y: 14, duration: 0.7, delay: 0.35, stagger: 0.06, ease: 'power3.out' });
+          /* заголовок — как в Amber: молочная плашка вытягивается слева, под ней встаёт строка, плашка уходит вправо */
+          var hb = sec.querySelector('.show__title-block'), hr = sec.querySelectorAll('.show__head .story__reveal'), ht = gsap.timeline();
+          ht.set(hr, { autoAlpha: 0 }, 0);
+          if (hb) {
+            ht.fromTo(hb, { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.85, ease: QUART }, 0);
+            ht.set(hb, { transformOrigin: '100% 50%' }, 0.85);
+            ht.to(hb, { scaleX: 0, duration: 0.85, ease: QUART }, 0.9);
+          }
+          ht.set(hr, { autoAlpha: 1 }, 0.85);
+          ht.fromTo(hr, { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: QUART, immediateRender: false }, 0.85);
+          /* мелкие подписи — печатаются по буквам */
+          var typeIn = function (el, at) {
+            if (!el) return;
+            if (!el.querySelector('.tc')) el.innerHTML = Array.prototype.map.call(el.textContent, function (ch) { return '<span class="tc">' + ch + '</span>'; }).join('');
+            ht.fromTo(el.querySelectorAll('.tc'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0, stagger: 0.03 }, at);
+          };
+          typeIn(sec.querySelector('.show__sub'), 0);
+          typeIn(sec.querySelector('.show__kicker'), 1.1);
+          ht.fromTo(sec.querySelectorAll('.show__tag'), { autoAlpha: 0, scaleX: 0.2, transformOrigin: '0% 50%' }, { autoAlpha: 1, scaleX: 1, duration: 0.6, ease: QUART, stagger: 0.08 }, 0.4);
+          ht.fromTo(sec.querySelector('.show__head .btn-frame'), { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.8, ease: QUART, clearProps: 'clipPath' }, 1.3);
         }
         begin();
       } else if (timer) timer.resume();
