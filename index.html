@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Playfair+Display:ital,wght@1,500&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400;500&family=Tenor+Sans&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/person.webp?v=2">
-<link rel="stylesheet" href="styles.css?v=395">
+<link rel="stylesheet" href="styles.css?v=396">
 </head>
 <body>
 <!-- Общая шапка для всего сайта: бургер-меню и монограмма слева, кнопка «Связаться со мной» справа -->
@@ -229,11 +229,33 @@
 
   <button class="story__scroll" type="button" aria-label="Дальше — «Сейчас»"><span class="story__tap" aria-hidden="true"><span class="hint-arrow"></span></span></button>
   <div class="story__now">
-    <div class="story__now-photo"><div class="story__now-frame"><img decoding="async" src="img/story/now-full.jpg" width="1600" height="1600" alt="Людмила за ноутбуком — сейчас она веб-дизайнер" loading="lazy"></div></div>
-    <div class="story__now-text">
-      <h3 class="story__title"><span class="story__mask"><span class="story__reveal"><span class="cap">Т</span>еперь я&nbsp;делаю</span></span><span class="story__mask"><span class="story__reveal">это визуально.</span></span></h3>
+    <!-- «Сейчас» (по мотивам Codrops «Image To Grid Transition», MIT): портрет в центре на фирменном фоне, надпись сверху и снизу;
+         по кнопке «Сейчас» портрет встаёт в сетку работ, остальные работы слетаются к нему -->
+    <div class="story__now-photo">
+      <div class="nowg__item"><div class="nowg__img" role="img" aria-label="Людмила Иващенко с белой каллой"></div></div>
+      <div class="nowg__grid" aria-hidden="true" data-lenis-prevent>
+        <div class="nowg__grid-in">
+      <p class="nowg__gtitle"><span><span class="cap">Т</span>еперь я&nbsp;делаю</span><span>это визуально.</span></p>
+      <button class="nowg__back" type="button" aria-label="Назад" tabindex="-1"><svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg></button>
+      <figure class="nowg__cell" style="--x:440;--y:112;--w:380;--ar:1.7775"><img src="img/works/w01.jpg" width="1422" height="800" alt="Сайт фотографа Nikonovphoto" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">01 — Сайт фотографа Nikonovphoto</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:880;--y:112;--w:190;--ar:0.7502"><img src="img/gallery/goose.webp" width="901" height="1201" alt="«Гуси-лебеди»" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">02 — «Гуси-лебеди»</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:1130;--y:112;--w:170;--ar:0.5600"><img src="img/gallery/houses.webp?v=2" width="896" height="1600" alt="Дома под ключ" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">03 — Дома под ключ</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:1360;--y:112;--w:210;--ar:0.7500"><img src="img/gallery/service-blue.webp" width="900" height="1200" alt="Сервиз чайный" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">04 — Сервиз чайный</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:1630;--y:130;--w:230;--ar:0.7500"><img src="img/gallery/vase.webp" width="900" height="1200" alt="Ваза. Фарфор" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">05 — Ваза. Фарфор</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:60;--y:330;--w:340;--ar:1.7778"><img src="img/gallery/porcelain.webp" width="1600" height="900" alt="«Авторский фарфор»" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">06 — «Авторский фарфор»</span></figcaption></figure>
+      <figure class="nowg__cell nowg__cell--target" style="--x:470;--y:410;--w:230;--ar:1.1551"><figcaption class="nowg__cap"><span class="nowg__cap-in">07 — Людмила Иващенко</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:770;--y:450;--w:200;--ar:0.7500"><img src="img/gallery/music.webp" width="900" height="1200" alt="«Вечера живой музыки»" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">08 — «Вечера живой музыки»</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:1040;--y:520;--w:420;--ar:1.7778"><img src="img/gallery/burger.webp" width="1600" height="900" alt="Кафе «Бургер-восторг»" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">09 — Кафе «Бургер-восторг»</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:1530;--y:530;--w:220;--ar:0.7500"><img src="img/gallery/mugs.webp" width="900" height="1200" alt="Набор кружек" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">10 — Набор кружек</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:120;--y:620;--w:230;--ar:0.7500"><img src="img/gallery/service-peach.webp" width="900" height="1200" alt="Фарфоровый сервиз" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">11 — Фарфоровый сервиз</span></figcaption></figure>
+      <figure class="nowg__cell" style="--x:400;--y:790;--w:330;--ar:1.7775"><img src="img/works/w03.jpg" width="1422" height="800" alt="Сайт «Флорис»" loading="lazy" decoding="async"><figcaption class="nowg__cap"><span class="nowg__cap-in">12 — Сайт «Флорис»</span></figcaption></figure>
+        </div>
+      </div>
     </div>
-    <p class="story__ghost story__ghost--now" aria-hidden="true">Сейчас</p>
+    <div class="story__now-text">
+      <h3 class="story__title"><span class="story__mask nowg__l1"><span class="story__reveal"><span class="cap">Т</span>еперь я&nbsp;делаю</span></span><span class="story__mask nowg__l2"><span class="story__reveal">это визуально.</span></span></h3>
+    </div>
+    <button class="nowg__enter" type="button" aria-label="Сейчас — посмотреть работы"><span class="nowg__enter-text"><span data-text="Сейчас">Сейчас</span></span><svg class="nowg__enter-deco" viewBox="0 0 100 100" aria-hidden="true"><circle vector-effect="non-scaling-stroke" cx="50" cy="50" r="48"/></svg></button>
     <p class="story__note story__note--left"><span class="story__mask"><span class="story__reveal">Я&nbsp;умею упаковывать смысл</span></span><span class="story__mask"><span class="story__reveal">так, чтобы визуальный посыл</span></span><span class="story__mask"><span class="story__reveal">считывался моментально</span></span></p>
     <p class="story__tags"><span>Системность</span><span>Эмпатия к&nbsp;аудитории</span><span>Результат без&nbsp;переделок</span></p>
   </div>
@@ -436,8 +458,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/CustomEase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="main.js?v=80"></script>
+<script src="main.js?v=81"></script>
 <script type="module" src="notebook.js?v=24"></script>
 <script src="case.js?v=24"></script>
 <script src="talk.js?v=13"></script>
@@ -445,6 +468,6 @@
 <script type="module" src="final.js?v=30"></script>
 <script type="module" src="show.js?v=43"></script>
 <script type="module" src="gallery.js?v=24"></script>
-<script type="module" src="story3d.js?v=45"></script>
+<script type="module" src="story3d.js?v=46"></script>
 </body>
 </html>

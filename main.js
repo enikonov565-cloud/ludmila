@@ -2,7 +2,8 @@
 (function () {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   /* ScrollTrigger при обновлении возвращает браузеру прежнее «восстанавливать прокрутку» — закрепляем «вручную» и у него */
-  if (window.ScrollTrigger && window.ScrollTrigger.clearScrollMemory) window.ScrollTrigger.clearScrollMemory('manual');
+  var keepManual = function () { try { if (window.gsap && window.ScrollTrigger) { window.gsap.registerPlugin(window.ScrollTrigger); window.ScrollTrigger.clearScrollMemory('manual'); } } catch (e) {} history.scrollRestoration = 'manual'; };
+  keepManual(); window.addEventListener('load', keepManual);
   /* перед перезагрузкой — наверх: браузер точно не вернёт в середину страницы */
   window.addEventListener('beforeunload', function () { history.scrollRestoration = 'manual'; window.scrollTo(0, 0); });
   /* идёт ли сейчас прокрутка: фоновые анимации на это время замирают — прокрутка остаётся плавной */

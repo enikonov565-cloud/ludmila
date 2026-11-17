@@ -116,72 +116,6 @@ function makeBouquet() {
   return { root, stems };
 }
 
-/* 3D-фото «Сейчас»: карта глубины (Depth Anything V2) сдвигает ближние планы сильнее дальних —
-   Людмила и ноутбук отделяются от стены и растения, кадр мягко «дышит» сам и откликается на мышь */
-function depthPhoto(frame, opts) {
-  const img = frame.querySelector('img');
-  const cv = document.createElement('canvas');
-  cv.className = 'story__depth'; cv.setAttribute('aria-hidden', 'true');
-  frame.appendChild(cv);
-  let started = false, r, mat, scene, cam, raf = 0, visible = false;
-  let mx = 0, my = 0, cx = 0, cy = 0;
-  const loop = (now) => {
-    const t = now / 1000;
-    const ax = Math.sin(t * 0.33) * 0.7, ay = Math.sin(t * 0.47 + 1.3) * 0.45;   // сам по себе — медленная «восьмёрка»
-    cx += (mx * 0.8 + ax - cx) * 0.045; cy += (my * 0.6 + ay - cy) * 0.045;
-    const ox = -cx * 0.05, oy = cy * 0.032, z = 1.08 + Math.sin(t * 0.22) * 0.014;
-    mat.uniforms.uOff.value.set(ox, oy);
-    mat.uniforms.uZoom.value = z;
-    if (opts.onMove) opts.onMove(ox, oy, z);
-    r.render(scene, cam);
-    raf = visible && !opts.reduce ? requestAnimationFrame(loop) : 0;
-  };
-  const resize = () => {
-    if (!r) return;
-    const w = frame.clientWidth, h = frame.clientHeight;
-    r.setSize(w, h, false); mat.uniforms.uRes.value.set(w, h);
-    if (!raf) r.render(scene, cam);
-  };
-  function start() {
-    if (started) return; started = true;
-    try { r = new THREE.WebGLRenderer({ canvas: cv, antialias: false, alpha: false, powerPreference: 'high-performance' }); }
-    catch (e) { cv.remove(); return; }
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    r.outputColorSpace = THREE.LinearSRGBColorSpace;            // цвета фото — как есть, без пересчёта
-    const ld = new THREE.TextureLoader();
-    Promise.all([ld.loadAsync(img.currentSrc || img.src), ld.loadAsync('img/story/now-depth.jpg?v=2')]).then(([ti, td]) => {
-      [ti, td].forEach(t => { t.colorSpace = THREE.NoColorSpace; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; });
-      scene = new THREE.Scene(); cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-      mat = new THREE.ShaderMaterial({
-        uniforms: { uImg: { value: ti }, uDep: { value: td }, uRes: { value: new THREE.Vector2(1, 1) },
-          uPos: { value: new THREE.Vector2(opts.pos[0], 1 - opts.pos[1]) }, uOff: { value: new THREE.Vector2() }, uZoom: { value: 1.06 } },
-        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
-        fragmentShader: `
-          uniform sampler2D uImg, uDep; uniform vec2 uRes, uPos, uOff; uniform float uZoom; varying vec2 vUv;
-          void main(){
-            float fa = uRes.x / uRes.y;
-            vec2 s = (fa > 1.0 ? vec2(1.0, 1.0 / fa) : vec2(fa, 1.0)) / uZoom;   // как object-fit: cover для квадратного фото
-            vec2 base = (1.0 - s) * uPos + vUv * s, uv = base;
-            float d = texture2D(uDep, base).r;
-            uv = base + uOff * (d - 0.37);   // Людмила и ноутбук (глубина ~0.37) стоят на месте — смещается фон за ними
-            gl_FragColor = texture2D(uImg, clamp(uv, 0.001, 0.999));
-          }`,
-      });
-      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
-      window.addEventListener('resize', resize); resize();
-      if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
-      frame.classList.add('is-3d');
-      if (opts.reduce) return;
-      window.addEventListener('pointermove', e => { mx = e.clientX / window.innerWidth * 2 - 1; my = e.clientY / window.innerHeight * 2 - 1; }, { passive: true });
-      new IntersectionObserver(en => {
-        visible = en[0].isIntersecting;
-        if (visible && !raf) raf = requestAnimationFrame(loop);
-      }, { threshold: 0.05 }).observe(frame);
-    }).catch(() => cv.remove());
-  }
-  return { start };
-}
-
 /* текстура экрана — как карточка в макете «п-р10»: фото сверху, белая плашка с тёмным текстом внизу */
 function screenTexture(img, caption) {
   const W = 1600, H = 1000;
@@ -362,15 +296,7 @@ async function init() {
 
   /* сцена идёт сама, по времени — с паузами на чтение; запускается, когда блок почти целиком на экране */
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
-  /* «Сейчас» висит в воздухе перед растением — на «глубине» 0.8: при движении фото смещается как ближний план */
-  const nowFrame = q('.story__now-frame'), ghostNowEl = q('.story__ghost--now');
-  let nowW = 0; window.addEventListener('resize', () => { nowW = 0; });
-  if (!stacked) gsap.set(ghostNowEl, { yPercent: -50 });           // центр слова — в точке над растением
-  const depth = depthPhoto(nowFrame, { reduce, pos: stacked ? [0.6, 0.3] : [0.5, 0.36], onMove: stacked ? null : (ox, oy, z) => {
-    const W = nowW || (nowW = nowFrame.clientWidth), k = (0.6 - 0.37) * z;   // ширина кадра — из запаса: чтение размеров в каждом кадре заставляло браузер пересчитывать страницу
-    ghostNowEl.style.setProperty('--fx', (-ox * k * W * 0.35).toFixed(1) + 'px');  // вбок — чуть-чуть, чтобы край держал линию
-    ghostNowEl.style.setProperty('--fy', (oy * k * W).toFixed(1) + 'px');
-  } });
+  const grid = nowGrid(section, { reduce });
   const noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
   [noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
@@ -379,12 +305,12 @@ async function init() {
   const wordsIn = () => ({ yPercent: 100, autoAlpha: 0, filter: 'blur(6px)', duration: 0.65, ease: 'power3.out', stagger: 0.03 });
   /* «Тогда» и «Сейчас» — по буквам */
   qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
-  const ghostThen = q('.story__ghost--then'), ghostNow = q('.story__ghost--now');
+  const ghostThen = q('.story__ghost--then');
   const charsIn = () => ({ yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1.3, ease: 'power3.out', stagger: 0.09 });
   const away = () => -(window.innerWidth * 1.15);
   let drift;
   const hint = q('.story__scroll');
-  let wantGo = false, bob = [];
+  let wantGo = false;
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
@@ -400,25 +326,22 @@ async function init() {
     .to(state, { slide: 1, duration: 1.5, ease: 'power2.inOut' }, 'away')            // вся сцена уходит влево…
     .to([q('.story__then'), ghostThen], { x: away, duration: 1.5, ease: 'power2.inOut' }, 'away') // …надписи — вместе с ней
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.5, ease: 'power2.inOut' }, 'away') // …фото справа налево
-    .call(() => depth.start(), null, 'away')                                      // 3D-фото готовится, пока уходит ноутбук
-    .from(qa('.story__now-frame > img, .story__now-frame > canvas'), { xPercent: 6, scale: 1.06, duration: 2.2, ease: 'power2.out' }, 'away')
+    .from(q('.nowg__img'), { scale: 1.12, duration: 2.2, ease: 'power2.out' }, 'away')
     /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
     .addLabel('now', 'away+=1.1')
     .set(canvas, { autoAlpha: 0 }, 'away+=1.5')
     .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, autoAlpha: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
-    .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
-    .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
+    /* кнопка «Сейчас»: круг прорисовывается, слово поднимается из-под строки */
+    .fromTo(q('.nowg__enter'), { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, 'now+=0.35')
+    .from(q('.nowg__enter circle'), { strokeDasharray: 302, strokeDashoffset: 302, duration: 1.1, ease: 'power2.inOut' }, 'now+=0.35')
+    .fromTo(q('.nowg__enter-text span'), { yPercent: 110 }, { yPercent: 0, duration: 0.7, ease: 'power3.out', clearProps: 'transform' }, 'now+=0.6')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
-    .call(() => {                                                                   // парит: покачивается и чуть наклоняется
-      bob.forEach(t => t.kill());
-      bob = [gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
-             gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 })];
-    });
+    ;
   render();
-  if (reduce) { tl.progress(1); render(); depth.start(); if (hint) hint.hidden = true; return; }
+  if (reduce) { tl.progress(1); render(); if (hint) hint.hidden = true; return; }
   const go = () => { wantGo = true; if (tl.paused() && tl.time() >= 2.39 && tl.progress() < 1) tl.play(); };
   /* любое движение вниз на «Тогда» — колесо, тачпад, палец, клавиши — запускает переход */
   section.addEventListener('wheel', e => { if (e.deltaY > 0) go(); }, { passive: true });
@@ -426,8 +349,9 @@ async function init() {
   section.addEventListener('touchmove', e => { if (ty - e.touches[0].clientY > 12) go(); }, { passive: true });
   window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
   const reset = () => {                                                            // снова «Тогда»
-    wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
-    tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
+    wantGo = false; drift && drift.kill();
+    grid.close(true);
+    tl.pause(0); gsap.set(ghostThen, { y: 0, rotate: 0 });
     section.classList.remove('is-now'); render();
   };
   hint && hint.addEventListener('click', go);
@@ -449,4 +373,86 @@ async function init() {
     });
     window.ScrollTrigger.sort(); window.ScrollTrigger.refresh();
   }
+}
+
+/* «Сейчас» → сетка работ (по мотивам Codrops «Image To Grid Transition», MIT; на GSAP Flip):
+   портрет переезжает в свою ячейку, остальные работы слетаются к центру из-за краёв, подписи выезжают из-под строки,
+   большая надпись уходит вверх и вниз, маленькая — въезжает. «Назад» — всё в обратном порядке */
+function nowGrid(section, { reduce }) {
+  const gsap = window.gsap, Flip = window.Flip;
+  const q = s => section.querySelector(s), qa = s => Array.from(section.querySelectorAll(s));
+  const enter = q('.nowg__enter'), back = q('.nowg__back'), gridEl = q('.nowg__grid'), item = q('.nowg__item');
+  const home = q('.story__now-photo'), target = q('.nowg__cell--target'), panel = home;
+  const big = qa('.story__now-text .story__reveal'), small = qa('.nowg__gtitle > span');
+  const cells = qa('.nowg__cell:not(.nowg__cell--target)');
+  if (!enter || !gridEl || !item || !target) return { close() {} };
+  if (Flip) gsap.registerPlugin(Flip);
+  const D = reduce ? 0 : 1, EASE = 'expo.inOut';
+  let open = false, busy = false;
+  /* откуда слетается работа: на 400 точек дальше от центра, чем её место */
+  const outward = (el, dist = 400) => {
+    const r = el.getBoundingClientRect(), p = panel.getBoundingClientRect();
+    const cx = r.left + r.width / 2 - (p.left + p.width / 2), cy = r.top + r.height / 2 - (p.top + p.height / 2);
+    const a = Math.atan2(Math.abs(cy), Math.abs(cx));
+    return { x: Math.sign(cx || 1) * Math.cos(a) * dist, y: Math.sign(cy || 1) * Math.sin(a) * dist, d: Math.hypot(cx, cy) };
+  };
+  const move = (to) => {
+    if (!Flip) { to.prepend(item); return; }
+    const st = Flip.getState(item);
+    to.prepend(item);
+    Flip.from(st, { duration: D, ease: EASE, absolute: false });
+  };
+  const show = () => {
+    if (open || busy) return;
+    busy = true; open = true;
+    section.classList.add('is-grid');
+    gridEl.classList.add('is-open'); gridEl.setAttribute('aria-hidden', 'false'); back.tabIndex = 0;
+    const tl = gsap.timeline({ onComplete: () => { busy = false; back.focus({ preventScroll: true }); } });
+    tl.to(enter, { autoAlpha: 0, duration: D, ease: EASE }, 0)
+      .add(() => move(target), 0)
+      .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
+      .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
+      .fromTo(back, { xPercent: -40, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
+      .to(panel, { backgroundColor: '#DDD2C2', duration: D, ease: EASE }, 0)
+      .fromTo(target.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE }, 0);
+    cells.forEach((c) => {
+      const o = outward(c), delay = reduce ? 0 : Math.min(0.4, o.d / 1000 * 0.4);
+      tl.fromTo(c, { x: o.x, y: o.y, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: D, ease: 'expo.out', delay }, reduce ? 0 : 0.4)
+        .fromTo(c.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE, delay }, 0);
+    });
+  };
+  const close = (instant) => {
+    if (!open) return;
+    if (instant) {
+      gsap.killTweensOf([enter, big, small, back, panel, ...cells]);
+      home.prepend(item); gsap.set(item, { clearProps: 'all' });
+      gsap.set(big, { yPercent: 0, autoAlpha: 1 }); gsap.set(enter, { autoAlpha: 1 }); gsap.set(panel, { clearProps: 'backgroundColor' });
+      gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true'); back.tabIndex = -1;
+      section.classList.remove('is-grid'); open = false; busy = false; return;
+    }
+    if (busy) return;
+    busy = true;
+    back.tabIndex = -1;
+    const tl = gsap.timeline({ onComplete: () => {
+      gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true');
+      open = false; busy = false; enter.focus({ preventScroll: true });
+    } });
+    tl.to(panel, { backgroundColor: '#E8DCC8', duration: D, ease: EASE }, 0)
+      .to(target.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D, ease: EASE }, 0)
+      .to(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0, duration: D, ease: EASE }, 0)
+      .to(back, { xPercent: -20, autoAlpha: 0, duration: D, ease: EASE }, 0)
+      .call(() => section.classList.remove('is-grid'), null, reduce ? 0 : 0.4)
+      .to(big, { yPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, reduce ? 0 : 0.4)
+      .to(enter, { autoAlpha: 1, duration: D, ease: EASE }, reduce ? 0 : 0.4)
+      .add(() => move(home), reduce ? 0 : 0.4);
+    cells.forEach((c) => {
+      const o = outward(c), delay = reduce ? 0 : Math.max(0, 0.4 - Math.min(0.4, o.d / 1000 * 0.4));
+      tl.to(c, { x: o.x, y: o.y, autoAlpha: 0, duration: D, ease: EASE, delay }, 0)
+        .to(c.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D * 0.5, ease: EASE, delay }, 0);
+    });
+  };
+  enter.addEventListener('click', show);
+  back.addEventListener('click', () => close(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) close(false); });
+  return { close };
 }
