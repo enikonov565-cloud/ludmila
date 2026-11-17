@@ -104,14 +104,14 @@ function init() {
   const dotEls = Array.from(dotsBox.children);
   function mark(i) { dotEls.forEach((b, k) => { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); }); }
 
-  /* ---------- подробности — в карточке галереи ниже: прокрутка к ней и раскрытие этой работы ---------- */
+  /* ---------- подробности — карточка галереи (та же), открывается прямо здесь, поверх подставки ---------- */
+  let cardOpen = false;
   const openCard = (i) => {
-    const gal = document.getElementById('gallery');
-    if (!gal) return;
-    const key = works[i].src.split('/').pop().split('?')[0].split('.')[0];
-    if (window.lenis) window.lenis.scrollTo(gal, { duration: 1 }); else gal.scrollIntoView({ behavior: 'smooth' });
-    if (window.galleryOpen) window.galleryOpen(key);
+    if (cardOpen || !window.galleryCard) return;
+    window.galleryCard(works[i].src.split('/').pop().split('?')[0].split('.')[0], sec);
   };
+  sec.addEventListener('gallerycard:open', () => { cardOpen = true; if (timer) timer.pause(); });
+  sec.addEventListener('gallerycard:close', () => { cardOpen = false; if (timer && visible) timer.resume(); });
   const nameP = sec.querySelector('.show__name');
   if (nameP) { nameP.style.cursor = 'pointer'; nameP.addEventListener('click', () => { if (shown >= 0) openCard(shown); }); }
 
@@ -286,7 +286,7 @@ function init() {
   const schedule = () => {
     if (timer) timer.kill();
     if (reduce) return;
-    timer = gsap.delayedCall(HOLD, () => { if (visible && !drag) goTo((active + 1) % total); });
+    timer = gsap.delayedCall(HOLD, () => { if (visible && !drag && !cardOpen) goTo((active + 1) % total); });
     if (!visible) timer.pause();
   };
   const goTo = (i, opts) => {

@@ -200,24 +200,58 @@
     });
   });
   closeBtn.addEventListener('click', hideContent);
-  /* снаружи (блок с подставкой выше): показать работу и раскрыть её подробности — та же карточка галереи */
+  /* карточка галереи — та же самая (рамка, название, вид, текст, номер, стрелка «назад»), но открывается прямо в другом блоке:
+     window.galleryCard(ключ по имени файла картинки, блок). Блок со вращающейся подставкой выше открывает её по щелчку на работе */
   var fileOf = function (src) { return String(src).split('/').pop().split('?')[0].split('.')[0]; };
-  window.galleryOpen = function (key) {
+  window.galleryCard = function (key, host) {
     var i = DATA.findIndex(function (d) { return fileOf(d.src) === key; });
-    if (i < 0) return;
-    var reveal = function () { if (!phone()) showContent(); };
-    if (open) { if (i === current) return; hideContent(); }
-    if (i === current) { setTimeout(reveal, 900); return; }
-    var wait = function () {
-      if (busy || open) { setTimeout(wait, 120); return; }
-      restart();
-      current = i; render(); decoFit(slides[current], false);
-      slides.forEach(function (q) { if (q.pos !== null && q.pos !== undefined) gsap.set(q.el, { autoAlpha: 1 }); });
-      showTexts(slides[current], true);
-      cur.textContent = pad(current + 1); mark();
-      setTimeout(reveal, 900);
+    if (i < 0 || !host || host.querySelector('.dg-embed')) return;
+    var s0 = slides[i];
+    var box = document.createElement('div'); box.className = 'dg-embed dg--open';
+    var st = document.createElement('div'); st.className = 'dg__stage';
+    var dc = document.createElement('div'); dc.className = 'dg__deco'; dc.setAttribute('aria-hidden', 'true');
+    var sl = s0.el.cloneNode(true); sl.classList.add('is-current'); sl.style.cssText = '';
+    st.appendChild(dc); st.appendChild(sl);
+    var ct = document.createElement('div'); ct.className = 'dg__content';
+    var cb = closeBtn.cloneNode(true); cb.style.cssText = '';
+    var it = items[i].cloneNode(true); it.classList.add('is-on');
+    Array.prototype.forEach.call(it.children, function (c) { c.style.cssText = ''; });
+    ct.appendChild(cb); ct.appendChild(it);
+    box.appendChild(st); box.appendChild(ct);
+    host.appendChild(box);
+    var frame = sl.querySelector('.dg__frame'), img = sl.querySelector('.dg__img');
+    img.loading = 'eager'; img.style.cssText = ''; frame.style.cssText = '';
+    gsap.set(sl.querySelectorAll('.dg__texts, .dg__side'), { autoAlpha: 0 });
+    /* размер и место — как у галереи: работа целиком в рамке, при подробностях — слева */
+    var W = st.clientWidth, H = st.clientHeight, ar = (s0.d.h || 1) / (s0.d.w || 1), ph = phone();
+    var maxW = ph ? W * 0.66 : Math.min(W * 0.4, H * 0.8), maxH = ph ? H * 0.42 : H * 0.66;
+    var u = ph ? 1 : Math.min(window.innerWidth / 1920, window.innerHeight / 1080), m = (ph ? 9 : 16 * u) + 2;
+    var w = maxW - 2 * m, h = w * ar; if (h > maxH - 2 * m) { h = maxH - 2 * m; w = h / ar; }
+    w += 2 * m; h += 2 * m;
+    gsap.set(frame, { width: w, height: h });
+    var to = ph ? { x: 0, y: -H / 2 + 96 + h / 2 } : { x: -(W / 2 - w / 2 - W * 0.075), y: 0 };
+    if (ph) { it.style.top = (96 + h + 70) + 'px'; cb.style.top = (96 + h + 34) + 'px'; var y0 = host.getBoundingClientRect().top + window.scrollY; if (window.lenis) window.lenis.scrollTo(y0, { duration: 0.8 }); else window.scrollTo({ top: y0, behavior: 'smooth' }); }
+    gsap.set(sl, { xPercent: -50, yPercent: -50, x: 0, y: ph ? to.y : 0, autoAlpha: 1, rotation: 0, scale: ph ? 1 : 0.9 });
+    gsap.set(dc, { xPercent: -50, yPercent: -50, width: w * 1.08, height: h * 1.08, x: 0, y: ph ? to.y : 0, opacity: 1 });
+    var parts = [cb].concat(Array.prototype.slice.call(it.children));
+    var tl = gsap.timeline();
+    tl.fromTo(box, { autoAlpha: 0 }, { autoAlpha: 1, duration: reduce ? 0 : 0.35, ease: 'power1.out' }, 0);
+    tl.to(dc, { width: W, height: H, x: ph ? 0 : -20, y: ph ? 0 : 20, duration: reduce ? 0 : 0.8, ease: 'power4.inOut' }, 0.05);
+    tl.to(sl, { x: to.x, y: to.y, scale: 1, duration: reduce ? 0.01 : 0.72, ease: 'power2.inOut' }, 0.1);
+    tl.fromTo(parts, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power4.out', stagger: 0.05 }, reduce ? 0 : 0.45);
+    var shut = function () {
+      document.removeEventListener('keydown', esc);
+      gsap.timeline({ onComplete: function () { box.remove(); host.dispatchEvent(new CustomEvent('gallerycard:close')); } })
+        .to(parts.slice().reverse(), { y: 10, autoAlpha: 0, duration: 0.3, stagger: 0.01, ease: 'power3.in' }, 0)
+        .to(dc, { width: w * 1.08, height: h * 1.08, x: 0, y: ph ? to.y : 0, duration: reduce ? 0 : 0.6, ease: 'power4.inOut' }, 0.1)
+        .to(sl, { x: 0, y: ph ? to.y : 0, scale: ph ? 1 : 0.9, duration: reduce ? 0.01 : 0.6, ease: 'power2.inOut' }, 0.1)
+        .to(box, { autoAlpha: 0, duration: reduce ? 0 : 0.35, ease: 'power1.in' }, 0.5);
     };
-    wait();
+    var esc = function (e) { if (e.key === 'Escape') shut(); };
+    cb.addEventListener('click', shut);
+    document.addEventListener('keydown', esc);
+    host.dispatchEvent(new CustomEvent('gallerycard:open'));
+    cb.focus({ preventScroll: true });
   };
   /* переход к работе по точке: соседняя — обычным листанием, дальняя — мягкой сменой */
   dotEls.forEach(function (b, i) {
