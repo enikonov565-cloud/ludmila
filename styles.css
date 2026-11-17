@@ -739,10 +739,18 @@ a { color: inherit; text-decoration: none; }
 /* «сейчас»: фото на весь экран, текст и полупрозрачные плашки поверх */
 .story__now { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 /* подсказка в «Тогда»: мышка с бегущим колёсиком — прокрутка открывает «Сейчас» */
-.story__scroll { position: absolute; z-index: 4; right: calc(60 * var(--u)); bottom: calc(44 * var(--u)); margin: 0; padding: calc(10 * var(--u)) calc(6 * var(--u));
-  display: flex; align-items: center; gap: calc(14 * var(--u)); background: none; border: 0; cursor: pointer;
-  font: 300 calc(20 * var(--u)) / 1.2 Inter, sans-serif; letter-spacing: .03em; color: #BDB7B1; white-space: nowrap; }
-.story__scroll:hover { color: #E8DCC8; }
+/* стрелки блока — простые, как везде на сайте, без обводки: «дальше» на «Тогда», «назад» на «Сейчас» */
+.story__arrow { position: absolute; z-index: 4; width: calc(101 * var(--u)); height: calc(30 * var(--u)); padding: 0; border: 0; background: none; color: #E8DCC8; cursor: pointer; display: flex; align-items: center; outline: none; transition: color .35s, transform .5s var(--ease); }
+.story__arrow svg { width: 100%; height: auto; display: block; }
+.story__arrow:hover { color: #C9A27A; }
+.story__arrow:focus-visible { color: #C9A27A; }
+.story__scroll { right: calc(60 * var(--u)); bottom: calc(60 * var(--u)); }
+.story__scroll:hover { transform: translateX(calc(6 * var(--u))); }
+.story__back { left: calc(60 * var(--u)); top: calc(420 * var(--u)); transform: scaleX(-1); opacity: 0; visibility: hidden; pointer-events: auto; }
+.story__back:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
+.story.is-grid .story__back { opacity: 0 !important; visibility: hidden !important; }
+/* пока сцена готовится — тексты «Сейчас» не проступают на «Тогда» */
+.story:not(.gl-ready):not(.no-gl) .story__note, .story:not(.gl-ready):not(.no-gl) .story__tags, .story:not(.gl-ready):not(.no-gl) .story__back { visibility: hidden; }
 /* круглая кнопка-значок со стрелкой и «пульсом»: видно, что сюда нажимать */
 .story__tap { position: relative; display: grid; place-items: center; width: calc(84 * var(--u)); height: calc(84 * var(--u)); border-radius: 50%; background: color-mix(in srgb, currentColor 16%, transparent); transition: background-color .3s ease; } /* залитый полупрозрачный круг + «пульс» */
 .story__tap::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid currentColor; animation: tap-pulse 2s ease-out infinite; }
@@ -762,7 +770,7 @@ a { color: inherit; text-decoration: none; }
 .nowg__item { position: absolute; z-index: 1; top: 0; bottom: 0; right: calc(150 * var(--u)); aspect-ratio: 1800 / 1464; cursor: pointer; outline: none; pointer-events: auto; }
 .nowg__img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none;
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 78%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 78%, transparent 100%); }   /* края фото растворяются в фоне */
-.nowg__item:focus-visible { outline: 2px solid #A9502C; outline-offset: -6px; }
+
 /* сетка работ: работы целиком, подпись под каждой; кадр 1920×1080 — по центру */
 .nowg__grid { position: absolute; inset: 0; z-index: 2; opacity: 0; visibility: hidden; pointer-events: none; }
 .nowg__grid.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -780,7 +788,8 @@ a { color: inherit; text-decoration: none; }
 .nowg__back { position: absolute; left: calc(60 * var(--u)); top: calc(250 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u)); padding: 0; border: 0; background: none; color: #1A2C30; cursor: pointer; transform: scaleX(-1); transition: color .35s; }
 .nowg__back svg { width: 100%; height: auto; display: block; }
 .nowg__back:hover { color: #A9502C; }
-.nowg__back:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
+.nowg__back { outline: none; }
+.nowg__back:focus-visible { color: #A9502C; }
 .story__note--left, .story__tags { transition: opacity .5s ease; }
 .story.is-grid .story__note--left, .story.is-grid .story__tags, .story.is-grid .story__ghost--now { opacity: 0 !important; pointer-events: none; }
 .story__ghost--now { transition: opacity .5s ease; }
@@ -806,7 +815,9 @@ a { color: inherit; text-decoration: none; }
   .story__then, .story__now-text { left: 20px; right: 20px; top: 96px; max-width: none; }
   .story__title { font-size: clamp(32px, 8.6vw, 60px); }
   .story__num { font-size: 1.28em; }
-  .story__scroll { right: 20px; bottom: 28px; font-size: 15px; gap: 12px; }
+  .story__scroll { right: 20px; bottom: 28px; }
+  .story__arrow { width: 72px; height: 18px; }
+  .story__back { position: relative; left: auto; top: auto; margin: 6px 0 0; align-self: flex-start; }
   .story__tap { width: 58px; height: 58px; }
   .story__tap .hint-arrow { width: 24px; }
   .story__scroll .hint-arrow::after { width: 7px; height: 7px; }
@@ -829,7 +840,7 @@ a { color: inherit; text-decoration: none; }
   .story__note .story__mask:not(:last-child)::after { content: " "; }
   .story__tags { margin-top: 14px; gap: 6px 8px; }
   .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(200, 189, 171, .14); }
-  .story__tags, .story__scroll { display: none; }   /* телефон: без лишнего — страницы и так сменяются сами */
+  .story__tags { display: none; }   /* телефон: без лишнего */
 }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */

@@ -298,9 +298,9 @@ async function init() {
   const q = s => section.querySelector(s), qa = s => section.querySelectorAll(s);
   /* три страницы идут сами: «Тогда» → «Сейчас» → сетка работ; стрелка в сетке ведёт обратно до «Тогда» */
   const HOLD_THEN = 2.5, HOLD_NOW = 3;
-  let autoNext = null, inView = false;
-  const later = (sec, fn) => { if (autoNext) autoNext.kill(); autoNext = gsap.delayedCall(sec, () => { if (inView && !document.hidden) fn(); else later(1, fn); }); };
-  const grid = nowGrid(section, { reduce, onBack: () => back() });
+  let autoNext = null, inView = false, auto = true;   // после ручного «назад» сами больше не листаем
+  const later = (sec, fn) => { if (autoNext) autoNext.kill(); if (!auto) return; autoNext = gsap.delayedCall(sec, () => { if (!auto) return; if (inView && !document.hidden) fn(); else later(1, fn); }); };
+  const grid = nowGrid(section, { reduce, onBack: () => { auto = false; if (autoNext) autoNext.kill(); } });   // из сетки — только на «Сейчас»
   const noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
   [noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
@@ -340,6 +340,7 @@ async function init() {
     /* «Сейчас» — как прежде: буквы выплывают из размытия */
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
+    .fromTo(q('.story__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 'now+=0.8')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
@@ -357,23 +358,25 @@ async function init() {
   window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
   /* назад: «Сейчас» уходит вправо, «Тогда» возвращается — тот же переход в обратную сторону */
   const back = () => {
-    if (autoNext) autoNext.kill();
+    auto = false; if (autoNext) autoNext.kill();
+    gsap.to(backBtn, { autoAlpha: 0, duration: 0.3 });
     wantGo = false; bob.forEach(t => t.kill()); bob = []; gsap.to(ghostNow, { y: 0, rotate: 0, duration: 0.4 });
     tl.tweenTo(2.4, { duration: 2, ease: 'power2.inOut', onComplete: () => {
       section.classList.remove('is-now');
       drift && drift.kill(); drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 });
       gsap.to(hint, { autoAlpha: 1, y: 0, duration: 0.5 });
-      later(HOLD_THEN + 1, go);
     } });
   };
   const reset = () => {                                                            // снова «Тогда»
-    if (autoNext) autoNext.kill();
+    if (autoNext) autoNext.kill(); auto = true;
     wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
     grid.close(true);
     tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
     section.classList.remove('is-now'); render();
   };
+  const backBtn = q('.story__back');
   hint && hint.addEventListener('click', go);
+  backBtn && backBtn.addEventListener('click', () => { if (tl.progress() === 1 && !grid.isOpen()) back(); });
   /* «Тогда» стартует, когда блок почти целиком на экране; ушли выше блока — сцена сбрасывается */
   new IntersectionObserver((e) => {
     const en = e[0];
@@ -428,7 +431,7 @@ function nowGrid(section, { reduce, onBack }) {
     section.classList.add('is-grid', 'is-now');   // шапка — тёмными буквами на светлом
     gridEl.classList.add('is-open'); gridEl.setAttribute('aria-hidden', 'false'); back.tabIndex = 0;
     item.tabIndex = -1;
-    const tl = gsap.timeline({ onComplete: () => { busy = false; if (pendingClose) { pendingClose = false; close(false); } else back.focus({ preventScroll: true }); } });
+    const tl = gsap.timeline({ onComplete: () => { busy = false; if (pendingClose) { pendingClose = false; close(false); } } });
     tl.add(() => move(target), 0)
       .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
