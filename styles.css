@@ -754,64 +754,52 @@ a { color: inherit; text-decoration: none; }
 .story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: -.55em 0 0; pointer-events: none;
   font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
 .story__ghost--then { z-index: 0; opacity: .22; } /* за ноутбуком */
+/* «Сейчас» — справа, внизу; светлые полупрозрачные буквы поверх фото */
+.story__ghost--now { z-index: 3; opacity: 0; visibility: hidden; left: auto; right: calc(60 * var(--u) - .06em); top: 85%; margin: 0; font-weight: 300; font-size: calc(220 * var(--u)); letter-spacing: -.03em; color: rgba(232, 220, 200, .6); mix-blend-mode: difference; }   /* на тёмном — светлые буквы, на белом жакете — тёмные */
 .story__ghost .ch { display: inline-block; }
-.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; background: #E8DCC8; }   /* фирменный молочный фон */
-/* «Сейчас»: портрет по центру, крупная надпись сверху и снизу (по мотивам «Image To Grid Transition», Codrops) */
-.nowg__item { position: absolute; z-index: 1; left: calc(50% - 325 * var(--u)); top: calc(50% - 240 * var(--u)); width: calc(650 * var(--u)); height: calc(563 * var(--u)); }   /* между строками надписи — надпись не заходит на портрет */
-.nowg__img { width: 100%; height: 100%; background: url(img/story/now-calla.webp?v=2) 50% 100% / contain no-repeat; }   /* портрет без фона, целиком */
-.story .story__now-text { inset: 0; max-width: none; pointer-events: none; }
-.story__now-text .story__title { position: absolute; inset: 0; margin: 0; font-size: calc(150 * var(--u)); line-height: 1; letter-spacing: -.035em; white-space: nowrap; }
-.story__now-text .story__mask { position: absolute; padding: .06em 0 .16em; margin: 0; }
-.story__now-text .cap { width: auto; padding-right: .04em; }
-.nowg__l1 { left: calc(230 * var(--u)); top: calc(86 * var(--u)); }
-.nowg__l2 { right: calc(60 * var(--u)); bottom: calc(6 * var(--u)); }
-/* кнопка «Сейчас» — круг, как «Enter» в образце: при наведении слово сменяется курсивом, круг расширяется */
-.nowg__enter { position: absolute; z-index: 4; left: 50%; top: calc(50% + 190 * var(--u)); width: calc(170 * var(--u)); height: calc(170 * var(--u)); margin: calc(-85 * var(--u)) 0 0 calc(-85 * var(--u));
-  display: grid; place-items: center; padding: 0; border: 0; background: rgba(232, 220, 200, .55); border-radius: 50%; color: #1A2C30; cursor: pointer;
-  font-weight: 400; font-size: calc(34 * var(--u)); letter-spacing: -.01em; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); opacity: 0; visibility: hidden; }
-.nowg__enter-text { grid-area: 1 / 1; line-height: 1.15; overflow: hidden; }
-.nowg__enter-text span { position: relative; display: block; padding: 0 .3em; transition: transform .3s ease-out; }
-.nowg__enter-text span::before { content: attr(data-text); position: absolute; left: 0; bottom: 100%; width: 100%; text-align: center; font-family: "Good Vibes Pro", "Great Vibes", cursive; font-size: 1.25em; color: #A9502C; }
-.nowg__enter-deco { grid-area: 1 / 1; width: 100%; height: 100%; fill: none; stroke: #1A2C30; stroke-width: 1px; transition: transform .3s ease-out; }
-.nowg__enter:hover .nowg__enter-text span, .nowg__enter:focus-visible .nowg__enter-text span { transform: translateY(100%); transition: transform .4s cubic-bezier(.7, 0, .3, 1); }
-.nowg__enter:hover .nowg__enter-deco, .nowg__enter:focus-visible .nowg__enter-deco { transform: scale(1.3); transition: transform .4s cubic-bezier(.7, 0, .3, 1); }
-.nowg__enter:focus-visible { outline: 2px solid #A9502C; outline-offset: 6px; }
-.nowg__enter { pointer-events: auto; }
+.story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; background: #050606; }   /* тёмный фирменный фон */
+/* «Сейчас»: портрет на тёмном справа, края мягко растворяются в фоне; щелчок по нему — сетка работ */
+.nowg__item { position: absolute; z-index: 1; top: 0; bottom: 0; right: calc(150 * var(--u)); aspect-ratio: 1800 / 1464; cursor: pointer; outline: none; pointer-events: auto; }
+.nowg__img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 78%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 78%, transparent 100%); }   /* края фото растворяются в фоне */
+.nowg__item:focus-visible { outline: 2px solid #A9502C; outline-offset: -6px; }
 /* сетка работ: работы целиком, подпись под каждой; кадр 1920×1080 — по центру */
 .nowg__grid { position: absolute; inset: 0; z-index: 2; opacity: 0; visibility: hidden; pointer-events: none; }
 .nowg__grid.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
 .nowg__grid-in { position: relative; width: calc(1920 * var(--u)); height: 100%; margin: 0 auto; }
 .nowg__cell { position: absolute; margin: 0; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); width: calc(var(--w) * var(--u)); }
-.nowg__cell img { display: block; width: 100%; height: auto; aspect-ratio: var(--ar); box-shadow: 0 calc(12 * var(--u)) calc(30 * var(--u)) calc(-14 * var(--u)) rgba(26, 44, 48, .45); }
-.nowg__cell--target .nowg__item { position: relative; left: auto; top: auto; width: 100%; height: auto; aspect-ratio: var(--ar); }
-.nowg__cap { margin-top: calc(10 * var(--u)); overflow: hidden; font-size: calc(18 * var(--u)); line-height: 1.3; letter-spacing: -.01em; color: #1A2C30; }
+.nowg__cell img { display: block; width: 100%; height: auto; aspect-ratio: var(--ar); box-shadow: 0 calc(14 * var(--u)) calc(34 * var(--u)) calc(-12 * var(--u)) rgba(0, 0, 0, .6); }
+.nowg__cell--target .nowg__item { position: relative; top: auto; bottom: auto; right: auto; width: 100%; height: auto; aspect-ratio: var(--ar); cursor: default; }
+.nowg__cell--target .nowg__img { -webkit-mask-image: none; mask-image: none; }
+.nowg__cap { margin-top: calc(10 * var(--u)); overflow: hidden; font-size: calc(18 * var(--u)); line-height: 1.3; letter-spacing: -.01em; color: #BDB7B1; }
 .nowg__cap-in { display: block; }
-.nowg__gtitle { position: absolute; left: calc(60 * var(--u)); top: calc(112 * var(--u)); margin: 0; font-weight: 500; font-size: calc(36 * var(--u)); line-height: 1.05; letter-spacing: -.03em; color: #1A2C30; }
+.nowg__gtitle { position: absolute; left: calc(60 * var(--u)); top: calc(112 * var(--u)); margin: 0; font-weight: 500; font-size: calc(36 * var(--u)); line-height: 1.05; letter-spacing: -.03em; color: #E8DCC8; }
 .nowg__gtitle > span { display: block; }
 .nowg__gtitle > span + span { padding-left: .9em; }
 .nowg__gtitle .cap { width: auto; }
-.nowg__back { position: absolute; left: calc(60 * var(--u)); top: calc(250 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u)); padding: 0; border: 0; background: none; color: #1A2C30; cursor: pointer; transform: scaleX(-1); transition: color .35s; }
+.nowg__back { position: absolute; left: calc(60 * var(--u)); top: calc(250 * var(--u)); width: calc(101 * var(--u)); height: calc(30 * var(--u)); padding: 0; border: 0; background: none; color: #E8DCC8; cursor: pointer; transform: scaleX(-1); transition: color .35s; }
 .nowg__back svg { width: 100%; height: auto; display: block; }
-.nowg__back:hover { color: #A9502C; }
-.nowg__back:focus-visible { outline: 2px solid #A9502C; outline-offset: 4px; }
+.nowg__back:hover { color: #C9A27A; }
+.nowg__back:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
 .story__note--left, .story__tags { transition: opacity .5s ease; }
-.story.is-grid .story__note--left, .story.is-grid .story__tags { opacity: 0; pointer-events: none; }
+.story.is-grid .story__note--left, .story.is-grid .story__tags, .story.is-grid .story__ghost--now { opacity: 0 !important; pointer-events: none; }
+.story__ghost--now { transition: opacity .5s ease; }
 .story__now-text { visibility: hidden; position: absolute; z-index: 3; left: calc(60 * var(--u)); top: calc(163 * var(--u)); max-width: calc(1144 * var(--u)); }
 /* «сейчас» — тёмный текст на светлом фото, как в макете «п-р 21» */
-.story__now .story__title { color: #1A2C30; line-height: 1.1; }
-.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #1A2C30; }
+.story__now .story__title { color: #E8DCC8; line-height: 1.1; }
+.story__note { position: absolute; z-index: 3; margin: 0; font-weight: 400; font-size: calc(30 * var(--u)); line-height: 1.2; color: #E8DCC8; }
 .story__note .story__mask { padding: 0 0 .04em; margin: 0; }
 .story__note .story__reveal { white-space: nowrap; } /* строки — как в макете */
 /* правый текст — на светлой матовой подложке: под ним листья растения */
 .story__note .w { display: inline-block; }
-.story__note--left { left: calc(60 * var(--u)); top: calc(420 * var(--u)); width: calc(483 * var(--u)); font-size: calc(26 * var(--u)); letter-spacing: .015em; }
-.story__tags { position: absolute; z-index: 3; margin: 0; left: calc(60 * var(--u)); top: calc(600 * var(--u)); width: calc(500 * var(--u)); display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); }
-.story__tags span { padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u)); background: rgba(255, 255, 255, .3);
-  font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #1A2C30; white-space: nowrap; }
+.story__note--left { left: calc(60 * var(--u)); top: calc(530 * var(--u)); width: calc(483 * var(--u)); letter-spacing: .015em; }
+.story__tags { position: absolute; z-index: 3; margin: 0; left: calc(60 * var(--u)); top: calc(884 * var(--u)); width: calc(520 * var(--u)); display: flex; flex-wrap: wrap; gap: calc(6 * var(--u)) calc(16 * var(--u)); }
+.story__tags span { padding: calc(13.95 * var(--u)) calc(27.89 * var(--u)); border-radius: calc(27.89 * var(--u)); background: rgba(200, 189, 171, .1);
+  font-weight: 400; font-size: calc(22.31 * var(--u)); line-height: normal; letter-spacing: -.02em; color: #BDB7B1; white-space: nowrap; }
 
 /* без WebGL — сразу показываем «сейчас» */
 .story.no-gl .story__then { display: none; }
-.story.no-gl .story__now-photo, .story.no-gl .story__now-text, .story.no-gl .nowg__enter { opacity: 1; visibility: visible; }
+.story.no-gl .story__now-photo, .story.no-gl .story__now-text, .story.no-gl .story__ghost--now { opacity: 1; visibility: visible; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .story { --u: 1px; }
@@ -823,13 +811,11 @@ a { color: inherit; text-decoration: none; }
   .story__tap .hint-arrow { width: 24px; }
   .story__scroll .hint-arrow::after { width: 7px; height: 7px; }
   .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
-  .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: calc(150px + 44svh + 64px) 20px 24px; }
-  .nowg__item { left: 20px; top: 150px; width: calc(100% - 40px); height: 44svh; }
-  .story__now-text .story__title { font-size: clamp(30px, 9.4vw, 60px); }
-  .story .story__now-text { left: 0; right: 0; top: 0; bottom: 0; }
-  .nowg__l1 { left: 20px; top: 92px; }
-  .nowg__l2 { left: auto; right: 20px; bottom: auto; top: calc(150px + 44svh - .25em); }
-  .nowg__enter { top: calc(150px + 44svh - 80px); width: 116px; height: 116px; margin: -58px 0 0 -58px; font-size: 20px; }
+  .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: 96px 20px 24px; }
+  .nowg__item { top: calc(104px + 2.3 * clamp(32px, 8.6vw, 60px)); bottom: auto; left: 0; right: 0; margin: 0 auto; height: 44svh; }
+  .story__now-text { margin-bottom: calc(44svh + 30px); }
+  .story__now-text, .story__ghost--now { position: relative; left: auto; right: auto; top: auto; width: auto; max-width: none; }
+  .story__ghost--now { margin: auto 0 4px; align-self: flex-end; font-size: clamp(56px, 17vw, 110px); }
   .nowg__grid { overflow-y: auto; overscroll-behavior: contain; }
   .nowg__grid-in { width: auto; height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 14px; align-items: start; padding: 88px 20px 40px; }
   .nowg__cell, .nowg__gtitle, .nowg__back { position: relative; left: auto; top: auto; width: auto; }
@@ -842,7 +828,7 @@ a { color: inherit; text-decoration: none; }
   .story__note .story__mask { display: inline; overflow: visible; } /* на телефоне строки текут вместе */
   .story__note .story__mask:not(:last-child)::after { content: " "; }
   .story__tags { margin-top: 14px; gap: 6px 8px; }
-  .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(255, 255, 255, .55); }
+  .story__tags span { padding: 9px 16px; border-radius: 99px; font-size: clamp(13px, 3.6vw, 16px); background: rgba(200, 189, 171, .14); }
 }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */

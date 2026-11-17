@@ -305,12 +305,13 @@ async function init() {
   const wordsIn = () => ({ yPercent: 100, autoAlpha: 0, filter: 'blur(6px)', duration: 0.65, ease: 'power3.out', stagger: 0.03 });
   /* «Тогда» и «Сейчас» — по буквам */
   qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
-  const ghostThen = q('.story__ghost--then');
+  const ghostThen = q('.story__ghost--then'), ghostNow = q('.story__ghost--now');
+  if (!stacked) gsap.set(ghostNow, { yPercent: -50 });           // центр слова — на линии 85% высоты, как прежде
   const charsIn = () => ({ yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1.3, ease: 'power3.out', stagger: 0.09 });
   const away = () => -(window.innerWidth * 1.15);
   let drift;
   const hint = q('.story__scroll');
-  let wantGo = false;
+  let wantGo = false, bob = [];
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render });
   tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
     .from(ghostThen.children, charsIn(), 0.45)
@@ -326,20 +327,22 @@ async function init() {
     .to(state, { slide: 1, duration: 1.5, ease: 'power2.inOut' }, 'away')            // вся сцена уходит влево…
     .to([q('.story__then'), ghostThen], { x: away, duration: 1.5, ease: 'power2.inOut' }, 'away') // …надписи — вместе с ней
     .fromTo(q('.story__now-photo'), { autoAlpha: 1, clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0%)', duration: 1.5, ease: 'power2.inOut' }, 'away') // …фото справа налево
-    .from(q('.nowg__img'), { scale: 1.12, duration: 2.2, ease: 'power2.out' }, 'away')
+    .from(q('.nowg__img'), { scale: 1.08, duration: 2.2, ease: 'power2.out' }, 'away')
     /* «Сейчас»: тексты начинают появляться, пока фото ещё открывается, — быстро и одной волной */
     .addLabel('now', 'away+=1.1')
     .set(canvas, { autoAlpha: 0 }, 'away+=1.5')
-    .call(() => section.classList.add('is-now'), null, 'away+=1.1')                // шапка — тёмными буквами
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
     .from(qa('.story__now-text .story__reveal'), { yPercent: 110, autoAlpha: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
-    /* кнопка «Сейчас»: круг прорисовывается, слово поднимается из-под строки */
-    .fromTo(q('.nowg__enter'), { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'back.out(1.6)' }, 'now+=0.35')
-    .from(q('.nowg__enter circle'), { strokeDasharray: 302, strokeDashoffset: 302, duration: 1.1, ease: 'power2.inOut' }, 'now+=0.35')
-    .fromTo(q('.nowg__enter-text span'), { yPercent: 110 }, { yPercent: 0, duration: 0.7, ease: 'power3.out', clearProps: 'transform' }, 'now+=0.6')
+    /* «Сейчас» — как прежде: буквы выплывают из размытия */
+    .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
+    .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
     .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
-    ;
+    .call(() => {                                                                   // парит: покачивается и чуть наклоняется
+      bob.forEach(t => t.kill());
+      bob = [gsap.to(ghostNow, { y: -14, duration: 3.2, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
+             gsap.to(ghostNow, { rotate: 1.2, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1 })];
+    });
   render();
   if (reduce) { tl.progress(1); render(); if (hint) hint.hidden = true; return; }
   const go = () => { wantGo = true; if (tl.paused() && tl.time() >= 2.39 && tl.progress() < 1) tl.play(); };
@@ -349,9 +352,9 @@ async function init() {
   section.addEventListener('touchmove', e => { if (ty - e.touches[0].clientY > 12) go(); }, { passive: true });
   window.addEventListener('keydown', e => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].includes(e.key) && section.getBoundingClientRect().top <= 2 && section.getBoundingClientRect().bottom > 0) go(); });
   const reset = () => {                                                            // снова «Тогда»
-    wantGo = false; drift && drift.kill();
+    wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
     grid.close(true);
-    tl.pause(0); gsap.set(ghostThen, { y: 0, rotate: 0 });
+    tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
     section.classList.remove('is-now'); render();
   };
   hint && hint.addEventListener('click', go);
@@ -381,11 +384,11 @@ async function init() {
 function nowGrid(section, { reduce }) {
   const gsap = window.gsap, Flip = window.Flip;
   const q = s => section.querySelector(s), qa = s => Array.from(section.querySelectorAll(s));
-  const enter = q('.nowg__enter'), back = q('.nowg__back'), gridEl = q('.nowg__grid'), item = q('.nowg__item');
+  const back = q('.nowg__back'), gridEl = q('.nowg__grid'), item = q('.nowg__item');
   const home = q('.story__now-photo'), target = q('.nowg__cell--target'), panel = home;
   const big = qa('.story__now-text .story__reveal'), small = qa('.nowg__gtitle > span');
   const cells = qa('.nowg__cell:not(.nowg__cell--target)');
-  if (!enter || !gridEl || !item || !target) return { close() {} };
+  if (!gridEl || !item || !target) return { close() {} };
   if (Flip) gsap.registerPlugin(Flip);
   const D = reduce ? 0 : 1, EASE = 'expo.inOut';
   let open = false, busy = false;
@@ -407,13 +410,13 @@ function nowGrid(section, { reduce }) {
     busy = true; open = true;
     section.classList.add('is-grid');
     gridEl.classList.add('is-open'); gridEl.setAttribute('aria-hidden', 'false'); back.tabIndex = 0;
+    item.tabIndex = -1;
     const tl = gsap.timeline({ onComplete: () => { busy = false; back.focus({ preventScroll: true }); } });
-    tl.to(enter, { autoAlpha: 0, duration: D, ease: EASE }, 0)
-      .add(() => move(target), 0)
+    tl.add(() => move(target), 0)
       .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
       .fromTo(back, { xPercent: -40, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
-      .to(panel, { backgroundColor: '#DDD2C2', duration: D, ease: EASE }, 0)
+      .to(panel, { backgroundColor: '#13242A', duration: D, ease: EASE }, 0)
       .fromTo(target.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE }, 0);
     cells.forEach((c) => {
       const o = outward(c), delay = reduce ? 0 : Math.min(0.4, o.d / 1000 * 0.4);
@@ -424,9 +427,9 @@ function nowGrid(section, { reduce }) {
   const close = (instant) => {
     if (!open) return;
     if (instant) {
-      gsap.killTweensOf([enter, big, small, back, panel, ...cells]);
-      home.prepend(item); gsap.set(item, { clearProps: 'all' });
-      gsap.set(big, { yPercent: 0, autoAlpha: 1 }); gsap.set(enter, { autoAlpha: 1 }); gsap.set(panel, { clearProps: 'backgroundColor' });
+      gsap.killTweensOf([big, small, back, panel, ...cells]);
+      home.prepend(item); gsap.set(item, { clearProps: 'all' }); item.tabIndex = 0;
+      gsap.set(big, { yPercent: 0, autoAlpha: 1 }); gsap.set(panel, { clearProps: 'backgroundColor' });
       gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true'); back.tabIndex = -1;
       section.classList.remove('is-grid'); open = false; busy = false; return;
     }
@@ -435,15 +438,14 @@ function nowGrid(section, { reduce }) {
     back.tabIndex = -1;
     const tl = gsap.timeline({ onComplete: () => {
       gridEl.classList.remove('is-open'); gridEl.setAttribute('aria-hidden', 'true');
-      open = false; busy = false; enter.focus({ preventScroll: true });
+      open = false; busy = false; item.tabIndex = 0; item.focus({ preventScroll: true });
     } });
-    tl.to(panel, { backgroundColor: '#E8DCC8', duration: D, ease: EASE }, 0)
+    tl.to(panel, { backgroundColor: '#050606', duration: D, ease: EASE }, 0)
       .to(target.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D, ease: EASE }, 0)
       .to(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .to(back, { xPercent: -20, autoAlpha: 0, duration: D, ease: EASE }, 0)
       .call(() => section.classList.remove('is-grid'), null, reduce ? 0 : 0.4)
       .to(big, { yPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, reduce ? 0 : 0.4)
-      .to(enter, { autoAlpha: 1, duration: D, ease: EASE }, reduce ? 0 : 0.4)
       .add(() => move(home), reduce ? 0 : 0.4);
     cells.forEach((c) => {
       const o = outward(c), delay = reduce ? 0 : Math.max(0, 0.4 - Math.min(0.4, o.d / 1000 * 0.4));
@@ -451,7 +453,8 @@ function nowGrid(section, { reduce }) {
         .to(c.querySelector('.nowg__cap-in'), { yPercent: 101, duration: D * 0.5, ease: EASE, delay }, 0);
     });
   };
-  enter.addEventListener('click', show);
+  item.addEventListener('click', () => { if (!open) show(); });
+  item.addEventListener('keydown', (e) => { if (!open && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(); } });
   back.addEventListener('click', () => close(false));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) close(false); });
   return { close };
