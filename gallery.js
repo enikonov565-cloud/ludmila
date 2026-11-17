@@ -25,7 +25,7 @@
     var el = document.createElement('div'); el.className = 'dg__slide';
     var kind = strip(d.kind).replace(/:$/, ''), where = strip(d.where);
     el.innerHTML =
-      '<div class="dg__frame" style="--ar:' + (d.ratio || 1) + '"><img class="dg__img" src="' + d.src + '" alt="' + strip(d.name) + ' — ' + kind.toLowerCase() + ' ' + where + '" decoding="async" loading="lazy" draggable="false"></div>' +
+      '<div class="dg__frame"><span class="dg__pic"><img class="dg__img" src="' + d.src + '" alt="' + strip(d.name) + ' — ' + kind.toLowerCase() + ' ' + where + '" decoding="async" loading="lazy" draggable="false"></span></div>' +
       '<p class="dg__side" aria-hidden="true">' + kind + '</p>' +
       '<div class="dg__texts"><span class="dg__num">' + pad(i + 1) + '</span><p class="dg__title">' + strip(d.name) + '</p><p class="dg__sub">' + kind + ' ' + where + '</p></div>';
     stage.appendChild(el);
@@ -54,7 +54,10 @@
   var size = function (s) {
     var W = stage.clientWidth, H = stage.clientHeight, ar = (s.d.h || 1) / (s.d.w || 1);
     var maxW = phone() ? W * 0.66 : Math.min(W * 0.4, H * 0.8), maxH = phone() ? H * 0.5 : H * 0.66;   // горизонтальные баннеры — шире, вертикальные — по высоте
-    var w = maxW, h = w * ar; if (h > maxH) { h = maxH; w = h / ar; }
+    /* рамка с паспарту: работа — целиком внутри, паспарту одинаковое со всех сторон */
+    var u = phone() ? 1 : Math.min(window.innerWidth / 1920, window.innerHeight / 1080), m = (phone() ? 9 : 16 * u) + 2;
+    var w = maxW - 2 * m, h = w * ar; if (h > maxH - 2 * m) { h = maxH - 2 * m; w = h / ar; }
+    w += 2 * m; h += 2 * m;
     s.w = w; s.h = h;
     gsap.set(s.frame, { width: w, height: h });
   };

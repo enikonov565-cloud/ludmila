@@ -1160,10 +1160,22 @@ a { color: inherit; text-decoration: none; }
 .gal__list { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); margin: 0; padding: 0; }   /* список работ — для экранного диктора */
 .dg__stage { position: absolute; inset: 0; perspective: 1400px; }
 /* приглушённый прямоугольник за текущей работой — фирменная бирюза; при подробностях разворачивается на весь блок */
+.dg__deco { opacity: 0; transition: opacity .6s ease; }   /* фон подробностей — виден, только когда они открыты */
+.dg--open .dg__deco { opacity: 1; }
 .dg__deco { position: absolute; left: 50%; top: 50%; translate: -50% -50%; background: #12221F; background: linear-gradient(160deg, #1A2C30, #102024); box-shadow: inset 0 0 0 1px rgba(201, 162, 122, .12); }
 .dg__slide { position: absolute; left: 50%; top: 50%; z-index: 2; visibility: hidden; }
 .dg__slide.is-current { z-index: 3; }
-.dg__frame { position: relative; overflow: hidden; cursor: pointer; transform-style: preserve-3d; box-shadow: 0 calc(34 * var(--u)) calc(70 * var(--u)) rgba(0, 0, 0, .5); }
+/* рамка — как в галерее nikonovphoto, в фирменных цветах и тоньше: тёмная кромка, светлое паспарту со светом сверху,
+   скос к работе (работа утоплена), мягкая тень от верхнего края проёма; тень рамки падает вниз */
+.dg__frame { --mat: calc(16 * var(--u)); --bevel: calc(5 * var(--u)); position: relative; box-sizing: border-box; padding: var(--mat); cursor: pointer; transform-style: preserve-3d;
+  border: 2px solid #0B1517; border-radius: calc(8 * var(--u));
+  background: linear-gradient(165deg, #F1E9DB 0%, #E2D7C5 45%, #CFC3B0 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -1px 0 rgba(0, 0, 0, .3), 0 4px 8px rgba(0, 0, 0, .45), 0 calc(30 * var(--u)) calc(44 * var(--u)) calc(-12 * var(--u)) rgba(0, 0, 0, .75); }
+.dg__frame::before { content: ""; position: absolute; inset: calc(var(--mat) - var(--bevel)); border-radius: 2px;
+  background: linear-gradient(to bottom, #8C806E 0%, #A99D89 40%, #DCD1BF 85%, #EEE6D8 100%); box-shadow: 0 0 0 1px rgba(0, 0, 0, .2); }
+.dg__frame::after { content: ""; position: absolute; z-index: 2; inset: var(--mat); pointer-events: none;
+  box-shadow: inset 0 calc(var(--bevel) * 1.4) calc(var(--bevel) * 2.2) calc(var(--bevel) * -1) rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(0, 0, 0, .45); }
+.dg__pic { position: relative; z-index: 1; display: block; width: 100%; height: 100%; overflow: hidden; }
 .dg__img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; }
 .dg--open .dg__slide.is-current .dg__frame { cursor: default; }
 /* подписи текущей работы — слева от неё: номер, название, вид работы; сверху — вид работы вертикально */
@@ -1207,6 +1219,7 @@ a { color: inherit; text-decoration: none; }
   .dg__title { margin-top: 6px; font-size: clamp(20px, 5.6vw, 30px); }
   .dg__sub { margin-top: 4px; font-size: clamp(13px, 3.6vw, 17px); }
   .dg__side { display: none; }
+  .dg__frame { --mat: 9px; --bevel: 3px; border-radius: 6px; }
   .dg__nav { left: 20px; bottom: 26px; width: 160px; height: 52px; }
   .dg__count { bottom: 22px; gap: 8px; }
   .dg__cur { font-size: 26px; } .dg__total { font-size: 14px; } .dg__sep { width: 16px; }
