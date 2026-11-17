@@ -22,7 +22,7 @@ function init() {
   /* ---------- работы: из скрытого списка в разметке ---------- */
   const works = Array.from(sec.querySelectorAll('.show__works li')).map((li) => ({
     src: li.dataset.src, w: +li.dataset.w, h: +li.dataset.h,
-    type: li.dataset.type, name: li.dataset.name, note: li.dataset.note, alt: li.textContent.trim(),
+    type: li.dataset.type, name: li.dataset.name, alt: li.textContent.trim(),
   }));
   const total = works.length;
   if (!total) return;
@@ -30,10 +30,7 @@ function init() {
 
   /* ---------- подпись: разбивка на буквы (слова не рвутся) ---------- */
   const nameEl = sec.querySelector('.show__name-text');
-  const nameBlock = sec.querySelector('.show__name-block');
   const typeEl = sec.querySelector('.show__type-text');
-  const noteEl = sec.querySelector('.show__note');
-  const countEl = sec.querySelector('.show__count');
   const pad = (n) => (n < 10 ? '0' : '') + n;
   const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const words = (text, cls) => text.split(' ').map((w) => '<span class="sw">' + Array.from(w).map((c) => '<span class="' + cls + '">' + esc(c) + '</span>').join('') + '</span>').join(' ');
@@ -50,22 +47,18 @@ function init() {
   if (leadLine) gsap.set(leadLine, { strokeDasharray: 1, strokeDashoffset: 1 });
   if (leadDot) gsap.set(leadDot, { attr: { r: 0 } });
   let shown = -1, busy = false, pending = -1;
-  const cap = { name: [], type: [], note: [] };
+  const cap = { name: [], type: [] };
   const fill = (i) => {
     cap.name = split(nameEl, works[i].name, 'nc');
     cap.type = typeHtml(typeEl, works[i].type);
-    cap.note = noteEl ? split(noteEl, works[i].note, 'tw') : [];
-    if (countEl) countEl.textContent = pad(i + 1) + ' / ' + pad(total);
-    gsap.set(cap.name, { yPercent: 105 }); gsap.set(cap.type, { yPercent: 140 }); gsap.set(cap.note, { autoAlpha: 0 });
+    gsap.set(cap.name, { yPercent: 105 }); gsap.set(cap.type, { yPercent: 140 });
   };
   const after = () => { busy = false; if (pending >= 0 && pending !== shown) { const p = pending; pending = -1; showCaption(p); } else pending = -1; };
   const enterCaption = () => {
     const tl = gsap.timeline({ onComplete: after });
     const d = reduce ? 0 : 0.85;
-    tl.fromTo(nameBlock, { scaleX: 0 }, { scaleX: 1, duration: d, ease: QUART }, 0);
     tl.to(cap.name, { yPercent: 0, duration: d, ease: QUART, stagger: { amount: reduce ? 0 : 0.22 } }, reduce ? 0 : 0.3);
     tl.to(cap.type, { yPercent: 0, duration: reduce ? 0 : 0.55, ease: QUART, stagger: { amount: reduce ? 0 : 0.16 } }, reduce ? 0 : 0.2);
-    tl.to(cap.note, { autoAlpha: 1, duration: 0, stagger: { each: reduce ? 0 : 0.018 } }, reduce ? 0 : 0.45);
     if (leadLine) {
       tl.fromTo(leadLine, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: reduce ? 0 : 0.7, ease: QUART }, reduce ? 0 : 0.35);
       tl.fromTo(leadDot, { attr: { r: 0 } }, { attr: { r: 5 }, duration: reduce ? 0 : 0.35, ease: 'back.out(2)' }, reduce ? 0 : 0.9);
@@ -82,9 +75,7 @@ function init() {
     const tl = gsap.timeline({ onComplete: () => { fill(shown); enterCaption(); } });
     const d = reduce ? 0 : 0.51;
     tl.to(cap.name, { yPercent: 105, duration: d, ease: QUINT, stagger: { amount: reduce ? 0 : 0.13, from: 'end' } }, 0);
-    tl.to(nameBlock, { scaleX: 0, duration: d, ease: QUINT }, reduce ? 0 : 0.31);
     tl.to(cap.type, { yPercent: -160, duration: reduce ? 0 : 0.3, ease: QUINT, stagger: { amount: reduce ? 0 : 0.1 } }, reduce ? 0 : 0.06);
-    tl.to(cap.note, { autoAlpha: 0, duration: 0, stagger: { each: reduce ? 0 : 0.007, from: 'end' } }, 0);
     if (leadLine) {
       tl.to(leadDot, { attr: { r: 0 }, duration: reduce ? 0 : 0.2, ease: QUINT }, 0);
       tl.to(leadLine, { strokeDashoffset: -1, duration: reduce ? 0 : 0.45, ease: QUINT }, 0);
@@ -269,6 +260,7 @@ function init() {
     im.onload = () => {
       const pt = new THREE.Texture(im);
       pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = maxAniso; pt.generateMipmaps = true; pt.minFilter = THREE.LinearMipmapLinearFilter; pt.magFilter = THREE.LinearFilter; pt.needsUpdate = true;
+      if (warmed) renderer.initTexture(pt);                     // заранее в видеопамять — при показе не дёргается
       const pic = new THREE.Mesh(new THREE.PlaneGeometry(pw, PH), new THREE.MeshBasicMaterial({ map: pt, toneMapped: false }));
       pic.position.set(0, fh / 2, DEPTH / 2 + 0.003);
       tilt.add(pic);
@@ -459,4 +451,18 @@ function init() {
     if (document.hidden) timer.pause(); else if (visible) timer.resume();
   });
   place();
+  /* прогрев заранее, пока страница в покое: шейдеры, тени и картинки готовятся до того, как блок покажется,
+     поэтому при прокрутке к нему нет рывка */
+  let warmed = false;
+  const warm = () => {
+    if (warmed || started) return;
+    warmed = true;
+    renderer.compile(scene, camera);
+    renderer.initTexture(gridTex);
+    scene.traverse((o) => { if (o.material && o.material.map) renderer.initTexture(o.material.map); });
+    renderer.render(scene, camera);
+  };
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+  const later = () => setTimeout(() => idle(warm, { timeout: 4000 }), 1500);
+  if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true });
 }

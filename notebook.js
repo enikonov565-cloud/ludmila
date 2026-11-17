@@ -90,23 +90,6 @@ function init() {
      линия поля, стрелка-пометка. У каждого разворота свой цвет скотча */
   const TAPE = ['#2F4B52', '#A9502C', '#6F7B74', '#C9A27A'];
   const MARK = ['#C9A27A', '#C8BDAB', '#C9A27A', '#6F7B74'];
-  const seeded = (n) => { let x = Math.sin(n * 91.7) * 43758.5453; return x - Math.floor(x); };
-  const tape = (ctx, x, y, w, h, angle, color, seed) => {
-    ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
-    const teeth = 7, tw = h / teeth;
-    ctx.beginPath(); ctx.moveTo(-w / 2, -h / 2);
-    ctx.lineTo(w / 2, -h / 2);
-    for (let k = 0; k < teeth; k++) ctx.lineTo(w / 2 + (k % 2 ? 0 : tw * 0.45), -h / 2 + tw * (k + 1));
-    ctx.lineTo(-w / 2, h / 2);
-    for (let k = teeth - 1; k >= 0; k--) ctx.lineTo(-w / 2 - (k % 2 ? 0 : tw * 0.45), -h / 2 + tw * k);
-    ctx.closePath();
-    ctx.globalAlpha = 0.82; ctx.fillStyle = color; ctx.fill();
-    ctx.clip();                                                  // лёгкие полосы и блик — фактура бумажного скотча
-    ctx.globalAlpha = 0.12; ctx.fillStyle = '#FFFFFF';
-    for (let k = -w; k < w; k += h * 0.5) ctx.fillRect(k, -h / 2, h * 0.16, h);
-    ctx.globalAlpha = 0.18; ctx.fillRect(-w / 2, -h / 2, w, h * 0.22);
-    ctx.restore();
-  };
   const underline = (ctx, x, y, w, color, seed) => {
     ctx.save(); ctx.strokeStyle = color; ctx.lineCap = 'round';
     ctx.globalAlpha = 0.85; ctx.lineWidth = PW * 0.007;
@@ -132,20 +115,6 @@ function init() {
     ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(x0 + (x1 - x0) * 0.9, y0, x1, y1); ctx.stroke();
     const a = Math.atan2(y1 - y0, (x1 - x0) * 0.1), L = PW * 0.03;
     ctx.beginPath(); ctx.moveTo(x1 - Math.cos(a - 0.5) * L, y1 - Math.sin(a - 0.5) * L); ctx.lineTo(x1, y1); ctx.lineTo(x1 - Math.cos(a + 0.5) * L, y1 - Math.sin(a + 0.5) * L); ctx.stroke();
-    ctx.restore();
-  };
-  /* закладка-стикер, как в настоящем блокноте: глянцевый флажок-стрелка — цветная часть и полупрозрачный «хвост» */
-  const flag = (ctx, x, y, len, h, dir, color, tilt) => {
-    ctx.save(); ctx.translate(x, y); ctx.rotate(tilt || 0); ctx.scale(dir, 1);
-    const solid = len * 0.42, tip = h * 0.55;
-    const shape = () => { ctx.beginPath(); ctx.moveTo(0, -h / 2); ctx.lineTo(len - tip, -h / 2); ctx.lineTo(len, 0); ctx.lineTo(len - tip, h / 2); ctx.lineTo(0, h / 2); ctx.closePath(); };
-    ctx.shadowColor = 'rgba(26, 20, 14, .14)'; ctx.shadowBlur = h * 0.25; ctx.shadowOffsetY = h * 0.06;
-    shape(); ctx.globalAlpha = 0.38; ctx.fillStyle = color; ctx.fill();          // полупрозрачная часть — сквозь неё видна бумага
-    ctx.shadowColor = 'transparent';
-    ctx.globalAlpha = 0.95; ctx.fillRect(0, -h / 2, solid, h);                    // цветная, плотная часть
-    const gl = ctx.createLinearGradient(0, -h / 2, 0, h / 2);                    // глянцевый блик сверху
-    gl.addColorStop(0, 'rgba(255,255,255,.38)'); gl.addColorStop(0.45, 'rgba(255,255,255,.06)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.globalAlpha = 1; shape(); ctx.fillStyle = gl; ctx.fill();
     ctx.restore();
   };
   /* веточка с листиками — тонкий рисунок пером, как в скетчбуке; листья чуть подкрашены шалфеем */
@@ -633,37 +602,6 @@ function init() {
     view.scene.add(ringGroup);
     book.needsRender = true;
   };
-  /* закладки-стикеры, как в настоящем блокноте: вклеены между листами и выглядывают из-за краёв стопок —
-     сбоку справа и слева, пара — сверху. Часть под страницами не видна; у видимой — свет и тень сцены */
-  let tabGroup = null;
-  const makeTabs = () => {
-    const g = new THREE.Group();
-    const rounded = (w, h, r) => {
-      const sh = new THREE.Shape();
-      sh.moveTo(-w / 2, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
-      sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2, h / 2); sh.closePath();
-      return new THREE.ShapeGeometry(sh, 6);
-    };
-    const mat = (c, o) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.38, metalness: 0, transparent: o < 1, opacity: o, side: THREE.DoubleSide });
-    const half = ASPECT / 2;
-    /* [сторона, положение вдоль края (доля), цвет, прозрачность, z — на каком листе стопки] */
-    const TABS = [
-      ['r', 0.30, '#A9502C', 0.96, 0.0016], ['r', 0.12, '#C9A27A', 0.9, 0.0022], ['r', -0.08, '#6F7B74', 0.94, 0.0012], ['r', -0.28, '#2F4B52', 0.92, 0.0019],
-      ['l', 0.22, '#6F7B74', 0.94, 0.0014], ['l', -0.02, '#A9502C', 0.92, 0.002], ['l', -0.24, '#C8BDAB', 0.96, 0.0011],
-      ['t', 0.42, '#2F4B52', 0.92, 0.0015], ['t', 0.62, '#C9A27A', 0.9, 0.0021],
-    ];
-    const W = 0.2, H = 0.1, OUT = 0.085;                      // длина стикера, ширина, сколько выглядывает
-    TABS.forEach(([side, at, c, o, z]) => {
-      const m = new THREE.Mesh(rounded(W, H, 0.012), mat(c, o));
-      if (side === 'r') { m.position.set(1 + OUT - W / 2, half * at * 2, z); }
-      else if (side === 'l') { m.position.set(-1 - OUT + W / 2, half * at * 2, z); m.rotation.z = Math.PI; }
-      else { m.position.set(at, half + OUT - W / 2, z); m.rotation.z = Math.PI / 2; }
-      m.castShadow = true; m.receiveShadow = false;
-      g.add(m);
-    });
-    return g;
-  };
-
   const start = () => {
     if (stacked) { flatStart(); return; }
     build();
