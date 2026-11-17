@@ -1169,10 +1169,10 @@ a { color: inherit; text-decoration: none; }
    скос к работе (работа утоплена), мягкая тень от верхнего края проёма; тень рамки падает вниз */
 .dg__frame { --mat: calc(16 * var(--u)); --bevel: calc(5 * var(--u)); position: relative; box-sizing: border-box; padding: var(--mat); cursor: pointer; transform-style: preserve-3d;
   border: 2px solid #0B1517; border-radius: calc(8 * var(--u));
-  background: linear-gradient(165deg, #F1E9DB 0%, #E2D7C5 45%, #CFC3B0 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 -1px 0 rgba(0, 0, 0, .3), 0 4px 8px rgba(0, 0, 0, .45), 0 calc(30 * var(--u)) calc(44 * var(--u)) calc(-12 * var(--u)) rgba(0, 0, 0, .75); }
+  background: linear-gradient(165deg, #22383D 0%, #1A2C30 45%, #102024 100%);   /* цвет — прежний: фирменная тёмная бирюза */
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 122, .16), inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 -1px 0 rgba(0, 0, 0, .4), 0 4px 8px rgba(0, 0, 0, .45), 0 calc(30 * var(--u)) calc(44 * var(--u)) calc(-12 * var(--u)) rgba(0, 0, 0, .75); }
 .dg__frame::before { content: ""; position: absolute; inset: calc(var(--mat) - var(--bevel)); border-radius: 2px;
-  background: linear-gradient(to bottom, #8C806E 0%, #A99D89 40%, #DCD1BF 85%, #EEE6D8 100%); box-shadow: 0 0 0 1px rgba(0, 0, 0, .2); }
+  background: linear-gradient(to bottom, #070F10 0%, #0F1C1F 40%, #2A4248 85%, #3A565C 100%); box-shadow: 0 0 0 1px rgba(0, 0, 0, .3); }   /* скос: верх в тени, низ освещён */
 .dg__frame::after { content: ""; position: absolute; z-index: 2; inset: var(--mat); pointer-events: none;
   box-shadow: inset 0 calc(var(--bevel) * 1.4) calc(var(--bevel) * 2.2) calc(var(--bevel) * -1) rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(0, 0, 0, .45); }
 .dg__pic { position: relative; z-index: 1; display: block; width: 100%; height: 100%; overflow: hidden; }
@@ -1198,7 +1198,7 @@ a { color: inherit; text-decoration: none; }
 .dg__item-text { margin: calc(48 * var(--u)) 0 0; max-width: calc(620 * var(--u)); font-weight: 300; font-size: calc(24 * var(--u)); line-height: 1.4; color: #E8DCC8; }
 .dg__item-num { display: block; margin-top: calc(56 * var(--u)); font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1; color: #C9A27A; }
 /* счётчик и стрелки — как в «Моём подходе» */
-.dg__nav { position: absolute; z-index: 5; left: calc(60 * var(--u)); bottom: calc(60 * var(--u)); width: calc(218 * var(--u)); height: calc(110 * var(--u)); color: #E8DCC8; }
+.dg__nav { position: absolute; z-index: 5; left: 50%; translate: -50% 0; bottom: calc(60 * var(--u));   /* по центру внизу */ width: calc(218 * var(--u)); height: calc(110 * var(--u)); color: #E8DCC8; }
 .dg__count { position: absolute; left: 0; right: 0; bottom: calc(26 * var(--u)); margin: 0; display: flex; justify-content: center; align-items: baseline; gap: calc(12 * var(--u)); }
 .dg__cur { font-family: var(--display); font-style: italic; font-weight: 500; font-size: calc(46 * var(--u)); line-height: 1; }
 .dg__sep { align-self: center; width: calc(26 * var(--u)); height: 1px; background: currentColor; opacity: .6; transform: rotate(-55deg); }
@@ -1211,6 +1211,13 @@ a { color: inherit; text-decoration: none; }
 .dg__arrow--next:hover { transform: translateX(calc(6 * var(--u))); }
 .dg__arrow--prev:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
 .dg__arrow:focus-visible, .dg__close:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
+/* точки — справа вверху, вертикально; текущая вытянута, как в блоке «Сайты» */
+.dg__dots { position: absolute; z-index: 5; right: calc(60 * var(--u)); top: calc(150 * var(--u)); display: flex; flex-direction: column; align-items: center; gap: calc(12 * var(--u)); }
+.dg__dot { width: calc(10 * var(--u)); height: calc(10 * var(--u)); padding: 0; border: 1px solid rgba(232, 220, 200, .7); border-radius: 99px; background: transparent; cursor: pointer; transition: height .5s var(--ease), background-color .4s, border-color .4s; }
+.dg__dot:hover { border-color: #E8DCC8; }
+.dg__dot.is-on { height: calc(30 * var(--u)); background: #E8DCC8; border-color: #E8DCC8; }
+.dg__dot:focus-visible { outline: 2px solid #C9A27A; outline-offset: 4px; }
+.dg--open .dg__dots { opacity: 0; pointer-events: none; }
 /* телефон: работа по центру, подписи под ней, листание пальцем и стрелками */
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .gal { --u: 1px; min-height: 640px; }
@@ -1220,7 +1227,9 @@ a { color: inherit; text-decoration: none; }
   .dg__sub { margin-top: 4px; font-size: clamp(13px, 3.6vw, 17px); }
   .dg__side { display: none; }
   .dg__frame { --mat: 9px; --bevel: 3px; border-radius: 6px; }
-  .dg__nav { left: 20px; bottom: 26px; width: 160px; height: 52px; }
+  .dg__nav { bottom: 26px; width: 160px; height: 52px; }
+  .dg__dots { right: 16px; top: 92px; gap: 8px; }
+  .dg__dot { width: 8px; height: 8px; } .dg__dot.is-on { height: 22px; }
   .dg__count { bottom: 22px; gap: 8px; }
   .dg__cur { font-size: 26px; } .dg__total { font-size: 14px; } .dg__sep { width: 16px; }
   .dg__arrow { width: 72px; height: 18px; } .dg__arrow--next { left: 86px; }

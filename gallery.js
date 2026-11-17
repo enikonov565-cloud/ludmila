@@ -45,7 +45,12 @@
     '<button class="dg__arrow dg__arrow--next" type="button" aria-label="Следующая работа">' + ARROW + '</button>';
   var label = sec.querySelector('.gal__label'); if (label) label.remove();
   var oldCanvas = sec.querySelector('.gal__canvas'); if (oldCanvas) oldCanvas.remove();
-  sec.appendChild(stage); sec.appendChild(content); sec.appendChild(nav);
+  /* точки справа вверху, вертикально: сколько работ и какая показана; клик — к этой работе */
+  var dots = document.createElement('div'); dots.className = 'dg__dots'; dots.setAttribute('aria-label', 'Работы');
+  dots.innerHTML = DATA.map(function (d, i) { return '<button class="dg__dot" type="button" aria-label="' + strip(d.name).replace(/"/g, '') + '"></button>'; }).join('');
+  sec.appendChild(stage); sec.appendChild(content); sec.appendChild(nav); sec.appendChild(dots);
+  var dotEls = Array.prototype.slice.call(dots.children);
+  var mark = function () { dotEls.forEach(function (b, k) { b.classList.toggle('is-on', k === current); b.setAttribute('aria-current', k === current ? 'true' : 'false'); }); };
   var items = Array.prototype.slice.call(content.querySelectorAll('.dg__item'));
   var closeBtn = content.querySelector('.dg__close');
   var cur = nav.querySelector('.dg__cur');
@@ -120,7 +125,7 @@
       else { gsap.set(s.el, { autoAlpha: 0 }); s.pos = null; }
       if (i !== current) gsap.set([s.texts, s.side], { autoAlpha: 0 });
     });
-    cur.textContent = pad(current + 1);
+    cur.textContent = pad(current + 1); mark();
   };
   var layout = function () { slides.forEach(size); render(); decoFit(slides[current], false); if (open) gsap.set(deco, { width: stage.clientWidth, height: stage.clientHeight }); };
 
@@ -148,7 +153,7 @@
     gsap.timeline().to(deco, { x: dir > 0 ? -26 : 26, y: dir > 0 ? -26 : 26, duration: reduce ? 0 : 0.36, ease: 'sine.inOut', delay: 0.05 })
       .to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.5, ease: 'sine.out' });
     decoFit(slides[current], true);
-    cur.textContent = pad(current + 1);
+    cur.textContent = pad(current + 1); mark();
     function done() { busy = false; render(); }
   };
 
@@ -195,6 +200,23 @@
     });
   });
   closeBtn.addEventListener('click', hideContent);
+  /* переход к работе по точке: соседняя — обычным листанием, дальняя — мягкой сменой */
+  dotEls.forEach(function (b, i) {
+    b.addEventListener('click', function () {
+      if (busy || open || i === current) return;
+      restart();
+      if (i === idx(current + 1)) return go(1);
+      if (i === idx(current - 1)) return go(-1);
+      busy = true;
+      var vis = slides.filter(function (q) { return q.pos !== null && q.pos !== undefined; }).map(function (q) { return q.el; });
+      gsap.to(vis, { autoAlpha: 0, duration: reduce ? 0 : 0.3, ease: 'power1.in', onComplete: function () {
+        current = i; render(); decoFit(slides[current], false);
+        var now = slides.filter(function (q) { return q.pos !== null && q.pos !== undefined; }).map(function (q) { return q.el; });
+        gsap.fromTo(now, { autoAlpha: 0 }, { autoAlpha: 1, duration: reduce ? 0 : 0.45, ease: 'power1.out', onComplete: function () { busy = false; } });
+        showTexts(slides[current], true);
+      } });
+    });
+  });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) hideContent(); });
   nav.querySelector('.dg__arrow--prev').addEventListener('click', function () { if (open) hideContent(); else { go(-1); restart(); } });
   nav.querySelector('.dg__arrow--next').addEventListener('click', function () { if (open) hideContent(); else { go(1); restart(); } });
