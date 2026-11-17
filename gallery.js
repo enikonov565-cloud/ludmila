@@ -77,7 +77,7 @@
     var t = at(s, p);
     if (opt.from !== undefined) { var f = at(s, opt.from); gsap.set(s.el, { x: f.x, y: f.y, rotation: f.rotation, scale: f.scale, autoAlpha: 1 }); }
     s.pos = p;
-    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.9, delay: opt.delay || 0, ease: 'power4.inOut' });
+    return gsap.to(s.el, { x: t.x, y: t.y, rotation: t.rotation, scale: t.scale, rotationX: 0, rotationY: 0, duration: reduce ? 0.01 : 0.72, delay: opt.delay || 0, ease: 'power2.inOut' });   // плавно и чуть быстрее
   };
 
   /* буквы названия: «перебираются» и встают на место — русскими буквами */
@@ -97,16 +97,16 @@
     });
   };
   var showTexts = function (s, anim) {
-    gsap.set([s.texts, s.side], { autoAlpha: 1 });
+    gsap.fromTo([s.texts, s.side], { autoAlpha: 0 }, { autoAlpha: 1, duration: anim ? 0.5 : 0, delay: anim ? 0.25 : 0, ease: 'power1.out' });
     if (anim) { scramble(s.title); gsap.fromTo(s.texts.querySelector('.dg__num'), { x: -12, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.7, ease: 'elastic.out(1, .5)' }); }
   };
-  var hideTexts = function (s) { gsap.to([s.texts, s.side], { autoAlpha: 0, duration: 0.25 }); };
+  var hideTexts = function (s) { gsap.to([s.texts, s.side], { autoAlpha: 0, duration: 0.2, ease: 'power1.in' }); };
 
   /* ---------- слайдшоу ---------- */
   var current = 0, busy = false, open = false, over = false, inView = false;
   var idx = function (i) { return (i + N) % N; };
   var decoFit = function (s, animate) {
-    gsap.to(deco, { width: s.w * 1.08, height: s.h * 1.08, duration: animate && !reduce ? 0.8 : 0, ease: 'power3.inOut' });
+    gsap.to(deco, { width: s.w * 1.08, height: s.h * 1.08, duration: animate && !reduce ? 0.72 : 0, ease: 'power2.inOut' });
   };
   var render = function () {
     slides.forEach(function (s, i) {
@@ -130,20 +130,20 @@
     hideTexts(now);
     if (dir > 0) {
       move(prev, -2);
-      move(now, -1, { delay: 0.07 });
-      move(next, 0, { delay: 0.14 });
-      move(upcoming, 1, { from: 2, delay: 0.21 }).then(done);
+      move(now, -1, { delay: 0.05 });
+      move(next, 0, { delay: 0.1 });
+      move(upcoming, 1, { from: 2, delay: 0.15 }).then(done);
       showTexts(next, true);
     } else {
       move(next, 2);
-      move(now, 1, { delay: 0.07 });
-      move(prev, 0, { delay: 0.14 });
-      move(upcoming, -1, { from: -2, delay: 0.21 }).then(done);
+      move(now, 1, { delay: 0.05 });
+      move(prev, 0, { delay: 0.1 });
+      move(upcoming, -1, { from: -2, delay: 0.15 }).then(done);
       showTexts(prev, true);
     }
     /* прямоугольник за работой «отскакивает» и подстраивается под новую рамку */
-    gsap.timeline().to(deco, { x: dir > 0 ? -40 : 40, y: dir > 0 ? -40 : 40, duration: reduce ? 0 : 0.4, ease: 'power2.in', delay: 0.08 })
-      .to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.6, ease: 'power2.out' });
+    gsap.timeline().to(deco, { x: dir > 0 ? -26 : 26, y: dir > 0 ? -26 : 26, duration: reduce ? 0 : 0.36, ease: 'sine.inOut', delay: 0.05 })
+      .to(deco, { x: 0, y: 0, duration: reduce ? 0 : 0.5, ease: 'sine.out' });
     decoFit(slides[current], true);
     cur.textContent = pad(current + 1);
     function done() { busy = false; render(); }
@@ -207,7 +207,7 @@
 
   /* листается сама, пока блок на экране, курсор не над работами и подробности закрыты */
   var timer = 0;
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 5200); };
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !open && !reduce && !document.hidden) go(1); }, 4600); };
   new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.45 }).observe(sec);
 
   /* старт: размеры картинок известны заранее (в данных), раскладываем сразу */
