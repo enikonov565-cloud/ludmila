@@ -758,7 +758,7 @@ a { color: inherit; text-decoration: none; }
 .story__now-photo { position: absolute; inset: 0; opacity: 0; visibility: hidden; overflow: hidden; will-change: clip-path; background: #E8DCC8; }   /* фирменный молочный фон */
 /* «Сейчас»: портрет по центру, крупная надпись сверху и снизу (по мотивам «Image To Grid Transition», Codrops) */
 .nowg__item { position: absolute; z-index: 1; left: calc(50% - 325 * var(--u)); top: calc(50% - 240 * var(--u)); width: calc(650 * var(--u)); height: calc(563 * var(--u)); }   /* между строками надписи — надпись не заходит на портрет */
-.nowg__img { width: 100%; height: 100%; background: url(img/story/now-calla.webp) 50% 100% / contain no-repeat; }   /* портрет без фона, целиком */
+.nowg__img { width: 100%; height: 100%; background: url(img/story/now-calla.webp?v=2) 50% 100% / contain no-repeat; }   /* портрет без фона, целиком */
 .story .story__now-text { inset: 0; max-width: none; pointer-events: none; }
 .story__now-text .story__title { position: absolute; inset: 0; margin: 0; font-size: calc(150 * var(--u)); line-height: 1; letter-spacing: -.035em; white-space: nowrap; }
 .story__now-text .story__mask { position: absolute; padding: .06em 0 .16em; margin: 0; }
