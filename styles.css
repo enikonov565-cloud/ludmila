@@ -1104,7 +1104,7 @@ a { color: inherit; text-decoration: none; }
 .show__lead-line { fill: none; stroke: rgba(232, 220, 200, .75); stroke-width: 1.5; }
 .show__lead-dot { fill: #E8DCC8; }
 /* кнопка — слева внизу */
-.show__cta { position: absolute; z-index: 4; left: calc(60 * var(--u)); bottom: calc(70 * var(--u)); min-width: calc(470 * var(--u)); justify-content: center; }
+.show__cta { position: absolute; z-index: 4; left: calc(60 * var(--u)); bottom: calc(70 * var(--u)); }   /* вид — единый для всех кнопок сайта */
 .show__name-block { position: absolute; z-index: -1; inset: 0; background: #A9502C; transform: scaleX(0); transform-origin: 0 50%; }
 .show__name-mask { display: block; overflow: hidden; padding: .2em .34em .14em; }
 .show__type { margin: calc(8 * var(--u)) 0 0; overflow: hidden; padding: .1em 0; font-weight: 300; color: rgba(232, 220, 200, .72); font-size: calc(18 * var(--u)); line-height: 1.2; letter-spacing: -.01em; }
@@ -1125,7 +1125,7 @@ a { color: inherit; text-decoration: none; }
   .show__stage { position: relative; top: auto; bottom: auto; margin: 14px -20px 0; height: min(96vw, 470px); }
   .show__caption { position: relative; left: auto; top: auto; margin: -30px auto 0; max-width: 100%; align-items: center; text-align: center; }
   .show__lead { display: none; }
-  .show__cta { position: static; align-self: center; width: min(340px, 100%); min-width: 0; margin-top: 28px; padding: 18px 24px; white-space: nowrap; font-size: 17px; letter-spacing: .01em; line-height: 1.2; }
+  .show .show__cta { position: static; align-self: center; margin-top: 28px; white-space: nowrap; }
   .show__name { font-size: clamp(20px, 5.6vw, 34px); }
   .show__type { margin-top: 10px; font-size: 15px; }
   .show__note { font-size: 12px; letter-spacing: .02em; }
@@ -1133,10 +1133,10 @@ a { color: inherit; text-decoration: none; }
 
 
 /* стрелки — внизу справа, точки — справа, вертикально (вид — как в галерее ниже) */
-.show .show__nav { left: auto; right: calc(60 * var(--u)); translate: none; bottom: calc(80 * var(--u)); height: calc(30 * var(--u)); }
+.show .show__nav { left: auto; right: calc(60 * var(--u)); translate: none; bottom: calc(70 * var(--u)); }   /* счётчик и стрелки — как везде на сайте */
 .show .show__dots { top: calc(50 * var(--u)); }
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
-  .show .show__nav { position: relative; right: auto; left: auto; bottom: auto; margin: 22px auto 0; width: 160px; height: 18px; }
+  .show .show__nav { position: relative; right: auto; left: auto; bottom: auto; margin: 18px auto 0; }
   .show .show__dots { right: 14px; top: 50%; translate: 0 -50%; }
   .show__name { font-size: clamp(17px, 4.8vw, 22px); white-space: normal; }
   .show__type { font-size: 14px; margin-top: 6px; }
@@ -1426,10 +1426,6 @@ a { color: inherit; text-decoration: none; }
   .cta-arrow { align-self: flex-start; }
   .btn-tg { display: flex; }
   .btn-tg { width: auto; right: auto; translate: none; margin-left: auto; margin-right: auto; }
-}
-/* «Заказать баннер или афишу» — короче по длине: текст чуть мельче, боковые отступы меньше; высота и скругление — как у остальных */
-@media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
-  .btn-frame { padding: calc(25 * var(--u)) calc(28 * var(--u)); font-size: calc(20 * var(--u)); }
 }
 
 /* ===== «Мой подход»: блокнот на кольцах вместо квадрата (notebook.js) ===== */

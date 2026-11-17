@@ -94,7 +94,8 @@ function init() {
   /* ---------- стрелки и точки — как в галерее ниже: стрелки внизу справа, точки справа вертикально ---------- */
   const ARROW = '<svg viewBox="0 0 101 14.73" aria-hidden="true"><path fill="currentColor" d="M0 7.36V8.36H100V6.36H0V7.36ZM100.71 8.07C101.1 7.68 101.1 7.05 100.71 6.66L94.34.29C93.95-.1 93.32-.1 92.93.29 92.54.68 92.54 1.32 92.93 1.71L98.59 7.36 92.93 13.02C92.54 13.41 92.54 14.04 92.93 14.44 93.32 14.83 93.95 14.83 94.34 14.44L100.71 8.07Z"/></svg>';
   const nav = document.createElement('div'); nav.className = 'dg__nav show__nav';
-  nav.innerHTML = '<button class="dg__arrow dg__arrow--prev" type="button" aria-label="Предыдущая работа">' + ARROW + '</button>' +
+  nav.innerHTML = '<p class="dg__count"><span class="dg__cur">01</span><span class="dg__sep" aria-hidden="true"></span><span class="dg__total">' + pad(total) + '</span></p>' +
+    '<button class="dg__arrow dg__arrow--prev" type="button" aria-label="Предыдущая работа">' + ARROW + '</button>' +
     '<button class="dg__arrow dg__arrow--next" type="button" aria-label="Следующая работа">' + ARROW + '</button>';
   const dotsBox = document.createElement('div'); dotsBox.className = 'dg__dots show__dots'; dotsBox.setAttribute('aria-label', 'Работы');
   dotsBox.innerHTML = works.map((w) => '<button class="dg__dot" type="button" aria-label="' + w.name.replace(/"/g, '') + '"></button>').join('');
@@ -102,7 +103,8 @@ function init() {
   capBox.after(nav);
   sec.querySelector('.show__stage').appendChild(dotsBox);
   const dotEls = Array.from(dotsBox.children);
-  function mark(i) { dotEls.forEach((b, k) => { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); }); }
+  const navCur = nav.querySelector('.dg__cur');
+  function mark(i) { if (navCur) navCur.textContent = pad(i + 1); dotEls.forEach((b, k) => { b.classList.toggle('is-on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); }); }
 
   /* ---------- подробности — карточка галереи (та же), открывается прямо здесь, поверх подставки ---------- */
   let cardOpen = false;
