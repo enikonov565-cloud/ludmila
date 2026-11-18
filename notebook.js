@@ -16,7 +16,7 @@ const host = section && section.querySelector('[data-book]');
 if (host) init();
 
 function init() {
-  const stacked = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
+  const stacked = false;   // телефон — тот же разворот, что на компьютере: лист перекидывается слева направо и обратно
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const rings = section.querySelector('.apx__rings');
   const scenes = Array.prototype.map.call(section.querySelectorAll('.apx__scene'), (li) => ({
