@@ -19,9 +19,23 @@
     var w = 0;
     Array.prototype.forEach.call(title.querySelectorAll('.story__reveal'), function (r) { w = Math.max(w, r.offsetWidth); });
     if (w) sec.style.setProperty('--tw', w + 'px');
+    spread();
+  };
+  /* средняя колонка распределена по высоте: от низа заголовка до верха кнопки «Написать в Telegram» —
+     равные промежутки «заголовок → отзыв» и «отзыв → карточки», низ карточек на линии верха кнопки */
+  var spread = function () {
+    var rev = sec.querySelector('.talk__review'), q = sec.querySelector('.talk__quote'), cards = sec.querySelector('.talk__cards'), btn = sec.querySelector('.btn-tg');
+    if (!rev || !q || !cards || !btn) return;
+    sec.style.removeProperty('--rt'); sec.style.removeProperty('--rg');
+    var top = title.offsetTop + title.offsetHeight, bottom = btn.offsetTop;
+    var g = (bottom - top - q.offsetHeight - cards.offsetHeight) / 2;
+    if (!(g > 0)) return;
+    sec.style.setProperty('--rt', Math.round(top + g) + 'px');
+    sec.style.setProperty('--rg', Math.round(g) + 'px');
   };
   fitReview();
   window.addEventListener('resize', fitReview);
+  window.addEventListener('load', fitReview);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitReview);
 
   var DIALOG = [                                   // коротко: одна мысль — одна строка
