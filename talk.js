@@ -61,7 +61,16 @@
   };
   var appear = function (row) {
     list.appendChild(row);
-    gsap.fromTo(row.firstChild, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: SPRING });
+    var hh = row.offsetHeight;
+    gsap.fromTo(row, { height: 0 }, { height: hh, duration: 0.55, ease: 'power2.out', clearProps: 'height' });   // соседи сдвигаются плавно
+    gsap.fromTo(row.firstChild, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: SPRING, delay: 0.1 });
+  };
+  var swap = function (oldRow, row) {                     // «печатает…» → сообщение: на том же месте, высота меняется плавно
+    var h0 = oldRow.offsetHeight;
+    oldRow.replaceWith(row);
+    var h1 = row.offsetHeight;
+    gsap.fromTo(row, { height: h0 }, { height: h1, duration: 0.5, ease: 'power2.out', clearProps: 'height' });
+    gsap.fromTo(row.firstChild, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' });
   };
 
   var timers = [], dotsTween = null;
@@ -87,8 +96,7 @@
         later(function () {
           var tr = list.querySelector('.is-typing');
           if (dotsTween) { dotsTween.kill(); dotsTween = null; }
-          if (tr) tr.remove();
-          appear(bubble('them', text));
+          if (tr) swap(tr, bubble('them', text)); else appear(bubble('them', text));
         }, t);
       } else {
         later(function () { appear(bubble('me', text)); }, t);   // свои сообщения Людмила отправляет сразу

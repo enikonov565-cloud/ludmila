@@ -540,9 +540,9 @@ document.documentElement.classList.replace('no-js', 'js');
   root.addEventListener('mouseleave', function () { over = false; });
 
   var timer = 0;
-  /* развороты листаются сами — каждые 6,5 секунды, пока блок на экране; курсор над блокнотом — ждём.
+  /* развороты листаются сами — каждые 3,5 секунды, пока блок на экране; курсор над блокнотом — ждём.
      Стрелки и клик по странице листают сразу, после них отсчёт начинается заново */
-  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce && !document.hidden) go(1); }, 6500); };
+  var restart = function () { clearInterval(timer); timer = setInterval(function () { if (inView && !over && !reduce && !document.hidden) go(1); }, 3500); };
   if ('IntersectionObserver' in window) {
     var answer = frame.querySelector('.apx__answer');
     new IntersectionObserver(function (e) {

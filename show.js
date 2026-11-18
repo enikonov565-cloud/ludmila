@@ -261,7 +261,9 @@ function init() {
       const pt = new THREE.Texture(im);
       pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = maxAniso; pt.generateMipmaps = true; pt.minFilter = THREE.LinearMipmapLinearFilter; pt.magFilter = THREE.LinearFilter; pt.needsUpdate = true;
       if (warmed) renderer.initTexture(pt);                     // заранее в видеопамять — при показе не дёргается
-      const pic = new THREE.Mesh(new THREE.PlaneGeometry(pw, PH), new THREE.MeshBasicMaterial({ map: pt, toneMapped: false }));
+      const pmat = new THREE.MeshBasicMaterial({ map: pt, toneMapped: false, transparent: true, opacity: 0 });
+      const pic = new THREE.Mesh(new THREE.PlaneGeometry(pw, PH), pmat);
+      gsap.to(pmat, { opacity: 1, duration: reduce ? 0 : 0.8, ease: 'power1.out', onUpdate: () => { dirty = true; }, onComplete: () => { pmat.transparent = false; pmat.needsUpdate = true; } });   // проявляется, а не выскакивает
       pic.position.set(0, fh / 2, DEPTH / 2 + 0.003);
       tilt.add(pic);
       dirty = true;
@@ -387,10 +389,10 @@ function init() {
     const tl = gsap.timeline({ onUpdate: () => { dirty = true; }, onComplete: schedule });
     if (!reduce) {
       st.rot = 1.4;
-      tl.fromTo(world.position, { y: -2.2 }, { y: 0, duration: 1, ease: QUART }, 0);
-      tl.fromTo(world.scale, { x: 0.7, y: 0.7, z: 0.7 }, { x: 1, y: 1, z: 1, duration: 1, ease: QUART }, 0);
-      tl.to(st, { rot: 0, duration: 1.2, ease: QUART }, 0);
-      frames.forEach((f, k) => tl.fromTo(f.lift.scale, { y: 0.001 }, { y: 1, duration: 0.6, ease: QUART }, 0.3 + k * 0.07));
+      tl.fromTo(world.position, { y: -1.4 }, { y: 0, duration: 1.4, ease: 'power2.out' }, 0);
+      tl.fromTo(world.scale, { x: 0.85, y: 0.85, z: 0.85 }, { x: 1, y: 1, z: 1, duration: 1.4, ease: 'power2.out' }, 0);
+      tl.to(st, { rot: 0, duration: 1.6, ease: 'power2.out' }, 0);
+      frames.forEach((f, k) => tl.fromTo(f.lift.scale, { y: 0.001 }, { y: 1, duration: 1.1, ease: 'power2.out' }, 0.35 + k * 0.12));
       tl.fromTo(canvas, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 0);
     }
     showCaption(0);

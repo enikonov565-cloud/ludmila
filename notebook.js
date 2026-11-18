@@ -617,7 +617,7 @@ function init() {
       formatPageLabel: (d) => 'Сцена ' + (sceneOf(Math.max(0, Math.min(scenes.length * (stacked ? 2 : 1) - 1, stacked ? d.page - 1 - LEAD : (d.page - 1 - LEAD) >> 1))) + 1) + ' из ' + scenes.length,
       paper: { backColor: PAPER, showThrough: 0.02, bulge: 0.6, wrinkles: 0.4, cutout: true },
       lighting: { floorShadow: 0.22, ambient: { sky: '#ffffff', ground: '#d8cfc2', intensity: 2.05 }, sun: { intensity: 2.1 } },
-      motion: { speed: 0.85, jitter: true },
+      motion: { speed: 1.35, jitter: true },
       interaction: { drag: false, click: false, hold: false, hover: false, keyboard: false },
       preload: Infinity,
     });

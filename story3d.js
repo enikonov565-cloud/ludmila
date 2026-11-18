@@ -446,11 +446,11 @@ function nowGrid(section, { reduce, onBack }) {
       .to(big, { yPercent: (i) => (i % 2 ? 110 : -110), autoAlpha: 0, duration: D, ease: EASE }, 0)
       .fromTo(small, { xPercent: (i) => (i % 2 ? 50 : -50), autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
       .fromTo(back, { xPercent: -40, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, duration: D, ease: EASE }, 0)
-      .to(panel, { backgroundColor: '#E8DCC8', duration: D, ease: EASE }, 0)   // сетка — на светлом фирменном фоне
+      .to(panel, { backgroundColor: '#E8DCC8', duration: D * 1.2, ease: 'power2.inOut' }, 0)   // сетка — на светлом фирменном фоне
       .fromTo(target.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE }, 0);
     cells.forEach((c) => {
       const o = outward(c), delay = reduce ? 0 : Math.min(0.4, o.d / 1000 * 0.4);
-      tl.fromTo(c, { x: o.x, y: o.y, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: D, ease: 'expo.out', delay }, reduce ? 0 : 0.4)
+      tl.fromTo(c, { x: o.x * 0.6, y: o.y * 0.6, autoAlpha: 0 }, { x: 0, y: 0, autoAlpha: 1, duration: D * 1.3, ease: 'power3.out', delay }, reduce ? 0 : 0.35)
         .fromTo(c.querySelector('.nowg__cap-in'), { yPercent: 101 }, { yPercent: 0, duration: D * 1.7, ease: EASE, delay }, 0);
     });
   };

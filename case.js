@@ -127,19 +127,19 @@
       curEl.textContent = (n + 1 < 10 ? '0' : '') + (n + 1);
     };
     if (reduce) { apply(); gsap.set(from, { autoAlpha: 0 }); gsap.set(to, { autoAlpha: 1, x: 0, y: 0 }); gsap.set(moving, { autoAlpha: 1 }); pageIn(to); return; }
-    gsap.to(from, { autoAlpha: 0, duration: 0.55, ease: 'power1.inOut' });
-    gsap.to(moving, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' });
-    swapCall = gsap.delayedCall(0.42, apply);
-    gsap.fromTo(to, { autoAlpha: 0, x: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 1, ease: 'power2.out', delay: 0.45 });
-    gsap.to(moving, { autoAlpha: 1, duration: 0.8, ease: 'power2.out', delay: 0.85 });
-    pageIn(to, 0.45);
+    gsap.to(from, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' });
+    gsap.to(moving, { autoAlpha: 0, duration: 0.3, ease: 'power1.inOut' });
+    swapCall = gsap.delayedCall(0.3, apply);
+    gsap.fromTo(to, { autoAlpha: 0, x: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 0.3 });
+    gsap.to(moving, { autoAlpha: 1, duration: 0.6, ease: 'power2.out', delay: 0.55 });
+    pageIn(to, 0.3);
   };
 
   var st = null;
   if (window.ScrollTrigger) {
     st = window.ScrollTrigger.create({
       trigger: sec, start: 'top top', end: '+=' + (total - 1) * 100 + '%', pin: true, pinSpacing: true, refreshPriority: -3,
-      onUpdate: function (self) { show(Math.min(total - 1, Math.floor(self.progress * total * 0.999))); }
+      onUpdate: function (self) { show(Math.round(self.progress * (total - 1))); }
     });
     window.ScrollTrigger.sort();
   }
@@ -148,9 +148,21 @@
     var n = Math.max(0, Math.min(total - 1, cur + d));
     if (!st) { show(n); return; }
     var y = st.start + (st.end - st.start) * n / Math.max(1, total - 1);   // ровно на начало страницы — там же, куда доводит прокрутка
-    if (window.lenis) window.lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
+    if (window.lenis) window.lenis.scrollTo(y, { duration: 0.8 }); else window.scrollTo({ top: y, behavior: 'smooth' });
   };
   sec.querySelector('.case__arrow--prev').addEventListener('click', function () { jump(-1); });
   sec.querySelector('.case__arrow--next').addEventListener('click', function () { jump(1); });
   if (hint) hint.addEventListener('click', function () { jump(1); });
+  /* колесо мыши внутри кейса: одно движение — одна страница, плавно, без «проскальзывания» сквозь страницы.
+     На первой странице вверх и на последней вниз — колесо листает сайт дальше как обычно */
+  var lock = false;
+  sec.addEventListener('wheel', function (e) {
+    if (!st || Math.abs(e.deltaY) < 2) return;
+    var y = window.scrollY, d = e.deltaY > 0 ? 1 : -1;
+    if (y < st.start - 4 || y > st.end + 4) return;
+    if ((d < 0 && cur === 0) || (d > 0 && cur === total - 1)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (lock) return;
+    lock = true; jump(d); setTimeout(function () { lock = false; }, 1000);
+  }, { passive: false });
 })();

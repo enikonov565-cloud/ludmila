@@ -287,10 +287,11 @@
   var timer = null;
   var schedule = function () {
     if (timer) timer.kill();
-    timer = gsap.delayedCall(REST, function tryGo() { if (inView && !over && !open && !reduce && !document.hidden && !busy) go(1); else timer = gsap.delayedCall(0.4, tryGo); });
+    timer = gsap.delayedCall(REST, function tryGo() { if (inView && performance.now() - seenAt > 1100 && !open && !reduce && !document.hidden && !busy) go(1); else timer = gsap.delayedCall(0.3, tryGo); });
   };
   var restart = schedule;
-  new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.45 }).observe(sec);
+  var seenAt = 0;
+  new IntersectionObserver(function (en) { var v = en[0].isIntersecting; if (v && !inView) seenAt = performance.now(); inView = v; }, { threshold: 0.45 }).observe(sec);
 
   /* старт: размеры картинок известны заранее (в данных), раскладываем сразу */
   slides.forEach(function (s) { gsap.set(s.el, { xPercent: -50, yPercent: -50 }); });
