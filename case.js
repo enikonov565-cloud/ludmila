@@ -70,7 +70,7 @@
     if (s) tl.fromTo(s, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.inOut' }, 0)
              .fromTo(s.querySelector('img'), { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power2.out' }, 0);
     tl.fromTo(bits(p), { y: 24, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, s ? 0.35 : 0);   // карточки — общим плавным подъёмом
+      { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: 0.07 }, s ? 0.35 : 0);   // карточки — общим плавным подъёмом
     if (reduce) tl.progress(1);   // без анимации — сразу в конечном виде
     return tl;
   };
@@ -153,16 +153,4 @@
   sec.querySelector('.case__arrow--prev').addEventListener('click', function () { jump(-1); });
   sec.querySelector('.case__arrow--next').addEventListener('click', function () { jump(1); });
   if (hint) hint.addEventListener('click', function () { jump(1); });
-  /* колесо мыши внутри кейса: одно движение — одна страница, плавно, без «проскальзывания» сквозь страницы.
-     На первой странице вверх и на последней вниз — колесо листает сайт дальше как обычно */
-  var lock = false;
-  sec.addEventListener('wheel', function (e) {
-    if (!st || Math.abs(e.deltaY) < 2) return;
-    var y = window.scrollY, d = e.deltaY > 0 ? 1 : -1;
-    if (y < st.start - 4 || y > st.end + 4) return;
-    if ((d < 0 && cur === 0) || (d > 0 && cur === total - 1)) return;
-    e.preventDefault(); e.stopPropagation();
-    if (lock) return;
-    lock = true; jump(d); setTimeout(function () { lock = false; }, 1000);
-  }, { passive: false });
 })();

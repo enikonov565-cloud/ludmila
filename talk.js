@@ -112,7 +112,7 @@
   intro.from(sec.querySelector('.talk__window'), { scale: 1.12, autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, 0)
     .from(sec.querySelector('.talk__person'), { xPercent: -6, autoAlpha: 0, duration: 1.4 }, 0.2)
     .call(function () { window.rtPlay && rtPlay(sec.querySelector('.talk__title'), 0); }, null, 0.4)
-    .fromTo(sec.querySelectorAll('.talk__quote, .talk__by, .talk__cards img'), { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08, clearProps: 'transform' }, 0.7)
+    .fromTo(sec.querySelectorAll('.talk__quote, .talk__by, .talk__cards img'), { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: 0.07, clearProps: 'transform' }, 0.7)
     .fromTo(sec.querySelector('.chat'), { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1 }, 0.6)
     .call(function () {          // телефон «живой»: медленно покачивается и чуть поворачивается
       gsap.to(sec.querySelector('.chat'), { y: -18, rotation: '-=2.5', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });

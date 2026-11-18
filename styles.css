@@ -104,7 +104,7 @@ a { color: inherit; text-decoration: none; }
   .about__name.is-in .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.1s + var(--i) * 55ms); }
   /* первый экран: все буквы обеих надписей — одним ровным плавным движением, с одинаковым шагом от начала до конца */
   .js .says:not(.is-split) .say__line { visibility: hidden; }   /* пока надпись не разбита на буквы — не показываем, без мелькания */
-  .says .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.5s + var(--i) * 55ms); will-change: transform, opacity; }
+  .says .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.5s + var(--i) * 55ms); }
   /* все остальные заголовки и подзаголовки — тем же ходом */
   .rt .ch { opacity: 0; }
   .rt.is-in .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(var(--rt-d, 0s) + var(--i) * 55ms); }
@@ -115,7 +115,7 @@ a { color: inherit; text-decoration: none; }
 }
 @keyframes bg { from { transform: scale(1.06); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ch { from { opacity: 0; transform: translateY(.4em); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
-@keyframes ch-soft { from { opacity: 0; transform: translateY(.22em); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes ch-soft { from { opacity: 0; transform: translateY(.22em); } to { opacity: 1; transform: none; } }   /* без размытия: размытие каждой буквы тяжело для браузера */
 
 /* Телефон и планшет: фото на весь экран, надпись сверху и снизу справа поверх фото
    (вокруг головы на узком экране нет места, чтобы спрятать надпись за неё) */
@@ -303,7 +303,7 @@ a { color: inherit; text-decoration: none; }
 /* Появление при прокрутке */
 .js .about [data-reveal]:not(.about__name) {
   opacity: 0; transform: translateY(24px);
-  transition: opacity .9s cubic-bezier(.33, 0, .25, 1), transform .9s cubic-bezier(.33, 0, .25, 1);   /* карточки и плашки — общим плавным подъёмом */
+  transition: opacity 1.1s var(--ease), transform 1.1s var(--ease);   /* карточки и плашки — общим плавным подъёмом */
   transition-delay: var(--d, 0s);
 }
 .js .about [data-reveal].is-in { opacity: 1; transform: none; }
@@ -572,10 +572,6 @@ a { color: inherit; text-decoration: none; }
 
 /* подсказка: блок листается прокруткой — «мышка» с бегущим колёсиком (только компьютер) */
 /* подсказка «листай»: тонкая стрелка бежит вправо (как стрелки навигации сайта) */
-.hint-arrow { position: relative; display: inline-block; width: calc(64 * var(--u)); height: 1px; background: currentColor; overflow: visible; animation: hint-run 1.8s cubic-bezier(.6, 0, .2, 1) infinite; }
-.hint-arrow::after { content: ""; position: absolute; right: 0; top: 50%; width: calc(9 * var(--u)); height: calc(9 * var(--u)); border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: translateY(-50%) rotate(45deg); }
-@keyframes hint-run { 0% { transform: translateX(calc(-10 * var(--u))); opacity: 0; } 25% { opacity: 1; } 75% { opacity: 1; } 100% { transform: translateX(calc(16 * var(--u))); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .hint-arrow { animation: none; } }
 /* счётчик 01 04 (Inter Light 28) и стрелки по 100 */
 .apx__nav { position: absolute; left: calc(781 * var(--u)); top: calc(905 * var(--u)); width: calc(218 * var(--u)); height: calc(110 * var(--u)); }
 .apx__count {
@@ -758,12 +754,6 @@ a { color: inherit; text-decoration: none; }
 /* пока сцена готовится — тексты «Сейчас» не проступают на «Тогда» */
 .story:not(.gl-ready):not(.no-gl) .story__note, .story:not(.gl-ready):not(.no-gl) .story__tags, .story:not(.gl-ready):not(.no-gl) .story__back { visibility: hidden; }
 /* круглая кнопка-значок со стрелкой и «пульсом»: видно, что сюда нажимать */
-.story__tap { position: relative; display: grid; place-items: center; width: calc(84 * var(--u)); height: calc(84 * var(--u)); border-radius: 50%; background: color-mix(in srgb, currentColor 16%, transparent); transition: background-color .3s ease; } /* залитый полупрозрачный круг + «пульс» */
-.story__tap::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid currentColor; animation: tap-pulse 2s ease-out infinite; }
-.story__tap .hint-arrow { width: calc(34 * var(--u)); }
-.story__scroll:hover .story__tap, .case__hint:hover .story__tap { background: color-mix(in srgb, currentColor 28%, transparent); }
-@keyframes tap-pulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.55); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .story__tap::before { animation: none; } }
 /* «Тогда» / «Сейчас» — Inter Light крупнее заголовка, в полутоне, справа — посередине между хедером и столом */
 .story__ghost { position: absolute; z-index: 3; right: calc(60 * var(--u)); top: calc(390 * var(--u)); margin: -.55em 0 0; pointer-events: none;
   font-weight: 300; font-size: calc(300 * var(--u)); line-height: 1; letter-spacing: -.03em; color: #BDB7B1; white-space: nowrap; }
@@ -824,9 +814,6 @@ a { color: inherit; text-decoration: none; }
   .story__scroll { right: 20px; bottom: 28px; }
   .story__arrow { width: 72px; height: 18px; }
   .story__back { position: absolute; left: 20px; top: auto; bottom: 28px; margin: 0; }   /* в самом низу страницы, напротив стрелки «дальше» */
-  .story__tap { width: 58px; height: 58px; }
-  .story__tap .hint-arrow { width: 24px; }
-  .story__scroll .hint-arrow::after { width: 7px; height: 7px; }
   .story__ghost { right: 20px; top: calc(96px + 2.24 * clamp(32px, 8.6vw, 60px) + 10px); margin: 0; font-size: clamp(56px, 17vw, 110px); }
   .story__now { display: flex; flex-direction: column; align-items: flex-start; padding: 96px 20px 24px; }
   .nowg__item { top: calc(104px + 2.3 * clamp(32px, 8.6vw, 60px)); bottom: auto; left: 0; right: 0; margin: 0 auto; height: 44svh; }

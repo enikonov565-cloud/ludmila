@@ -89,8 +89,8 @@
     /* заголовок — когда он целиком на экране (блок замечается раньше, и надпись успевала проиграться за краем) */
     var head = sec.querySelector('.sites__title');
     if (window.rtPlay && head) new IntersectionObserver(function (en, o) { if (!en[0].isIntersecting) return; o.disconnect(); rtPlay(sec.querySelector('.sites__sub'), 0); rtPlay(head, 0.35); }, { threshold: 1 }).observe(head);
-    gsap.fromTo(sec.querySelectorAll('.sites__tags .show__tag'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.3, stagger: 0.08, ease: 'power2.out', clearProps: 'transform' });
-    gsap.fromTo(review, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.6, ease: 'power2.out', clearProps: 'transform' });
+    gsap.fromTo(sec.querySelectorAll('.sites__tags .show__tag'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 1.1, delay: 0.3, stagger: 0.07, ease: 'expo.out', clearProps: 'transform' });
+    gsap.fromTo(review, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 1.1, delay: 0.6, ease: 'expo.out', clearProps: 'transform' });
   };
 
   /* идёт, только пока блок на экране */

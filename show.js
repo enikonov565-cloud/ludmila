@@ -124,7 +124,7 @@ function init() {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.VSMShadowMap;   // мягкие, размытые тени — как от рассеянного света
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;   // мягкие, размытые тени — как от рассеянного света
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
   const scene = new THREE.Scene();
@@ -137,7 +137,7 @@ function init() {
   key.shadow.mapSize.set(2048, 2048);
   Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 });
   key.shadow.normalBias = 0.03;
-  key.shadow.radius = 14; key.shadow.blurSamples = 24;
+  key.shadow.mapSize.set(1024, 1024);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xc9a27a, 1.1);   // тёплый контровой — медь по краям рамок
   rim.position.set(6, 4, -7);
@@ -308,7 +308,7 @@ function init() {
     const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     phone = window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio || 1));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const fh = PH + 2 * MAT + 0.16;
@@ -400,7 +400,7 @@ function init() {
       /* шапка: заголовок встаёт из-под строки, мелкие подписи печатаются, плашки вспыхивают как табло */
       if (window.rtPlay) { rtPlay(sec.querySelector('.show__sub'), 0); rtPlay(sec.querySelector('.show__title'), 0.35); rtPlay(sec.querySelector('.show__kicker'), 1.1); }
       /* плашки и кнопка — общим для сайта плавным подъёмом, одна за другой */
-      gsap.fromTo(sec.querySelectorAll('.show__tag, .show__cta'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', stagger: 0.08, delay: 0.5, clearProps: 'transform' });
+      gsap.fromTo(sec.querySelectorAll('.show__tag, .show__cta'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.07, delay: 0.5, clearProps: 'transform' });
     }
   };
 

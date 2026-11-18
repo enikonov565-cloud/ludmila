@@ -349,7 +349,7 @@ async function init() {
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
     .fromTo(q('.story__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 'now+=0.8')
     .call(() => { if (goingBack) return; window.rtPlay && rtPlay(noteL, 0); }, null, 'now+=0.95')
-    .fromTo(tags, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, 'now+=1.35')
+    .fromTo(tags, { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', stagger: 0.07 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
       if (goingBack) return;
       bob.forEach(t => t.kill());
