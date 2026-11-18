@@ -434,9 +434,9 @@ a { color: inherit; text-decoration: none; }
    Фон #968E83 на 90% поверх белого. Слева два квадрата (680 и 480) — сцены в них сменяются
    анимацией из примера Animated clip-path slider: внешний раскрывается снизу, внутренний сверху. */
 .approach {
-  --u: min(calc(100vw / 1920), calc(100svh / 1080));
+  --u: min(calc(100vw / 1920), calc((100svh - 40px) / 1080));   /* снизу запас 40px: стрелки и угол блокнота не уходят под панель задач */
   position: relative; overflow: hidden; overflow: clip; /* clip — блок нельзя «прокрутить» вбок фокусом или прокруткой к элементу */
-  height: 100svh; min-height: calc(1080 * var(--u));
+  height: 100svh; min-height: calc(1080 * var(--u) + 40px); padding-bottom: 40px;
   display: flex; align-items: center; justify-content: center;
   /* цвета меняются вместе со сценой (скрипт плавно переводит переменные) */
   --bg: #A1998F; --ink: #182C31;
