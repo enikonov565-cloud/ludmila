@@ -1472,14 +1472,14 @@ a { color: inherit; text-decoration: none; }
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
   .apx { left: calc(288 * var(--u)); top: calc(370 * var(--u)); width: calc(920 * var(--u)); height: calc(680 * var(--u)); }   /* по центру между вертикальным заголовком и портретом */
   /* блокнот лежит под наклоном, правый край выше; правее вертикального заголовка, углы не задевают тексты */
-  .apx { transform: rotate(-9deg) scale(.88); transform-origin: 50% 50%; }
+  .apx { transform: rotate(-5deg) scale(.88); transform-origin: 50% 50%; }   /* наклон мягче — корешок почти по оси */
   /* область рисования шире страниц на запас под переворачиваемый лист (27.975% с каждой стороны, как в библиотеке) — страницы совпадают с рамкой блокнота */
   .apx .apx__book { inset: -27.975%; }
   /* заголовок — по левому полю, снизу вверх: поворот вокруг нижнего левого угла, низ надписи на линии 1015 */
   .approach__title { left: calc(60 * var(--u) + 1.1 * 77 * var(--u)); top: calc(1045 * var(--u) - 1.1 * 77 * var(--u));   /* низ — на линии стрелок, как и нижний левый угол блокнота */ width: auto; white-space: nowrap; transform: rotate(-90deg); transform-origin: 0 100%; }
   .apx__answer { left: calc(1090 * var(--u)); top: calc(350 * var(--u)); width: calc(320 * var(--u)); }   /* на месте заголовка */
   .apx__answer-head { white-space: normal; }
-  .apx__nav { left: calc(700 * var(--u)); top: calc(950 * var(--u)); }   /* счётчик и стрелки — под блокнотом */
+  .apx__nav { left: calc(748 * var(--u) - 109 * var(--u)); top: calc(950 * var(--u)); }   /* счётчик и стрелки — ровно по оси блокнота (центр 748) */
   .apx__answer-sub { width: calc(300 * var(--u)); }
 }
 .apx__book { position: absolute; z-index: 1; inset: 0; }
@@ -1533,7 +1533,7 @@ a { color: inherit; text-decoration: none; }
 /* компьютер: заголовком сверху слева, над блокнотом (крупно, рукописная «Я»), под ним — подпись одной строкой */
 @media (min-width: 1001px) and (min-aspect-ratio: 7/5) {
   /* размеры — как у «Клиент поймёт вас с первого экрана»: заголовок 60, подпись 20 приглушённо; ниже, слева от блокнота */
-  .apx__answer { left: calc(333 * var(--u)); top: calc(292 * var(--u));   /* посередине между надписью из частиц и блокнотом */   /* левый край — по верхнему левому углу блокнота */ width: auto; gap: calc(10 * var(--u)); align-items: center; }   /* подпись — по центру заголовка */
+  .apx__answer { left: calc(748 * var(--u)); translate: -50% 0; top: calc(292 * var(--u));   /* по оси блокнота */   /* посередине между надписью из частиц и блокнотом */   /* левый край — по верхнему левому углу блокнота */ width: auto; gap: calc(10 * var(--u)); align-items: flex-end; }   /* подпись — под «работаю иначе.», той же ширины (main.js подгоняет размер) */
   .apx__br { display: none; }                                  /* «Я работаю иначе.» — одной строкой */
   .apx__answer-sub .apx__line { display: inline; }            /* подпись — тоже одной строкой */
   .apx__answer-sub .apx__line + .apx__line::before { content: " "; }

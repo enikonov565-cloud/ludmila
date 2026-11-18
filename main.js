@@ -550,6 +550,20 @@ document.documentElement.classList.replace('no-js', 'js');
       if (inView && answer) answer.classList.add('is-in');
     }, { threshold: 0.4 }).observe(root);
   }
+  /* компьютер: подпись «Я читаю бизнес — и сразу делаю то, что нужно» — ровно той же ширины, что «работаю иначе.» (без рукописной «Я») */
+  var fitSub = function () {
+    var ans = frame.querySelector('.apx__answer'); if (!ans) return;
+    var head = ans.querySelector('.apx__answer-head'), sub = ans.querySelector('.apx__answer-sub'), cap = head && head.querySelector('.cap');
+    if (!head || !sub || !cap) return;
+    if (window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches) { sub.style.fontSize = ''; sub.style.letterSpacing = ''; return; }
+    sub.style.fontSize = ''; sub.style.letterSpacing = '';
+    var hr = head.getBoundingClientRect(), cr = cap.getBoundingClientRect();
+    var target = hr.right - cr.right - (parseFloat(getComputedStyle(cap).marginRight) || 0);
+    var w = sub.getBoundingClientRect().width; if (!(w > 0 && target > 0)) return;
+    sub.style.fontSize = (parseFloat(getComputedStyle(sub).fontSize) * target / w).toFixed(2) + 'px';
+  };
+  fitSub(); window.addEventListener('resize', fitSub); window.addEventListener('load', fitSub);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSub);
   restart();
 
   var wanted = 0, pinned = false, jump = function () {};   /* закрепления по прокрутке больше нет — развороты листаются сами */
