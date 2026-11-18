@@ -297,7 +297,8 @@
   layout();
   showTexts(slides[current], false);
   /* все работы раскодируются заранее — при появлении новой картинки нет подвисания */
-  slides.forEach(function (s) { if (s.img.decode) s.img.decode().catch(function () {}); });
+  var decodeAll = function () { slides.forEach(function (s) { if (s.img.decode) s.img.decode().catch(function () {}); }); };
+  if (window.afterHero) window.afterHero(decodeAll); else decodeAll();   // после надписи первого экрана — чтобы она не дёргалась
   restart();
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 150); });

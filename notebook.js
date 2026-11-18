@@ -653,7 +653,7 @@ function init() {
     const idle = (fn) => (window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 2500 }) : setTimeout(fn, 200));
     const io = new IntersectionObserver((en) => { if (en[0].isIntersecting) go(); }, { rootMargin: '60% 0px' });   // запасной путь — если до блока долистали раньше
     io.observe(section);
-    const early = () => setTimeout(() => idle(go), 1200);
+    const early = () => (window.afterHero ? window.afterHero(() => idle(go)) : setTimeout(() => idle(go), 1200));
     if (document.readyState === 'complete') early(); else window.addEventListener('load', early);
   });
 }

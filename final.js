@@ -325,7 +325,8 @@ function init() {
   new IntersectionObserver((en) => { if (en[0].isIntersecting) setup(); }, { rootMargin: '250% 0px' }).observe(sec);
   /* лента загружается заранее — в первую свободную минуту после загрузки сайта, чтобы к последней странице всё было готово */
   const early = () => idle(setup);
-  if (document.readyState === 'complete') setTimeout(early, 1500); else window.addEventListener('load', () => setTimeout(early, 1500));
+  const kick = () => (window.afterHero ? window.afterHero(early) : setTimeout(early, 1500));
+  if (document.readyState === 'complete') kick(); else window.addEventListener('load', kick);
   new IntersectionObserver((en) => { near = en[0].isIntersecting; if (near) draw(); else if (!visible) halt(); }, { threshold: 0 }).observe(sec);
   /* показ начинается, когда страница открыта больше чем наполовину */
   new IntersectionObserver((en) => { visible = en[0].intersectionRatio > 0.5; if (visible) start(); else stop(); }, { threshold: [0, 0.5, 1] }).observe(sec);

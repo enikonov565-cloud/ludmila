@@ -463,6 +463,6 @@ function init() {
     renderer.render(scene, camera);
   };
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
-  const later = () => setTimeout(() => idle(warm, { timeout: 4000 }), 1500);
+  const later = () => (window.afterHero ? window.afterHero(() => setTimeout(() => idle(warm, { timeout: 4000 }), 1500)) : setTimeout(() => idle(warm, { timeout: 4000 }), 1500));
   if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true });
 }

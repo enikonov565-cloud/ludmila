@@ -18,7 +18,14 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const section = document.querySelector('.story');
 const canvas = section && section.querySelector('.story__gl');
 const gsap = window.gsap;
-if (section && canvas && gsap) init();
+if (section && canvas && gsap) {
+  let booted = false;
+  const boot = () => { if (booted) return; booted = true; io.disconnect(); init(); };
+  const io = new IntersectionObserver((en) => { if (en[0].isIntersecting) boot(); }, { rootMargin: '150% 0px' });
+  io.observe(section);
+  if (window.afterHero) window.afterHero(boot); else boot();
+  ['wheel', 'touchmove', 'keydown', 'click'].forEach((ev) => window.addEventListener(ev, boot, { once: true, passive: true }));   // человек начал листать — готовим сразу, чтобы закрепление блока не сдвинуло страницу позже
+}
 
 function loadImage(src) {
   return new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = src; });

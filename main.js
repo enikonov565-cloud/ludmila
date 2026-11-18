@@ -1,6 +1,9 @@
 /* Сайт всегда открывается с главного экрана: без восстановления прокрутки и без перехода по #якорю из адреса */
 (function () {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  /* тяжёлая подготовка других блоков (3D, блокнот) ждёт, пока на первом экране допишется надпись, — иначе она дёргается */
+  var heroAt = performance.now() + 5200;
+  window.afterHero = function (fn) { setTimeout(fn, Math.max(0, heroAt - performance.now())); };
   /* ScrollTrigger при обновлении возвращает браузеру прежнее «восстанавливать прокрутку» — закрепляем «вручную» и у него */
   var keepManual = function () { try { if (window.gsap && window.ScrollTrigger) { window.gsap.registerPlugin(window.ScrollTrigger); window.ScrollTrigger.clearScrollMemory('manual'); } } catch (e) {} history.scrollRestoration = 'manual'; };
   keepManual(); window.addEventListener('load', keepManual);
@@ -87,7 +90,7 @@ document.documentElement.classList.replace('no-js', 'js');
     var i = 0, prev = null;
     group.querySelectorAll('.say__line, .about__name-line, .apx__line').forEach(function (line) {
       var block = line.closest('.say') || group;
-      if (prev && block !== prev) i += 6;
+      if (prev && block !== prev) i += group.classList.contains('says') ? 2 : 6;   // первый экран: вторая надпись продолжает тот же ровный ритм
       prev = block;
       Array.prototype.slice.call(line.childNodes).forEach(function (node) {
         if (node.nodeType === 1 && node.classList.contains('cap')) {
@@ -120,6 +123,7 @@ document.documentElement.classList.replace('no-js', 'js');
         line.replaceChild(frag, node);
       });
     });
+    group.classList.add('is-split');
   });
 })();
 
