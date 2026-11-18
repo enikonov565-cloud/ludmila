@@ -155,7 +155,7 @@ function init() {
     ctx.save();
     if (dir < 0) { ctx.translate(PW, 0); ctx.scale(-1, 1); }                   // оборот — зеркально
     const e = dir < 0 ? PW - edge : edge;
-    ctx.shadowColor = 'rgba(26, 20, 14, .14)'; ctx.shadowBlur = h * 0.2; ctx.shadowOffsetY = h * 0.05;
+
     ctx.globalAlpha = 0.42; ctx.fillStyle = st.color; ctx.fillRect(e - inW, y, inW, h);   // на бумаге — полупрозрачно
     ctx.globalAlpha = 1; ctx.beginPath();                                       // за краем — плотно, внешние углы скруглены
     const R = h * 0.22; ctx.moveTo(e, y); ctx.lineTo(PW - R, y); ctx.quadraticCurveTo(PW, y, PW, y + R); ctx.lineTo(PW, y + h - R); ctx.quadraticCurveTo(PW, y + h, PW - R, y + h); ctx.lineTo(e, y + h); ctx.closePath();
@@ -433,8 +433,8 @@ function init() {
         [['12', 0, -74], ['3', 74, 0], ['6', 0, 74], ['9', -74, 0]].forEach((n) => ctx.strokeText(n[0], n[1], n[2] + 8.6));
         const d = new Date();
         const s = d.getSeconds() + d.getMilliseconds() / 1000, m = d.getMinutes() + s / 60, hr = (d.getHours() % 12) + m / 60;
-        hand(ctx, hr * 30, 46, 9, 4.2, gold, true);
-        hand(ctx, m * 6, 72, 11, 3, gold, true);
+        hand(ctx, hr * 30, 46, 9, 4.2, gold, false);
+        hand(ctx, m * 6, 72, 11, 3, gold, false);
         ctx.save(); ctx.rotate(s * 6 * Math.PI / 180);
         ctx.fillStyle = '#A9502C'; ctx.beginPath(); ctx.roundRect(-0.6, -79.6, 1.2, 100, 0.6); ctx.fill();
         ctx.beginPath(); ctx.arc(0, 16, 4, 0, Math.PI * 2); ctx.fill(); ctx.restore();
@@ -596,7 +596,7 @@ function init() {
         const ring = new THREE.Mesh(geo, mat);
         ring.rotation.x = Math.PI / 2;                           // дуга — вверх, к зрителю
         ring.position.set(0, ASPECT * (0.5 - f), 0.004);
-        ring.castShadow = true;
+        ring.castShadow = false;
         ringGroup.add(ring);
       });
     }
@@ -616,7 +616,7 @@ function init() {
       label: 'Блокнот «Мой подход»',
       formatPageLabel: (d) => 'Сцена ' + (sceneOf(Math.max(0, Math.min(scenes.length * (stacked ? 2 : 1) - 1, stacked ? d.page - 1 - LEAD : (d.page - 1 - LEAD) >> 1))) + 1) + ' из ' + scenes.length,
       paper: { backColor: PAPER, showThrough: 0.02, bulge: 0.6, wrinkles: 0.4, cutout: true },
-      lighting: { floorShadow: 0.22, ambient: { sky: '#ffffff', ground: '#d8cfc2', intensity: 2.05 }, sun: { intensity: 2.1 } },
+      lighting: { shadows: false, floorShadow: 0, ambient: { sky: '#ffffff', ground: '#d8cfc2', intensity: 2.05 }, sun: { intensity: 2.1 } },
       motion: { speed: 1.35, jitter: true },
       interaction: { drag: false, click: false, hold: false, hover: false, keyboard: false },
       preload: Infinity,
