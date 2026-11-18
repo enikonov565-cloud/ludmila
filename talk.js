@@ -35,7 +35,7 @@
     ['me', 'Все: Figma, PSD, PNG.'],
     ['them', 'Начинаем!']
   ];
-  var SPRING = 'back.out(1.6)';   // упругий въезд, как spring из образца
+  var SPRING = 'power2.out';   // упругий въезд, как spring из образца
 
   var clock = 0;                  // время сообщений: 10:02, 10:03…
   var bubble = function (who, text) {
@@ -61,7 +61,7 @@
   };
   var appear = function (row) {
     list.appendChild(row);
-    gsap.fromTo(row.firstChild, { autoAlpha: 0, scale: 0.85, y: 10 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.55, ease: SPRING });
+    gsap.fromTo(row.firstChild, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: SPRING });
   };
 
   var timers = [], dotsTween = null;
@@ -104,7 +104,7 @@
   intro.from(sec.querySelector('.talk__window'), { scale: 1.12, autoAlpha: 0, duration: 1.8, ease: 'power2.out' }, 0)
     .from(sec.querySelector('.talk__person'), { xPercent: -6, autoAlpha: 0, duration: 1.4 }, 0.2)
     .call(function () { window.rtPlay && rtPlay(sec.querySelector('.talk__title'), 0); }, null, 0.4)
-    .fromTo(sec.querySelectorAll('.talk__quote, .talk__by, .talk__cards img'), { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.12, clearProps: 'transform' }, 0.7)
+    .fromTo(sec.querySelectorAll('.talk__quote, .talk__by, .talk__cards img'), { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08, clearProps: 'transform' }, 0.7)
     .fromTo(sec.querySelector('.chat'), { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1 }, 0.6)
     .call(function () {          // телефон «живой»: медленно покачивается и чуть поворачивается
       gsap.to(sec.querySelector('.chat'), { y: -18, rotation: '-=2.5', duration: 3.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });

@@ -199,7 +199,7 @@ document.documentElement.classList.replace('no-js', 'js');
   if (!('IntersectionObserver' in window)) { items.forEach(show); return; }
 
   var order = ['.about__name', '.about__adapt', '.about__count', '.tile--portrait', '.tile--photo', '.case-card', '.about__hook', '.tags'];
-  var step = 0.12;
+  var step = 0.08;
   var desktop = !window.matchMedia('(max-width: 1000px), (max-aspect-ratio: 7/5)').matches;
 
   if (desktop) {

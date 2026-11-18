@@ -72,7 +72,7 @@
     gsap.set(wh, { visibility: 'visible', y: reduce ? 0 : drop(wh) });
     gsap.set(skin, { opacity: 0 });
     var tl = gsap.timeline();
-    tl.to(wh, { y: 0, duration: d(RISE), ease: 'back.out(1.15)' }, 0)
+    tl.to(wh, { y: 0, duration: d(RISE), ease: 'power2.out' }, 0)
       .to(skin, { opacity: 1, duration: d(0.9), ease: 'power1.out' }, 0)
       /* полный оборот: начинает и заканчивает главным экраном к зрителю */
       .to(wh, { _a: 360, duration: d(TURN), ease: 'sine.inOut', onUpdate: function () { apply(wh); } }, '+=0.6')
@@ -87,8 +87,8 @@
     if (reduce) return;
     gsap.from(sec.querySelector('.sites__bg'), { autoAlpha: 0, duration: 1.6, ease: 'power2.out' });
     if (window.rtPlay) { rtPlay(sec.querySelector('.sites__sub'), 0); rtPlay(sec.querySelector('.sites__title'), 0.35); }
-    gsap.from(sec.querySelectorAll('.sites__tags .show__tag'), { autoAlpha: 0, y: 12, duration: 0.7, delay: 0.3, stagger: 0.08, ease: 'power3.out' });
-    gsap.from(review, { autoAlpha: 0, y: 14, duration: 0.8, delay: 0.6, ease: 'power3.out' });
+    gsap.fromTo(sec.querySelectorAll('.sites__tags .show__tag'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.3, stagger: 0.08, ease: 'power2.out', clearProps: 'transform' });
+    gsap.fromTo(review, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.6, ease: 'power2.out', clearProps: 'transform' });
   };
 
   /* идёт, только пока блок на экране */

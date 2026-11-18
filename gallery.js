@@ -107,7 +107,7 @@
   };
   var showTexts = function (s, anim) {
     gsap.fromTo([s.texts, s.side], { autoAlpha: 0 }, { autoAlpha: 1, duration: anim ? 0.5 : 0, delay: anim ? 0.25 : 0, ease: 'power1.out' });
-    if (anim) { scramble(s.title); gsap.fromTo(s.texts.querySelector('.dg__num'), { x: -12, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.7, ease: 'elastic.out(1, .5)' }); }
+    if (anim) { scramble(s.title); gsap.fromTo(s.texts.querySelector('.dg__num'), { x: -12, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out' }); }
   };
   var hideTexts = function (s) { gsap.to([s.texts, s.side], { autoAlpha: 0, duration: 0.2, ease: 'power1.in' }); };
 

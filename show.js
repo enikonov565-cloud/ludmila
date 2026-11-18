@@ -397,9 +397,8 @@ function init() {
     if (!reduce) {
       /* шапка: заголовок встаёт из-под строки, мелкие подписи печатаются, плашки вспыхивают как табло */
       if (window.rtPlay) { rtPlay(sec.querySelector('.show__sub'), 0); rtPlay(sec.querySelector('.show__title'), 0.35); rtPlay(sec.querySelector('.show__kicker'), 1.1); }
-      sec.querySelectorAll('.show__tag, .show__cta').forEach((el, k) => {
-        gsap.fromTo(el, { autoAlpha: 0 }, { keyframes: { autoAlpha: [0, 1, 0.15, 1, 0.4, 1], easeEach: 'steps(1)' }, duration: 0.32, ease: 'none', delay: 0.5 + k * 0.08 });
-      });
+      /* плашки и кнопка — общим для сайта плавным подъёмом, одна за другой */
+      gsap.fromTo(sec.querySelectorAll('.show__tag, .show__cta'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', stagger: 0.08, delay: 0.5, clearProps: 'transform' });
     }
   };
 

@@ -302,8 +302,8 @@ a { color: inherit; text-decoration: none; }
 
 /* Появление при прокрутке */
 .js .about [data-reveal]:not(.about__name) {
-  opacity: 0; transform: translateY(calc(40 * var(--u)));
-  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .9s cubic-bezier(.33, 0, .25, 1), transform .9s cubic-bezier(.33, 0, .25, 1);   /* карточки и плашки — общим плавным подъёмом */
   transition-delay: var(--d, 0s);
 }
 .js .about [data-reveal].is-in { opacity: 1; transform: none; }

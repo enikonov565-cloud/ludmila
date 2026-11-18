@@ -69,8 +69,8 @@
     }
     if (s) tl.fromTo(s, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.inOut' }, 0)
              .fromTo(s.querySelector('img'), { scale: 1.08 }, { scale: 1, duration: 1.4, ease: 'power2.out' }, 0);
-    tl.fromTo(bits(p), { y: 24, autoAlpha: 0, filter: 'blur(6px)' },
-      { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.7, ease: 'power3.out', stagger: 0.12 }, s ? 0.35 : 0);
+    tl.fromTo(bits(p), { y: 24, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, s ? 0.35 : 0);   // карточки — общим плавным подъёмом
     if (reduce) tl.progress(1);   // без анимации — сразу в конечном виде
     return tl;
   };
