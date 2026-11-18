@@ -82,6 +82,65 @@
 
 document.documentElement.classList.replace('no-js', 'js');
 
+/* Единое появление заголовков и подзаголовков на всём сайте — как надпись на первом экране:
+   буквы по одной выплывают снизу из лёгкого размытия, одинаковым шагом и одинаковой плавностью.
+   rtSplit(el) — разбить на буквы (слова не рвутся, неразрывные пробелы склеивают слова),
+   rtPlay(el, задержка) — проиграть (повторно — с начала), rtReset(el) — спрятать снова.
+   Заголовки, которые не ведёт своя сцена блока, проигрываются сами, когда показались на экране. */
+(function () {
+  'use strict';
+  var split = function (el) {
+    if (el.classList.contains('rt')) return;
+    var i = 0;
+    var walk = function (node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+        if (n.nodeType === 1) {
+          if (n.classList.contains('cap')) { n.classList.add('ch'); n.style.setProperty('--i', i++); return; }
+          if (/^(BR|CANVAS|SVG|IMG)$/i.test(n.tagName)) return;
+          walk(n); return;
+        }
+        if (n.nodeType !== 3 || !n.nodeValue) return;
+        var frag = document.createDocumentFragment(), w = null, glue = false;
+        n.nodeValue.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) {
+            if (part.indexOf('\u00a0') > -1 && w) { w.appendChild(document.createTextNode('\u00a0')); glue = true; }
+            else { frag.appendChild(document.createTextNode(' ')); w = null; glue = false; }
+            return;
+          }
+          if (!(glue && w)) { w = document.createElement('span'); w.className = 'w'; frag.appendChild(w); }
+          glue = false;
+          Array.from(part).forEach(function (c) { var s = document.createElement('span'); s.className = 'ch'; s.textContent = c; s.style.setProperty('--i', i++); w.appendChild(s); });
+        });
+        node.replaceChild(frag, n);
+      });
+    };
+    walk(el);
+    el.classList.add('rt');
+  };
+  window.rtSplit = split;
+  window.rtPlay = function (el, delay) {
+    if (!el) return;
+    split(el);
+    el.style.setProperty('--rt-d', (delay || 0) + 's');
+    el.classList.remove('is-in'); void el.offsetWidth; el.classList.add('is-in');
+  };
+  window.rtReset = function (el) { if (el) el.classList.remove('is-in'); };
+  /* заголовки, которые ведут сцены блоков (они сами вызывают rtPlay в нужный момент) */
+  var managed = '.story__title, .story__note, .case__title, .case__kicker, .talk__title, .show__title, .show__sub, .show__kicker, .sites__title, .sites__sub';
+  /* заголовки, которые проигрываются сами при появлении на экране */
+  var auto = '.works__title, .works__note p, .final__title .final__ln, .final__sub';
+  document.querySelectorAll(managed).forEach(split);
+  var list = Array.prototype.slice.call(document.querySelectorAll(auto));
+  list.forEach(split);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (en) {
+      en.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); window.rtPlay(e.target, 0.1); } });
+    }, { threshold: 0.4 });
+    list.forEach(function (el) { io.observe(el); });
+  } else list.forEach(function (el) { el.classList.add('is-in'); });
+})();
+
 /* Побуквенное появление надписей: каждая буква — свой span с порядковым номером --i,
    слова не разрываются при переносе. Следующий абзац группы начинается с паузой. */
 (function () {

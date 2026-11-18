@@ -86,8 +86,7 @@
   var intro = function () {
     if (reduce) return;
     gsap.from(sec.querySelector('.sites__bg'), { autoAlpha: 0, duration: 1.6, ease: 'power2.out' });
-    gsap.from(sec.querySelector('.sites__sub'), { autoAlpha: 0, y: 14, duration: 0.7, ease: 'power3.out' });
-    gsap.from(sec.querySelectorAll('.sites__title .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, delay: 0.1, ease: 'power3.out' });
+    if (window.rtPlay) { rtPlay(sec.querySelector('.sites__sub'), 0); rtPlay(sec.querySelector('.sites__title'), 0.35); }
     gsap.from(sec.querySelectorAll('.sites__tags .show__tag'), { autoAlpha: 0, y: 12, duration: 0.7, delay: 0.3, stagger: 0.08, ease: 'power3.out' });
     gsap.from(review, { autoAlpha: 0, y: 14, duration: 0.8, delay: 0.6, ease: 'power3.out' });
   };

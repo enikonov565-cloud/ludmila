@@ -101,15 +101,17 @@ a { color: inherit; text-decoration: none; }
 /* Появление: фото проявляется, затем надпись по буквам выплывает из размытия */
 @media (prefers-reduced-motion: no-preference) {
   .stage__photo { animation: bg 2.4s var(--ease) both; }
-  .about__name.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.45s + var(--i) * 42ms); }
-  .about__name.is-in .ch.cap { animation-duration: 1.6s; }
+  .about__name.is-in .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.1s + var(--i) * 55ms); }
   /* первый экран: все буквы обеих надписей — одним ровным плавным движением, с одинаковым шагом от начала до конца */
   .js .says:not(.is-split) .say__line { visibility: hidden; }   /* пока надпись не разбита на буквы — не показываем, без мелькания */
   .says .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.5s + var(--i) * 55ms); will-change: transform, opacity; }
+  /* все остальные заголовки и подзаголовки — тем же ходом */
+  .rt .ch { opacity: 0; }
+  .rt.is-in .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(var(--rt-d, 0s) + var(--i) * 55ms); }
   .js .apx__answer .ch { opacity: 0; }
-  .apx__answer.is-in .ch { animation: ch 1.1s var(--ease) both; animation-delay: calc(.1s + var(--i) * 30ms); }
+  .apx__answer.is-in .ch { animation: ch-soft 1.4s cubic-bezier(.33, 0, .25, 1) both; animation-delay: calc(.1s + var(--i) * 55ms); }
   /* имя во втором блоке начинается вместе с цепочкой появления блока */
-  .about__name.is-in .ch { animation-delay: calc(.05s + var(--i) * 32ms); }
+
 }
 @keyframes bg { from { transform: scale(1.06); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ch { from { opacity: 0; transform: translateY(.4em); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
@@ -1577,3 +1579,12 @@ a { color: inherit; text-decoration: none; }
   .nb-slot, .nb-face { box-shadow: none !important; background: none; }
   .nb-slot canvas, .nb-face canvas { border-radius: 0; filter: drop-shadow(0 8px 12px rgba(26, 20, 14, .22)); }
 }
+
+/* ===== Единая цветовая схема текстов =====
+   тёмные страницы: заголовки — молочный #E8DCC8, подзаголовки и тексты — #BDB7B1;
+   светлые страницы: заголовки — тёмная бирюза #1A2C30, подзаголовки и тексты — та же бирюза, чуть мягче */
+.about__name, .story__title, .story__now .story__title, .case__title, .talk__title, .show__title, .sites__title, .show__name, .dg__title, .dg__item-title { color: #E8DCC8; }
+.about__adapt, .story__note, .case__kicker, .show__sub, .show__kicker, .sites__sub, .show__type, .dg__sub, .dg__item-sub, .dg__item-text { color: #BDB7B1; }
+.works__title, .final__title, .nowg__gtitle { color: #1A2C30; }
+.works__note, .final__sub, .nowg__cap { color: rgba(26, 44, 48, .8); }
+.final__sub.final__ln.is-light { color: #BDB7B1; }

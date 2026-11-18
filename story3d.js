@@ -310,9 +310,7 @@ async function init() {
   const grid = nowGrid(section, { reduce, onBack: () => { auto = false; if (autoNext) autoNext.kill(); } });   // из сетки — только на «Сейчас»
   const noteL = q('.story__note--left'), tags = qa('.story__tags span');
   /* тексты справа и слева — по словам: слова выезжают из-под строки, проявляясь из размытия */
-  [noteL].forEach(n => n && n.querySelectorAll('.story__reveal').forEach(r => {
-    r.innerHTML = r.textContent.split(' ').map(w => '<span class="w">' + w + '</span>').join(' ');
-  }));
+  /* заметка «Сейчас» — общим ходом букв (разбита в main.js) */
   const wordsIn = () => ({ yPercent: 100, autoAlpha: 0, filter: 'blur(6px)', duration: 0.65, ease: 'power3.out', stagger: 0.03 });
   /* «Тогда» и «Сейчас» — по буквам */
   qa('.story__ghost').forEach(el => { el.innerHTML = [...el.textContent].map(ch => '<span class="ch">' + ch + '</span>').join(''); });
@@ -324,7 +322,9 @@ async function init() {
   const hint = q('.story__scroll');
   let wantGo = false, bob = [], goingBack = false;
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: render, onComplete: () => later(HOLD_NOW, () => grid.show()) });
-  tl.from(qa('.story__then .story__reveal'), { yPercent: 110, autoAlpha: 0, duration: 1, ease: 'power3.out', stagger: 0.15 }, 0)
+  const thenTitle = q('.story__then .story__title'), nowTitle = q('.story__now-text .story__title');
+  /* заголовки «Тогда» и «Сейчас» — общим для сайта ходом букв; при возврате назад — прячутся и снова проигрываются */
+  tl.call(() => { if (tl.reversed() || goingBack) return; window.rtPlay && rtPlay(thenTitle, 0); }, null, 0)
     .from(ghostThen.children, charsIn(), 0.45)
     .from(state, { spin: -0.05, duration: 1.6, ease: 'power2.out' }, 0)
     .call(() => { drift = gsap.to(ghostThen, { y: () => -14 * Math.min(1, window.innerWidth / 1920 + 0.3), duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1 }); }, null, 1.8)
@@ -343,12 +343,12 @@ async function init() {
     .addLabel('now', 'away+=1.1')
     .set(canvas, { autoAlpha: 0 }, 'away+=1.5')
     .fromTo(q('.story__now-text'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, 'now')
-    .from(qa('.story__now-text .story__reveal'), { yPercent: 110, autoAlpha: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power3.out', stagger: 0.12 }, 'now')
+    .call(() => { if (goingBack) return; window.rtPlay && rtPlay(nowTitle, 0); }, null, 'now')
     /* «Сейчас» — как прежде: буквы выплывают из размытия */
     .to(ghostNow, { autoAlpha: 1, duration: 0.01 }, 'now+=0.25')
     .from(ghostNow.children, { yPercent: 70, autoAlpha: 0, rotate: 6, filter: 'blur(14px)', duration: 1, ease: 'power3.out', stagger: 0.06 }, 'now+=0.25')
     .fromTo(q('.story__back'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 'now+=0.8')
-    .from(noteL.querySelectorAll('.w'), wordsIn(), 'now+=0.95')
+    .call(() => { if (goingBack) return; window.rtPlay && rtPlay(noteL, 0); }, null, 'now+=0.95')
     .from(tags, { y: 22, scale: 0.9, autoAlpha: 0, filter: 'blur(8px)', duration: 0.7, ease: 'back.out(1.7)', stagger: 0.1 }, 'now+=1.35')
     .call(() => {                                                                   // парит: покачивается и чуть наклоняется
       if (goingBack) return;
@@ -368,6 +368,7 @@ async function init() {
   const back = () => {
     auto = false; if (autoNext) autoNext.kill(); goingBack = true;
     gsap.to(backBtn, { autoAlpha: 0, duration: 0.3 });
+    window.rtReset && rtReset(noteL); gsap.to(tags, { autoAlpha: 0, duration: 0.3 });   // тексты «Сейчас» уходят сразу, не остаются на «Тогда»
     wantGo = false; bob.forEach(t => t.kill()); bob = []; gsap.to(ghostNow, { y: 0, rotate: 0, duration: 0.4 });
     tl.tweenTo(2.4, { duration: Math.max(3, (tl.time() - 2.4) * 1.1), ease: 'sine.inOut', onComplete: () => { goingBack = false;   // назад — медленно и плавно, весь путь одним движением
       section.classList.remove('is-now');
@@ -379,6 +380,7 @@ async function init() {
     if (autoNext) autoNext.kill(); auto = true;
     wantGo = false; drift && drift.kill(); bob.forEach(t => t.kill()); bob = [];
     grid.close(true);
+    window.rtReset && (rtReset(noteL), rtReset(nowTitle));
     tl.pause(0); gsap.set([ghostThen, ghostNow], { y: 0, rotate: 0 });
     section.classList.remove('is-now'); render();
   };
