@@ -711,7 +711,7 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 1000px), (max-aspect-ratio: 7/5) {
   .site-header { padding: 12px 20px; }
-  .site-header.is-scrolled { padding-top: 8px; padding-bottom: 8px; }
+  .site-header.is-scrolled { padding-top: 8px; padding-bottom: 8px; background: var(--hc-fill, rgb(var(--hc-bg))); }   /* телефон: шапка с плотным фоном — текст блока под ней не просвечивает */
   .site-header__left { gap: 10px; }
   .brand { gap: 10px; }
   .header-cta { font-size: 16px; }
@@ -1545,7 +1545,8 @@ a { color: inherit; text-decoration: none; }
   .approach { display: grid; grid-template-columns: minmax(0, 1fr) 46%; grid-template-areas: "title title" "answer photo" "book book" "nav nav"; column-gap: 8px; }
   .approach__frame { display: contents; }
   .approach__title { grid-area: title; margin-bottom: 16px; }
-  .apx__answer { grid-area: answer; align-self: center; padding: 0 0 12px; }
+  .apx__answer { grid-area: answer; align-self: stretch; display: flex; flex-direction: column; justify-content: flex-start; padding: 10px 0 0; }   /* «Я работаю иначе.» — вверху, подпись — посередине между ним и блокнотом */
+  .apx__answer-sub { margin: auto 0; }
   /* «Я работаю» / «иначе.» — ровно две строки; подпись — две строки, как в макете, мельче */
   .apx__br { display: inline; }
   .apx__answer-head { font-size: clamp(24px, 6.6vw, 42px); white-space: nowrap; }
@@ -1553,12 +1554,12 @@ a { color: inherit; text-decoration: none; }
   .apx__answer { gap: 10px; }
   .apx__answer-sub { font-size: clamp(12.5px, 3.45vw, 18px); white-space: nowrap; }
   .approach__photo { grid-area: photo; order: 0; align-self: end; width: calc(100% + 20px); height: auto; margin: 0 -20px 0 0; }
-  .apx { grid-area: book; margin: 18px 0 10px; width: 100%; height: auto; aspect-ratio: 2 / 1.36; justify-self: center; }
+  .apx { grid-area: book; margin: 6px 0 0; width: 100%; height: auto; aspect-ratio: 2 / 1.36; justify-self: center; }
   .approach { --nbw: min(calc(100vw - 40px), calc((66svh - 14px) / 2)); }   /* блокнот целиком помещается на экране */
   /* место под блокнот — сразу, до его сборки: две квадратные страницы и кольца; иначе блок вырос бы позже и наехал на следующий */
   .apx .apx__book { position: absolute; inset: -27.975%; width: auto; height: auto; margin: 0; }   /* разворот как на компьютере, с запасом под переворачиваемый лист */
   /* стрелки — сразу под блокнотом, компактно */
-  .apx__nav { grid-area: nav; margin: 14px 0 44px; width: 160px; height: 52px; }
+  .apx__nav { grid-area: nav; margin: 0 0 44px; width: 160px; height: 52px; }   /* стрелки — вплотную под блокнотом */
   .apx__count { bottom: 22px; gap: 8px; }
   .apx__cur { font-size: 26px; }
   .apx__total { font-size: 14px; }

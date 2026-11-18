@@ -907,7 +907,7 @@ document.documentElement.classList.replace('no-js', 'js');
     var m = rgb.match(/\d+(\.\d+)?/g); if (!m) return false;
     return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) > 150;
   };
-  var last = '';
+  var last = '', lastFill = '';
   var update = function () {
     var y = header.offsetHeight / 2, under = null;
     for (var i = 0; i < sections.length; i++) {
@@ -922,6 +922,10 @@ document.documentElement.classList.replace('no-js', 'js');
       else if (under.classList.contains('story')) light = under.classList.contains('is-now'); // «Сейчас» — светлое фото
       else if (under.classList.contains('case')) light = under.getAttribute('data-page') === '1'; // «После» — светлый фон
     }
+    /* телефон: шапка заливается цветом блока под ней — текст блока не просвечивает сквозь неё */
+    var fill = under ? getComputedStyle(under).backgroundColor : '';
+    if (!fill || /rgba\(.*,\s*0\)$/.test(fill) || fill === 'transparent') fill = 'rgb(' + (light ? LIGHT : DARK).bg + ')';
+    if (fill !== lastFill) { lastFill = fill; header.style.setProperty('--hc-fill', fill); }
     var key = light ? 'L' : 'D';
     if (key === last) return;
     last = key;
