@@ -95,7 +95,7 @@
   gsap.set(sec.querySelectorAll('.case__ghost'), { xPercent: -50, yPercent: -50 });
   /* «После»: карточки растут на широком экране — до высоты кадра (k ≤ 1.1), не дальше ширины */
   var setK = function () {
-    var vw = document.documentElement.clientWidth, vh = window.innerHeight, u = Math.min(vw / 1920, (vh - 40) / 1080);
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight, u = Math.min(vw / 1920, (vh - 40 - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hide')) || 0)) / 1080);
     var k = Math.min(1.1, (vw - 246 * u) / (1674 * u));
     sec.style.setProperty('--k', Math.max(0.6, k).toFixed(4));
   };

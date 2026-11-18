@@ -20,6 +20,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+:root { --hide: 0px; --sb: calc(40px + var(--hide)); }   /* --hide — полоса окна под панелью задач (считает скрипт в head); --sb — нижний запас блоков на компьютере */
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--teal); color: #fff; font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 p, h1, h2, ul, figure { margin: 0; padding: 0; }
@@ -434,9 +435,9 @@ a { color: inherit; text-decoration: none; }
    Фон #968E83 на 90% поверх белого. Слева два квадрата (680 и 480) — сцены в них сменяются
    анимацией из примера Animated clip-path slider: внешний раскрывается снизу, внутренний сверху. */
 .approach {
-  --u: min(calc(100vw / 1920), calc((100svh - 40px) / 1080));   /* снизу запас 40px: стрелки и угол блокнота не уходят под панель задач */
+  --u: min(calc(100vw / 1920), calc((100svh - var(--sb)) / 1080));   /* снизу запас 40px: стрелки и угол блокнота не уходят под панель задач */
   position: relative; overflow: hidden; overflow: clip; /* clip — блок нельзя «прокрутить» вбок фокусом или прокруткой к элементу */
-  height: 100svh; min-height: calc(1080 * var(--u) + 40px); padding-bottom: 40px;
+  height: 100svh; min-height: calc(1080 * var(--u) + var(--sb)); padding-bottom: var(--sb);
   display: flex; align-items: center; justify-content: center;
   /* цвета меняются вместе со сценой (скрипт плавно переводит переменные) */
   --bg: #A1998F; --ink: #182C31;
@@ -720,7 +721,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Блок «Мой путь» (Figma «п-р10»): 3D-ноутбук на тёмном интерьере ===== */
 .story {
-  --u: min(calc(100vw / 1920), calc((100svh - 40px) / 1080));   /* снизу запас 40px: кнопки и подписи у нижнего края не уходят под панель задач */
+  --u: min(calc(100vw / 1920), calc((100svh - var(--sb)) / 1080));   /* снизу запас 40px: кнопки и подписи у нижнего края не уходят под панель задач */
   position: relative; overflow: hidden; overflow: clip;
   height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0%, #070F10 100%); /* фирменный фон, как во втором блоке */
@@ -746,7 +747,7 @@ a { color: inherit; text-decoration: none; }
 .story__arrow svg { width: 100%; height: auto; display: block; }
 .story__arrow:hover { color: #C9A27A; }
 .story__arrow:focus-visible { color: #C9A27A; }
-.story__scroll { right: calc(60 * var(--u)); bottom: calc(60 * var(--u)); }
+.story__scroll { right: calc(60 * var(--u)); bottom: calc(60 * var(--u) + var(--hide)); }
 .story__scroll:hover { transform: translateX(calc(6 * var(--u))); }
 .story__back { left: calc(60 * var(--u)); top: calc(420 * var(--u)); transform: scaleX(-1); opacity: 0; visibility: hidden; pointer-events: auto; }
 .story__back:hover { transform: scaleX(-1) translateX(calc(6 * var(--u))); }
@@ -840,7 +841,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Блок 6 «Дизайн продаёт» (Figma «п-р10(4)»): кейс на трёх страницах ===== */
 .case {
-  --u: min(calc(100vw / 1920), calc((100svh - 40px) / 1080)); --S: min(calc(480 * var(--u)), calc((100vw - 850 * var(--u)) / 3)); --g: calc((100% - 736 * var(--u) - 3 * var(--S)) / 3); /* квадрат 480 как во втором блоке; зазоры между фото — одинаковые */ --k: 1;
+  --u: min(calc(100vw / 1920), calc((100svh - var(--sb)) / 1080)); --S: min(calc(480 * var(--u)), calc((100vw - 850 * var(--u)) / 3)); --g: calc((100% - 736 * var(--u) - 3 * var(--S)) / 3); /* квадрат 480 как во втором блоке; зазоры между фото — одинаковые */ --k: 1;
   position: relative; overflow: hidden; overflow: clip; height: 100svh; min-height: 560px; color: #BDB7B1;
   background: linear-gradient(180deg, #1A2C30 0, #070F10 calc(568 * var(--u)), #070F10 100%);   /* как во втором блоке «Обо мне» */
 }
@@ -886,8 +887,8 @@ a { color: inherit; text-decoration: none; }
 /* подпись под фото — как текст «Вы любите своё дело…» во втором блоке */
 .case__item p { margin: calc(22 * var(--u)) 0 0; font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.25; letter-spacing: -.015em; color: #BDB7B1; }
 .case__item--top { left: calc(60 * var(--u) + var(--S) + var(--g)); top: calc(226 * var(--u)); }
-.case__item--left { left: calc(60 * var(--u)); top: auto; bottom: calc(26 * var(--u)); }
-.case__item--right { left: calc(60 * var(--u) + 2 * var(--S) + 2 * var(--g)); top: auto; bottom: calc(26 * var(--u)); }
+.case__item--left { left: calc(60 * var(--u)); top: auto; bottom: calc(26 * var(--u) + var(--sb)); }
+.case__item--right { left: calc(60 * var(--u) + 2 * var(--S) + 2 * var(--g)); top: auto; bottom: calc(26 * var(--u) + var(--sb)); }
 
 /* ===== страница «После» — точно по макету «п-р 22» (кадр 1920×1080) ===== */
 .case__page--after { display: block;
@@ -927,9 +928,9 @@ a { color: inherit; text-decoration: none; }
 
 /* счётчик и стрелки — те же, что в «Моём подходе» (классы apx__*); здесь только место и цвет */
 .case { --ink: #BDB7B1; }
-.case .case__nav { position: absolute; z-index: 2; left: calc(60 * var(--u) + var(--S) + var(--g) + (var(--S) - 218 * var(--u)) / 2); top: auto; bottom: calc(26 * var(--u)); }   /* по центру под средним фото (своё правило — раньше его перекрывало правило блокнота) */
+.case .case__nav { position: absolute; z-index: 2; left: calc(60 * var(--u) + var(--S) + var(--g) + (var(--S) - 218 * var(--u)) / 2); top: auto; bottom: calc(26 * var(--u) + var(--sb)); }   /* по центру под средним фото (своё правило — раньше его перекрывало правило блокнота) */
 /* «дальше» — круглая стрелка с «пульсом», как на «Тогда» */
-.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); left: auto; bottom: calc(26 * var(--u)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
+.case__hint { position: absolute; z-index: 2; right: calc(60 * var(--u)); left: auto; bottom: calc(26 * var(--u) + var(--sb)); margin: 0; padding: 0; background: none; border: 0; cursor: pointer;
   color: #BDB7B1; opacity: 0; transition: opacity .6s ease; }
 .case__hint { width: calc(101 * var(--u)); height: calc(30 * var(--u)); display: flex; align-items: center; }
 .case__hint svg { width: 100%; height: auto; display: block; }
@@ -1018,12 +1019,12 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(90deg, rgba(7, 15, 16, 0) 0%, rgba(7, 15, 16, .1) 28%, rgba(7, 15, 16, .88) 43%, #070F10 54%),
               linear-gradient(0deg, rgba(7, 15, 16, .55) 0%, rgba(7, 15, 16, 0) 30%); }
 /* заголовок — в свободной тёмной части, телефон — справа */
-.talk { --cw: clamp(calc(340 * var(--u)), calc(100vw - 1580 * var(--u)), calc(400 * var(--u)));   /* на 16:9 телефон чуть уже — наклонённый угол не задевает отзыв и карточки */ --tl: min(calc(783 * var(--u)), calc(100% - 1240 * var(--u))); }   /* левый край текста: у вас на экране — по линии 783u, на 16:9 — левее, чтобы не упереться в телефон */
+.talk { --cw: calc(clamp(calc(340 * var(--u)), calc(100vw - 1580 * var(--u)), calc(400 * var(--u))) - .6 * var(--hide));   /* на 16:9 телефон чуть уже — наклонённый угол не задевает отзыв и карточки */ --tl: min(calc(783 * var(--u)), calc(100% - 1240 * var(--u))); }   /* левый край текста: у вас на экране — по линии 783u, на 16:9 — левее, чтобы не упереться в телефон */
 .talk__title { position: absolute; z-index: 3; left: var(--tl); top: calc(150 * var(--u)); width: auto; margin: 0; white-space: nowrap; font-size: calc(75 * var(--u)); }   /* на 2 ед. меньше общего — строка «я задаю правильные» помещается между линиями */
 
 /* ===== iPhone с перепиской ===== */
 .chat { will-change: transform;   /* телефон покачивается — свой слой, иначе каждый кадр перерисовывался целиком */
-  position: absolute; z-index: 3; right: calc(60 * var(--u) + .118 * var(--cw)); top: calc(50% + 30 * var(--u) - 24px);   /* телефон и кнопка чуть выше — снизу запас, кнопка не уходит под панель задач */ /* наклон и центрирование задаёт talk.js; наклонённый угол телефона — ровно по правому полю сайта (60), как «связаться со мной» */ width: var(--cw); height: auto; aspect-ratio: 1 / 2;
+  position: absolute; z-index: 3; right: calc(60 * var(--u) + .118 * var(--cw)); top: calc(50% + 30 * var(--u) - 24px - .5 * var(--hide));   /* телефон и кнопка чуть выше — снизу запас, кнопка не уходит под панель задач */ /* наклон и центрирование задаёт talk.js; наклонённый угол телефона — ровно по правому полю сайта (60), как «связаться со мной» */ width: var(--cw); height: auto; aspect-ratio: 1 / 2;
   padding: calc(13 * var(--u)); border-radius: calc(66 * var(--u)); background: #1c1d1f;
   box-shadow: inset 0 0 0 calc(2 * var(--u)) #3a3b3e, 0 calc(40 * var(--u)) calc(90 * var(--u)) rgba(0, 0, 0, .55); }
 /* экран — как чат Telegram: зелёный фон темы с тонким узором-«каракулями» */
@@ -1414,7 +1415,7 @@ a { color: inherit; text-decoration: none; }
 .case[data-page="0"] .cta-arrow:hover { color: #E8DCC8; }
 
 /* «Написать в Telegram» — под телефоном с перепиской: капсула с самолётиком */
-.btn-tg { position: absolute; z-index: 3; right: calc(60 * var(--u) + .24 * var(--cw)); top: calc(50% + 60 * var(--u) + .9925 * var(--cw) - 24px); width: var(--cw);   /* по центру под низом наклонённого телефона */
+.btn-tg { position: absolute; z-index: 3; right: calc(60 * var(--u) + .24 * var(--cw)); top: calc(50% + 60 * var(--u) + .9925 * var(--cw) - 24px - .5 * var(--hide)); width: var(--cw);   /* по центру под низом наклонённого телефона */
   display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--u)); padding: calc(14 * var(--u)) calc(24 * var(--u));
   border: 1px solid rgba(232, 220, 200, .4); border-radius: 999px; color: #E8DCC8;
   font-weight: 400; font-size: calc(20 * var(--u)); line-height: 1.2; letter-spacing: -.01em;
