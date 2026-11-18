@@ -281,10 +281,6 @@ function init() {
       tick(dt) { t += dt; },
       draw(ctx) {
         const ry = (Math.sin(t * 0.55) * 17) * Math.PI / 180, rx = (Math.sin(t * 0.37 + 1.2) * 6) * Math.PI / 180;
-        /* мягкая тень под ёмкостью */
-        const sh = ctx.createRadialGradient(cx, cy + bh * 1.02, 0, cx, cy + bh * 1.02, bw * 1.5);
-        sh.addColorStop(0, 'rgba(26, 44, 48, .22)'); sh.addColorStop(1, 'rgba(26, 44, 48, 0)');
-        ctx.fillStyle = sh; ctx.fillRect(cx - bw * 1.6, cy + bh * 0.8, bw * 3.2, bh * 0.5);
         const V = [[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1], [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]]
           .map(([x, y, z]) => project(x * bw, y * bh, z * bd, ry, rx));
         const faces = [[0, 1, 2, 3], [4, 5, 6, 7], [0, 4, 7, 3], [1, 5, 6, 2], [0, 1, 5, 4], [3, 2, 6, 7]];
@@ -386,9 +382,6 @@ function init() {
       },
       draw(ctx) {
         const x = AREA.x + (AREA.w - S) / 2, y = AREA.y + (AREA.h - S) / 2;
-        const sh = ctx.createRadialGradient(x + S / 2, y + S * 0.9, 0, x + S / 2, y + S * 0.9, S * 0.4);
-        sh.addColorStop(0, 'rgba(26, 44, 48, .18)'); sh.addColorStop(1, 'rgba(26, 44, 48, 0)');
-        ctx.fillStyle = sh; ctx.fillRect(x, y + S * 0.75, S, S * 0.3);
         ctx.drawImage(renderer.domElement, x, y, S, S);
       },
     };
@@ -409,9 +402,6 @@ function init() {
       draw(ctx) {
         const k = R / 96;
         ctx.save(); ctx.translate(cx, cy); ctx.scale(k, k);
-        /* тень на бумаге */
-        const sh = ctx.createRadialGradient(4, 8, 80, 4, 8, 108); sh.addColorStop(0, 'rgba(26,44,48,.28)'); sh.addColorStop(1, 'rgba(26,44,48,0)');
-        ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(4, 8, 108, 0, Math.PI * 2); ctx.fill();
         const face = ctx.createRadialGradient(-10, -18, 0, 0, 0, 120);
         face.addColorStop(0, '#21363B'); face.addColorStop(0.65, '#16262A'); face.addColorStop(1, '#0B1517');
         ctx.fillStyle = face; ctx.beginPath(); ctx.arc(0, 0, 96, 0, Math.PI * 2); ctx.fill();
